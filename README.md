@@ -24,11 +24,11 @@ Im Rahmen unseres ML-Projektes haben wir uns für die CRISP-DM-Zyklus-Vorgehensw
 Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne manuelle Eingriffe.)
 
 ## Vorgehensweise
-Datenquellen gesucht. 
-Daten analysiert mit Phyton.
-Daten in Organge getestet geschaut was macht ein Tree, LR und Gradient Boosting. Metriken angeschaut.
-Recherche Libararys Phython für Modelltraining und Datenaufbereitung
-Weiter auf Phython mit Data Preparation, welche Daten können wichtig sein?
-Recherche und Auswahl vom Modell: Welche Modelle beachten Zeitreihen
+- Datenquellen gesucht. 
+- Daten analysiert mit Phyton.
+- Daten in Organge getestet geschaut was macht ein Tree, LR und Gradient Boosting. Metriken angeschaut.
+- Recherche Libararys Phython für Modelltraining und Datenaufbereitung
+- Weiter auf Phython mit Data Preparation, welche Daten können wichtig sein?
+- Recherche und Auswahl vom Modell: Welche Modelle beachten Zeitreihen
 
 
