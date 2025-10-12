@@ -1,4 +1,6 @@
+#Analyse der vorhandenen Daten
 import pandas as pd
+
 
 dateipfad = r"C:\Users\User\Documents\GitHub\Forecast & Anomalie Detection\251006_Stromverbrauch Basel 2012-2025.csv"
 
@@ -37,7 +39,7 @@ print("Doppelte Zeitpunkte:", len(doppelte))
 print("Erste 10 fehlende Zeitpunkte:")
 print(fehlende)
 
-# Optional: Differenzen zwischen Zeitpunkten prüfen
+# Optional: Differenzen zwischen Zeitpunkten prüfen.
 delta = df.index.to_series().diff().value_counts().head(5)
 print("\nHäufigste Zeitabstände:")
 print(delta)
