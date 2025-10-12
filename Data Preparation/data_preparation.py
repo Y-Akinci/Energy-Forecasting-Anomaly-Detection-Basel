@@ -35,7 +35,7 @@ print("Doppelte Zeitpunkte:", len(doppelte))
 
 # Fehlende Zeitpunkte anzeigen
 print("Erste 10 fehlende Zeitpunkte:")
-print(fehlende[:10])
+print(fehlende)
 
 # Optional: Differenzen zwischen Zeitpunkten prüfen
 delta = df.index.to_series().diff().value_counts().head(5)
