@@ -1,5 +1,8 @@
 #Analyse der vorhandenen Daten
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import sklearn
 
 
 dateipfad = r"C:\Users\User\Documents\GitHub\Forecast & Anomalie Detection\251006_Stromverbrauch Basel 2012-2025.csv"
@@ -43,3 +46,8 @@ print(fehlende)
 delta = df.index.to_series().diff().value_counts().head(5)
 print("\nHäufigste Zeitabstände:")
 print(delta)
+
+
+
+
+
