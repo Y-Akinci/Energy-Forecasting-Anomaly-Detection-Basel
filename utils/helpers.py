@@ -1,7 +1,7 @@
 import pandas as pd
 import os, sys
 def csv_file():
-    dateipfad = r"C:\Users\User\Documents\GitHub\Forecast & Anomalie Detection\251006_Stromverbrauch Basel 2012-2025.csv"
+    dateipfad = r"C:\Users\User\Documents\GitHub\Forecast und Anomalie Detection\251006_Stromverbrauch Basel 2012-2025.csv"
 
     df = pd.read_csv(dateipfad, sep = ";")
 

@@ -1,8 +1,9 @@
-from utils.helpers import csv_file    
+   
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import sklearn
+from utils.helpers import csv_file 
 
 df = csv_file()
 
