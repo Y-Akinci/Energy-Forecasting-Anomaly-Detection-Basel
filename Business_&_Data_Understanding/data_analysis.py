@@ -1,11 +1,9 @@
-#Analyse der vorhandenen Daten
+from utils.helpers import csv_file    
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import sklearn
-from utils.helpers import csv_file
-from project_setup import add_project_root
-add_project_root()
+
 df = csv_file()
 
 print(df.index.dtype)
