@@ -1,11 +1,12 @@
-   
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import sklearn
-from utils.helpers import csv_file 
+from utils import helpers
 
-df = csv_file()
+df = helpers.csv_file()
 
 print(df.index.dtype)
 #print(df.head(3))
