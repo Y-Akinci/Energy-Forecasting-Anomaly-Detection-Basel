@@ -25,7 +25,7 @@ Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne
 
 ## Vorgehensweise
 - Datenquellen gesucht. 
-- Daten analysiert mit Phyton.
+- Daten analysiert mit Phyton. Zielvariablen und Features festgelegt.
 - Daten in Organge getestet geschaut was macht ein Tree, LR und Gradient Boosting. Metriken angeschaut.
 - Recherche Libararys Phython für Modelltraining und Datenaufbereitung
 - Weiter auf Phython mit Data Preparation, welche Daten können wichtig sein?
