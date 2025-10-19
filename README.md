@@ -34,12 +34,17 @@ Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne
 ## Business Understanding
 ### Business Case / Nutzen / IWB
 ### Formalisierung
-### 
 
 ## Data Understnading
 ### Aufbau Daten
+Quelle
 ### Umgang mit Fehlenden Werten
-### Wichtige Entscheidungen
+#### Grundversorgte und Freie Kunden
+
+#### Zeitumstellung
+Beim Import und der Prüfung der Zeitreihe zeigte sich, dass 52 Viertelstunden-Zeitpunkte fehlen. Diese treten jeweils Ende Oktober in den Jahren mit Sommerzeit-Umstellung auf. Die Ursache liegt in der Umstellung von Sommer- auf Winterzeit: lokal werden diese Stunden doppelt gemessen, in der UTC-Darstellung erscheinen sie jedoch als Lücke.
+Da UTC-Zeit keine Sommerzeitkorrektur enthält, wurde sie als Standardzeitzone beibehalten, um Dubletten zu vermeiden und die Daten konsistent zu halten.
+Ab 2022 scheinen die Daten bereits zeitzonenbereinigt exportiert zu werden, was auf eine System- oder Formatumstellung der Quelle hindeutet.
 
 ## Modeling
 ## Evaluation
