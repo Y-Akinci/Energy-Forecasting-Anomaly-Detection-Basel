@@ -31,4 +31,16 @@ Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne
 - Weiter auf Phython mit Data Preparation, welche Daten können wichtig sein?
 - Recherche und Auswahl vom Modell: Welche Modelle beachten Zeitreihen
 
+## Business Understanding
+### Business Case / Nutzen / IWB
+### Formalisierung
+### 
 
+## Data Understnading
+### Aufbau Daten
+### Umgang mit Fehlenden Werten
+### Wichtige Entscheidungen
+
+## Modeling
+## Evaluation
+## Demployment
