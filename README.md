@@ -5,18 +5,19 @@ Machine-Learning-Modell zur Vorhersage und Anomalieerkennung im Energieverbrauch
 xxxxxx
 
 ## Methodik
-Im Rahmen unseres ML-Projektes haben wir uns für die CRISP-DM-Zyklus-Vorgehensweise (Cross Industry Standard Process for Data Mining) entschieden. Diese besteht aus sechs Phasen und bietet uns eine umfassende Orientierung und hilft uns die nächsten wichtigen Schritte im Überblick zu behalten.
+Im Rahmen unseres ML-Projektes haben wir uns für die CRISP-DM-Zyklus-Vorgehensweise (Cross Industry Standard Process for Data Mining) entschieden. Dieses Vorgehensmodell gliedert den gesamten Datenanalyseprozess, von der Problemdefinition bis zur praktischen Nutzung des Modells, in sechs klar definierte Phasen.
+CRISP-DM bietet uns eine strukturierte und iterative Vorgehensweise, um systematisch Daten zu verstehen, Modelle zu entwickeln und deren Nutzen im realen Umfeld zu evaluieren.
 
 ### Business Understanding Data Understanding (Problemformalisierung)
-- eine formalisierte Problembeschreibung ableiten
+- In dieser Phase wird das Problem fachlich verstanden und in eine formalisierte Aufgabenstellung für das Machine Learning übersetzt.
+Zudem erfolgt eine erste Analyse der vorhandenen Datenquellen und -qualität.
 ### Data Preperation
-- Daten für Maschinelles Lernen der Formalisierung aufbereiten (Handling fehlender Werte,, Diskretisierung, Skalierung)
+- Die Daten werden aufbereitet, bereinigt und für das Modelltraining vorbereitet (Handling fehlender Werte,, Diskretisierung, Skalierung)
 ### Modeling
 - Auswahl und Training des Modells (versch. Kriterien, Stärken & Schwächen und Parameter kennen)
 ### Evaluation
-- ergebnisse beurteilen
-- mögliche Probleme verstehen
-- wirtschaftlicher Nutzten
+- Überprüfung der Modellleistung anhand geeigneter Metriken.
+- Ziel ist es, die Ergebnisse kritisch zu bewerten, Probleme zu erkennen und den wirtschaftlichen Nutzen zu beurteilen.
 ### Deployment
 - das entwickelte Modell oder die gewonnenen Erkenntnisse in die Praxis überführen.
 
