@@ -5,6 +5,7 @@ Machine-Learning-Modell zur Vorhersage und Anomalieerkennung im Energieverbrauch
 xxxxxx
 
 ## Methodik
+### CRISP-DM
 Im Rahmen unseres ML-Projektes haben wir uns für die CRISP-DM-Zyklus-Vorgehensweise (Cross Industry Standard Process for Data Mining) entschieden. Dieses Vorgehensmodell gliedert den gesamten Datenanalyseprozess, von der Problemdefinition bis zur praktischen Nutzung des Modells, in sechs klar definierte Phasen.
 CRISP-DM bietet uns eine strukturierte und iterative Vorgehensweise, um systematisch Daten zu verstehen, Modelle zu entwickeln und deren Nutzen im realen Umfeld zu evaluieren.
 <img width="547" height="501" alt="image" src="https://github.com/user-attachments/assets/bd337948-9179-4135-807f-55f50c3d952d" />
@@ -33,6 +34,8 @@ Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne
 - Recherche Libararys Phython für Modelltraining und Datenaufbereitung
 - Weiter auf Phython mit Data Preparation, welche Daten können wichtig sein?
 - Recherche und Auswahl vom Modell: Welche Modelle beachten Zeitreihen
+
+### SCRUM
 
 ## Business Understanding
 ### Business Case / Nutzen / IWB
