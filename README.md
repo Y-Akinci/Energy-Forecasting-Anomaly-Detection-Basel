@@ -1,8 +1,6 @@
 # Energy-Forecasting-Anomaly-Detection-Basel
-Machine-Learning-Modell zur Vorhersage und Anomalieerkennung im Energieverbrauch.
+Wir entwickeln für Basel-Stadt ein datengetriebenes System zur Energie-Lastprognose und Anomalie-Erkennung. Auf Basis historischer Last-, Wetter- und Kalenderdaten sollen kurz- bis mittelfristige Forecasts gelingen und Abweichungen früh präventiv erkannt werden um Beschaffung, Netzbetrieb und Peak-Management verlässlicher und kosteneffizienter zu machen.
 
-#@ Vorwort und Hintergrund 
-xxxxxx
 
 ## Methodik
 ### CRISP-DM
