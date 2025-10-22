@@ -14,6 +14,10 @@ Yaren Akinci:
 - Wir haben ausserdem Besprochen dass wir mit der Scrum Methode aus den vorerigen Projekten fortfahren möchten, da diese Sich für die Orientierung und den Fortschritt innerhalb des Projektes sehr nützlich erwies.
 
 Kerem Akkaya:
+- Energie Messdaten analysiert
+- Neue Datenquellen gesucht --> Wetterdaten Metereologie Schweiz
+- Tutorial zur Umsetzung eines AI Models geschaut und umgesetz
+- Überlegungen zur Abgrenzung des Projektes gemacht
 
 Haris Salli:
 
@@ -25,7 +29,10 @@ Yaren Akinci:
 
 
 Kerem Akkaya:
-
+- Datenaufbereitung über Python recherchieren
+- Wetter- und Energiedaten Joinen und bereinigen
+- Abgrenzungen im Projekt machen und Projekt schildern in Data Understanding und Business understanding
+- 
 Haris Salli:
 
 
@@ -37,6 +44,8 @@ Yaren Akinci:
 
 
 Kerem Akkaya:
+- Freiheit im Projekt und Vogehen bringen Unsicherheiten auf
+- Dokumentation nicht klar
 
 Haris Salli:
 
