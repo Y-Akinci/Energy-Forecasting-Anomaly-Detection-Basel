@@ -12,6 +12,9 @@ Yaren Akinci:
 - ...wie ich in Python die Datenquelle anlege, und mithilfe Pandas analysiere und die Zeitreihe als Index setzte und
 - ...welche Pakete/Libraries wichtig sind und wie ich sie in Python hinzufüge
 - Wir haben ausserdem Besprochen dass wir mit der Scrum Methode aus den vorerigen Projekten fortfahren möchten, da diese Sich für die Orientierung und den Fortschritt innerhalb des Projektes sehr nützlich erwies.
+- Datenquellen gesucht. 
+- Daten analysiert mit Phyton. Zielvariablen und Features festgelegt.
+- Daten in Organge getestet. (Tree, LR und Gradient Boosting. Metriken analysiert; erster Richtwert)
 
 Kerem Akkaya:
 - Energie Messdaten analysiert
