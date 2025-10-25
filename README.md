@@ -23,16 +23,7 @@ Zudem erfolgt eine erste Analyse der vorhandenen Datenquellen und -qualität.
 - das entwickelte Modell oder die gewonnenen Erkenntnisse in die Praxis überführen.
 
 (Das trainierte Prognosemodell wird als wiederverwendbare Python-Datei gespeichert. Ein separates Skript ruft das Modell regelmäßig auf und erstellt täglich eine Vorhersage des Stromverbrauchs für den Folgetag. Die Prognosen werden automatisch in einer CSV-Datei oder als Diagramm gespeichert.
-Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne manuelle Eingriffe.)
-
-## Vorgehensweise
-- Datenquellen gesucht. 
-- Daten analysiert mit Phyton. Zielvariablen und Features festgelegt.
-- Daten in Organge getestet geschaut was macht ein Tree, LR und Gradient Boosting. Metriken angeschaut.
-- Recherche Libararys Phython für Modelltraining und Datenaufbereitung
-- Weiter auf Phython mit Data Preparation, welche Daten können wichtig sein?
-- Recherche und Auswahl vom Modell: Welche Modelle beachten Zeitreihen
-
+Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne manuelle Eingriffe.
 ### SCRUM
 
 ## Business Understanding
