@@ -8,3 +8,4 @@ if root_dir not in sys.path:
 
 # --- Starte das eigentliche Script ---
 subprocess.run([sys.executable, "Business_und_Data_Understanding/data_analysis.py"])
+

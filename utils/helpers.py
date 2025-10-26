@@ -1,14 +1,16 @@
 import pandas as pd
-import os, sys
-def csv_file():
-    dateipfad = r"C:\Users\User\Documents\GitHub\Forecast und Anomalie Detection\251006_Stromverbrauch Basel 2012-2025.csv"
+import os
 
-    df = pd.read_csv(dateipfad, sep = ";")
+def csv_file():
+    # Projekt-Root finden (eine Ebene über /utils)
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_path = os.path.join(root_dir, "data", "stromverbrauch_basel.csv")
+
+    df = pd.read_csv(data_path, sep=";")
 
     print("Anzahl Zeilen und Spalten:", df.shape)
     print("Spaltennamen:", df.columns.tolist())
-    #print(df.head())
 
-    df["Start der Messung"] = pd.to_datetime(df["Start der Messung"], errors = "coerce")
+    df["Start der Messung"] = pd.to_datetime(df["Start der Messung"], errors="coerce")
     df = df.set_index("Start der Messung")
     return df
