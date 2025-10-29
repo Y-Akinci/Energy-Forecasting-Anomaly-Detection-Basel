@@ -4,7 +4,7 @@ import os
 def csv_file():
     # Projekt-Root finden (eine Ebene über /utils)
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_path = os.path.join(root_dir, "data", "stromverbrauch_basel.csv")
+    data_path = os.path.join(root_dir, "data", "251006_StromverbrauchBasel2012-2025.csv")
 
     df = pd.read_csv(data_path, sep=";")
 
