@@ -68,30 +68,29 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 
 ## Data Understnading
 
-**Datenquellen:**
-### Stromverbauch Daten von Basel
+### Datenquellen:
+#### Stromverbauch Daten von Basel
 - [Data](data/251006_StromverbrauchBasel2012-2025.csv)
-- [Link]([https://de.wikipedia.org/wiki/Data_Science](https://opendata.swiss/de/dataset/kantonaler-stromverbrauch-netzlast))
-### Meteo Daten
+- [Link](https://de.wikipedia.org/wiki/Data_Science](https://opendata.swiss/de/dataset/kantonaler-stromverbrauch-netzlast))
+#### Meteo Daten
 - [Data]()
 - [Link]()
 
-**Datenstruktur:**  
+### Datenstruktur:  
 - Excel/csv Format
-### Stromverbauch Daten von Basel
+#### Stromverbauch Daten von Basel
 - Total 481960 Zeilen, 11 Spalten
 - Wichtige Variablen: Kundentyp, Verbrauch, Saison
-### Meteo Daten
+#### Meteo Daten
 
-
-**Erste Analysen:**  
+### Erste Analysen:  
 - Histogramm der Verbrauchswerte (siehe /plots/verbrauch.png)
 - Stark saisonale Schwankungen im Feld 'Monat'
 
-**Datenqualität:**  
+### Datenqualität: 
 - Ausreißer im Monat Dezember 2023
 
-**Relevante Felder:**  
+### Relevante Felder:  
 - Kundentyp: frei/privat
 - Verbrauch: kWh pro Monat
 - Zeitraum: Januar 2022–Dezember 2024
