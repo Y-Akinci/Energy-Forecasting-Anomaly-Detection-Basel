@@ -67,37 +67,35 @@ Hinweis: IWB kauft nicht täglich Strom, sondern nur bei Bedarf. Prognosen diene
 Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche Merkmale (z. B. Stunde, Wochentag, Monat, saisonale Muster) sowie abgeleitete Werte wie Lags, gleitende Durchschnitte und optional Feiertagsinformationen umfasst. Auf dieser Basis wird ein Regressionsmodell trainiert, um den Stromverbrauch präzise vorherzusagen und die Modellgüte anhand transparenter Metriken zu bewerten. Zusätzlich wird ein Anomalie-Flag pro Zeitintervall erzeugt, das auf Prognoseabweichungen oder unüberwachten Scores basiert. Die täglichen Prognosen und Erkennungen werden automatisch in einer CSV-Datei oder als Diagramm exportiert.
 
 ## Data Understnading
-### Aufbau Daten
-#### Features
-#### Messintervall, Prognosehorizont, Use-Cases
-- Intervall: 15 Minuten (historisch kontinuierlich; wenige dokumentierte Interpolationen sind vernachlässigbar).
 
-- Horizont: kurzfristig (nächste Stunden oder der folgende Tag).
+**Datenquellen:**
+### Stromverbauch Daten von Basel
+- [Data](data/251006_StromverbrauchBasel2012-2025.csv)
+- [Link]([https://de.wikipedia.org/wiki/Data_Science](https://opendata.swiss/de/dataset/kantonaler-stromverbrauch-netzlast))
+### Meteo Daten
+- [Data]()
+- [Link]()
 
-* Einsatzbereiche:
-  * Optimierung der Fahrweise von Erzeugung und Speichern.
-  * Präzisere Marktzukäufe bei Bedarf.
-  * Automatische Erkennung von Verbrauchsanomalien zur Prüfung.
-
-Nachhaltigkeitssteuerung: Operativ kann auch mit 15-Minuten-Forecasts der Einsatz von Speichern und erneuerbarer Energie verbessert werden. Strategische Nachhaltigkeitsplanung (z. B. Monats- oder Jahresmix) liegt ausserhalb des Projektfokus.
-
-### Quelle
-### Abgrenzungen
-- In Diesem Projekt haben wir durch zeitlichen Gründen auf Spannungs- oder Frequenzdaten verzichtet und somit keine technische Netz-Anomalieanalyse durchgeführt.
-- Der Datensatz misst ausschliesslich den elektrischen Energiebezug aus dem öffentlichen Netz des Kantons Basel-Stadt.
-Dadurch sind Eigenverbräuche, etwa aus Photovoltaikanlagen, die direkt vor Ort genutzt werden, nicht enthalten.
-Der gemessene Gesamtverbrauch kann daher niedriger erscheinen, wenn ein Teil des Strombedarfs lokal durch Eigenproduktion gedeckt wird.
-Einspeisungen aus dezentralen Anlagen (z.B PV-Überschüsse) werden nicht als separate Werte erfasst, beeinflussen aber indirekt die Netzbilanz, da sie den insgesamt benötigten Netzbezug reduzieren.
-- Ebenfalls wird in diesem Projekt keine Marktpreis-Optimierung durchgeführt, da der Fokus gezielt auf Prognose und Überwachung liegt.
+**Datenstruktur:**  
+- Excel/csv Format
+### Stromverbauch Daten von Basel
+- Total 481960 Zeilen, 11 Spalten
+- Wichtige Variablen: Kundentyp, Verbrauch, Saison
+### Meteo Daten
 
 
-### Umgang mit Fehlenden Werten
-#### Grundversorgte und Freie Kunden
+**Erste Analysen:**  
+- Histogramm der Verbrauchswerte (siehe /plots/verbrauch.png)
+- Stark saisonale Schwankungen im Feld 'Monat'
 
-#### Zeitumstellung
-Beim Import und der Prüfung der Zeitreihe zeigte sich, dass 52 Viertelstunden-Zeitpunkte fehlen. Diese treten jeweils Ende Oktober in den Jahren mit Sommerzeit-Umstellung auf. Die Ursache liegt in der Umstellung von Sommer- auf Winterzeit: lokal werden diese Stunden doppelt gemessen, in der UTC-Darstellung erscheinen sie jedoch als Lücke.
-Da UTC-Zeit keine Sommerzeitkorrektur enthält, wurde sie als Standardzeitzone beibehalten, um Dubletten zu vermeiden und die Daten konsistent zu halten.
-Ab 2022 scheinen die Daten bereits zeitzonenbereinigt exportiert zu werden, was auf eine System- oder Formatumstellung der Quelle hindeutet.
+**Datenqualität:**  
+- Ausreißer im Monat Dezember 2023
+
+**Relevante Felder:**  
+- Kundentyp: frei/privat
+- Verbrauch: kWh pro Monat
+- Zeitraum: Januar 2022–Dezember 2024
+
 
 ## Data Preparation
 
