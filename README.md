@@ -130,7 +130,7 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 5. Sehr gut geeignet für **Zeitreihenanalyse** und **Machine-Learning-Prognosen**.
 
 ---
-### Data Understanding – Wetterdaten Basel (2010–2029)
+### Data Understanding – Wetterdaten Basel (2010–2024)
 
 #### Datensatzübersicht
 - **Datei:** `Wetterdaten_Basel_2010-2029_merged.csv`  
