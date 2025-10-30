@@ -130,7 +130,7 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 5. Sehr gut geeignet für **Zeitreihenanalyse** und **Machine-Learning-Prognosen**.
 
 ---
-
+### Data Understanding – Meteo Daten (2012–2025)
 
 ## Data Preparation
 
