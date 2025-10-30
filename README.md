@@ -48,7 +48,7 @@ IWB Industrielle Werke Basel ist Versorger und Netzbetreiber: eigene Erzeugung (
 Grundversorgte Kunden: beziehen Energie direkt von IWB.
 Freie Kunden: kaufen Energie am Markt, nutzen aber das IWB-Netz. Deren Last ist für die Netzplanung ebenso relevant.
 
-### Business Nutzten
+### Business Nutzen
 #### Nachfrageprognose
 1. Planungssicherheit: Eigenproduktion, Speicher, Lastverschiebung und gezielter Marktzukauf können früh geplant werden.
 2. Kosteneffizienz: Weniger teurer Spot-Zukauf, optimierte Fahrpläne für Erzeugung und Speicher, geringere Regelenergie.
@@ -75,9 +75,9 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 #### Stromverbauch Daten von Basel
 - [Data](data/251006_StromverbrauchBasel2012-2025.csv)
 - [Link](https://de.wikipedia.org/wiki/Data_Science](https://opendata.swiss/de/dataset/kantonaler-stromverbrauch-netzlast))
-#### Meteo Daten
+#### Meteo Daten Basel/Binningen BAS
 - [Data]()
-- [Link]()
+- [Link](https://www.meteoschweiz.admin.ch/service-und-publikationen/applikationen/ext/daten-ohne-programmierkenntnisse-herunterladen.html#lang=de&mdt=normal&pgid=&sid=BAS&col=ch.meteoschweiz.ogd-smn&di=ten-minutes&tr=historical&hdr=2020-2029)
 
 ### Data Understanding – Energieverbrauch Basel (2012–2025)
 
