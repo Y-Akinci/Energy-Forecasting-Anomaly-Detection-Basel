@@ -105,7 +105,6 @@ Instanzen:
 |`Grundversorgte Kunden` | Anzahl der Kunden, die automatisch mit Strom versorgt werden. | 0-26'090 |
 |`Freie Kunden` | Anzahl der Kunden, die selbst ihren Anbieter wählen können. | 0-32'296 |
 |`Stromverbrauch` | Verbrauch in Kilowattstunden (kWh) für den jeweiligen Zeitraum. | 22'322-68'374 |
-
 | **Wetterdaten** |  |  |
 | `station_abbr` | Stationskürzel (z. B. Basel = BAS) | Text |
 | `reference_timestamp` | Datum und Zeit der Messung | Datum + Uhrzeit |
