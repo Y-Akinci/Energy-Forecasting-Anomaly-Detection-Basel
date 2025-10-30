@@ -192,14 +192,6 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 
 ---
 
-#### Nächste Schritte
-- Zeitindex (`Date and Time`) in UTC-Datetime konvertieren.  
-- Resampling auf 15- oder 60-Minuten-Intervalle (zur Abstimmung mit Energieverbrauch).  
-- Prüfung von **extremen Wetterereignissen** und deren Einfluss auf den Stromverbrauch.  
-- Erweiterung um saisonale oder gleitende Durchschnittswerte (z. B. Temperaturmittel, Niederschlagssummen).  
-
----
-
 ## Data Preparation
 
 ## Modeling
