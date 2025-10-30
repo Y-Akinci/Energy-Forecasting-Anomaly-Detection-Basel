@@ -66,7 +66,7 @@ Hinweis: IWB kauft nicht täglich Strom, sondern nur bei Bedarf. Prognosen diene
 ### Technischer Zielzustand
 Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche Merkmale (z. B. Stunde, Wochentag, Monat, saisonale Muster) sowie abgeleitete Werte wie Lags, gleitende Durchschnitte und optional Feiertagsinformationen umfasst. Auf dieser Basis wird ein Regressionsmodell trainiert, um den Stromverbrauch präzise vorherzusagen und die Modellgüte anhand transparenter Metriken zu bewerten. Zusätzlich wird ein Anomalie-Flag pro Zeitintervall erzeugt, das auf Prognoseabweichungen oder unüberwachten Scores basiert. Die täglichen Prognosen und Erkennungen werden automatisch in einer CSV-Datei oder als Diagramm exportiert.
 
-## Data Understnading
+## Data Understnading Main
 
 ### Datenquellen:
 #### Stromverbauch Daten von Basel
@@ -76,24 +76,60 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 - [Data]()
 - [Link]()
 
-### Datenstruktur:  
-- Excel/csv Format
-#### Stromverbauch Daten von Basel
-- Total 481960 Zeilen, 11 Spalten
-- Wichtige Variablen: Kundentyp, Verbrauch, Saison
-#### Meteo Daten
+### Data Understanding – Energieverbrauch Basel (2012–2025)
 
-### Erste Analysen:  
-- Histogramm der Verbrauchswerte (siehe /plots/verbrauch.png)
-- Stark saisonale Schwankungen im Feld 'Monat'
+#### Datensatzübersicht
+- **Datei:** `251006_StromverbrauchBasel2012-2025.csv`  
+- **Zeilen:** 481’959  
+- **Spalten:** 12  
+- **Zeitraum:** 01.01.2012 → 29.09.2025  
+- **Datenfrequenz:** 15-Minuten-Intervalle  
+- **Index:** `Start der Messung` (UTC, DatetimeIndex)
 
-### Datenqualität: 
-- Ausreißer im Monat Dezember 2023
+---
 
-### Relevante Felder:  
-- Kundentyp: frei/privat
-- Verbrauch: kWh pro Monat
-- Zeitraum: Januar 2022–Dezember 2024
+#### Datenstruktur
+| Typ | Spalten |
+|------|----------|
+| **Numerisch** | `Stromverbrauch`, `Grundversorgte Kunden`, `Freie Kunden`, `Jahr`, `Monat`, `Tag`, `Wochentag`, `Tag des Jahres`, `Quartal`, `Woche des Jahres` |
+| **Text** | `Start der Messung (Text)` |
+
+---
+
+#### Datenqualität
+- ✅ **Keine doppelten Zeitstempel**  
+- ⚠️ **Fehlende Werte:**
+  - `Grundversorgte Kunden`: ca. **62 %** fehlend  
+  - `Freie Kunden`: ca. **63 %** fehlend  
+- ✅ **Zeitintervalle** sind konsistent (alle 15 Minuten)  
+- ✅ **Datumsindex** korrekt gesetzt (`UTC`)  
+
+---
+
+#### Beschreibende Statistik
+| Variable | Minimum | Maximum | Mittelwert |
+|-----------|----------|----------|-------------|
+| **Stromverbrauch (kWh)** | 22 322 | 68 374 | **38 454** |
+| **Grundversorgte Kunden** | 0 | 26 090 | **15 788** |
+| **Freie Kunden** | 0 | 32 296 | **19 277** |
+
+---
+
+#### Korrelationen (stärkste Zusammenhänge)
+- `Stromverbrauch` ↔ `Freie Kunden`: **0.92**  
+- `Stromverbrauch` ↔ `Grundversorgte Kunden`: **0.87**  
+- `Stromverbrauch` ↔ `Wochentag`: **–0.27**
+
+---
+
+#### 🔍 Zentrale Erkenntnisse
+1. Der Datensatz umfasst **über 13 Jahre** Stromverbrauchsdaten für Basel.  
+2. **Saisonale und wöchentliche Muster** sind erkennbar (z. B. geringerer Verbrauch am Wochenende).  
+3. **Kundensegmente** (freie vs. grundversorgte Kunden) beeinflussen den Verbrauch deutlich.  
+4. **Datenqualität insgesamt hoch**, nur vereinzelte Lücken.  
+5. Sehr gut geeignet für **Zeitreihenanalyse** und **Machine-Learning-Prognosen**.
+
+---
 
 
 ## Data Preparation
