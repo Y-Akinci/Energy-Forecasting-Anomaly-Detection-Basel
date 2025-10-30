@@ -130,7 +130,75 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 5. Sehr gut geeignet für **Zeitreihenanalyse** und **Machine-Learning-Prognosen**.
 
 ---
-### Data Understanding – Meteo Daten (2012–2025)
+### Data Understanding – Wetterdaten Basel (2010–2029)
+
+#### Datensatzübersicht
+- **Datei:** `Wetterdaten_Basel_2010-2029_merged.csv`  
+- **Zeilen:** 788’977  
+- **Spalten:** 27  
+- **Zeitraum:** 2010 → 2029  
+- **Frequenz:** 10-Minuten-Intervalle  
+- **Datenquelle:** Wetterstation Basel (BAS)
+
+---
+
+#### Datenstruktur
+| Typ | Beispielspalten |
+|------|-----------------|
+| **Numerisch** | `Lufttemperatur 2 m ü. Boden`, `relative Luftfeuchtigkeit`, `Windgeschwindigkeit`, `Niederschlag`, `Globalstrahlung`, `Diffusstrahlung`, `Langwellige Einstrahlung`, `Sonnenscheindauer` |
+| **Text/Objekt** | `station_abbr`, `Date and Time`, `Date`, `Time` |
+
+---
+
+#### Datenqualität
+- ✅ **Keine doppelten Einträge**  
+- ⚠️ **Fehlende Werte:**  
+  - Temperatur- und Druckmessungen: < 0,3 % fehlend  
+  - Wind- und Strahlungsdaten: ca. 0,2 – 0,4 % fehlend  
+  - Insgesamt sehr **hohe Datenqualität** (> 99 % vollständig)  
+- ✅ **Einheitliche Zeitintervalle** (10 Minuten)  
+- ✅ **Numerische Typen** korrekt erkannt  
+
+---
+
+#### Beschreibende Statistik (Auszug)
+| Variable | Minimum | Maximum | Mittelwert |
+|-----------|----------|----------|-------------|
+| **Lufttemperatur 2 m ü. Boden (°C)** | –19.3 | 37.4 | **11.53** |
+| **relative Luftfeuchtigkeit (%)** | 11.0 | 100.0 | **73.98** |
+| **Luftdruck (hPa)** | 940.1 | 1006.3 | **979.8** |
+| **Windgeschwindigkeit (km/h)** | 0.0 | 55.1 | **6.78** |
+| **Niederschlag (mm/10 min)** | 0.0 | 19.0 | **0.02** |
+| **Globalstrahlung (W/m²)** | 0.0 | 1265.0 | **142.32** |
+| **Sonnenscheindauer (min/10 min)** | 0.0 | 10.0 | **2.04** |
+
+---
+
+#### Korrelationen (wichtige Zusammenhänge)
+- **Temperatur ↔ Taupunkt:** 0.84 → enge physikalische Beziehung  
+- **Temperatur ↔ relative Luftfeuchtigkeit:** –0.54 → wärmer = trockener  
+- **Windgeschwindigkeit ↔ Böenspitze:** > 0.95 → erwartungsgemäß stark korreliert  
+- **Globalstrahlung ↔ Sonnenscheindauer:** 0.80 → hohe Strahlung bei viel Sonne  
+- **Temperatur ↔ Globalstrahlung:** 0.50 – 0.78 → deutlicher Tagesgang-Einfluss  
+
+---
+
+#### Zentrale Erkenntnisse
+1. **Sehr umfangreicher Datensatz** – rund 789 000 Zeilen über fast 20 Jahre.  
+2. **Nahezu vollständige Messreihe**, ideal zur Kombination mit Stromverbrauchsdaten.  
+3. **Starke saisonale Effekte:** höhere Globalstrahlung → höhere Temperaturen.  
+4. **Hohe interne Konsistenz:** physikalische Abhängigkeiten sind plausibel.  
+5. **Datensatz geeignet für Energie-, Klima- und Zeitreihenmodelle.**
+
+---
+
+#### Nächste Schritte
+- Zeitindex (`Date and Time`) in UTC-Datetime konvertieren.  
+- Resampling auf 15- oder 60-Minuten-Intervalle (zur Abstimmung mit Energieverbrauch).  
+- Prüfung von **extremen Wetterereignissen** und deren Einfluss auf den Stromverbrauch.  
+- Erweiterung um saisonale oder gleitende Durchschnittswerte (z. B. Temperaturmittel, Niederschlagssummen).  
+
+---
 
 ## Data Preparation
 
