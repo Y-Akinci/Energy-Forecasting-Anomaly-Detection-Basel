@@ -24,6 +24,7 @@ Zudem erfolgt eine erste Analyse der vorhandenen Datenquellen und -qualität.
 
 (Das trainierte Prognosemodell wird als wiederverwendbare Python-Datei gespeichert. Ein separates Skript ruft das Modell regelmäßig auf und erstellt täglich eine Vorhersage des Stromverbrauchs für den Folgetag. Die Prognosen werden automatisch in einer CSV-Datei oder als Diagramm gespeichert.
 Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne manuelle Eingriffe.
+
 ### SCRUM
 Für das effiziente und zielorientierte Management verwendeten wir die agile Scrum-Methode. Ein zyklischer Framework, wo in jedem Zyklus, auch Sprint genannt, ein bestimmtes Ziel gesetzt wird. Dieser dauert mehrere Wochen und hat designierte Rollenverteilungen, wie Prodct-Owner, Scrum Master und das Entwicklungsteam. In regelmässigen Scrum-Meetings wird der Fortschritt von jedem einzelnen Teammitglied evaluiert, und neue Aufgaben werden entsprechend zugewiesen. Am Ende jedes Zyklus wird eine Sprint-Retrospective durchgeführt. Ein Rückblick in dem Positives sowie Negatives betrachtet wird um entsprechende strategische Entscheidungen für den nächsten Sprint zu treffen.
 
@@ -35,9 +36,12 @@ Das Projekt entwickelt ein zweiteiliges System für Basel-Stadt:
 - Nachfrageprognose des Stromverbrauchs auf 15-Minuten-Basis.
 - Anomalieerkennung im Verbrauchsverhalten.
 
-Datenumfang: viertelstündlicher Netzbezug im Kanton Basel-Stadt inklusive Netzverluste.
+Datenumfang: 
+Daten zum Stromverbrauch: viertelstündlicher Netzbezug im Kanton Basel-Stadt inklusive Netzverluste.
 Nicht enthalten: lokal erzeugter und direkt vor Ort verbrauchter PV-Strom.
 Kundengruppen im Datensatz: grundversorgte und freie Kunden. Beide beeinflussen die Netzlast.
+
+Wetterdaten: zehnminütige Messung diverser Wetterdaten, wie Niederschlag, Sonneneinstralung und Windstärke
 
 Zielvariable: Gesamtverbrauch (Summe beider Kundengruppen).
 Für Netzführung und Lastplanung ist der gesamte Effekt im Netz relevant. Optional können später Submodelle pro Kundengruppe erstellt werden.
@@ -69,7 +73,7 @@ Hinweis: IWB kauft nicht täglich Strom, sondern nur bei Bedarf. Prognosen diene
 ### Technischer Zielzustand
 Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche Merkmale (z. B. Stunde, Wochentag, Monat, saisonale Muster) sowie abgeleitete Werte wie Lags, gleitende Durchschnitte und optional Feiertagsinformationen umfasst. Auf dieser Basis wird ein Regressionsmodell trainiert, um den Stromverbrauch präzise vorherzusagen und die Modellgüte anhand transparenter Metriken zu bewerten. Zusätzlich wird ein Anomalie-Flag pro Zeitintervall erzeugt, das auf Prognoseabweichungen oder unüberwachten Scores basiert. Die täglichen Prognosen und Erkennungen werden automatisch in einer CSV-Datei oder als Diagramm exportiert.
 
-## Data Understnading Main
+## Data Understanding Main
 
 ### Datenquellen:
 #### Stromverbauch Daten von Basel
@@ -78,6 +82,64 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 #### Meteo Daten Basel/Binningen BAS
 - [Data]()
 - [Link](https://www.meteoschweiz.admin.ch/service-und-publikationen/applikationen/ext/daten-ohne-programmierkenntnisse-herunterladen.html#lang=de&mdt=normal&pgid=&sid=BAS&col=ch.meteoschweiz.ogd-smn&di=ten-minutes&tr=historical&hdr=2020-2029)
+
+#### Formalisierung
+
+Instanzen: 
+- Parameter Messungen im 30 Minuten Intervall
+- Parameter Messungen im Tagesintervall
+
+
+### Features (X)
+| Features | Beschreibung | Werteskala |
+|--------|----------|--------------|
+| **Stromdaten** | | |
+|`Start der Messung (Text)` | Ursprünglicher Zeitpunkt der Messung als Textstring. | Text |
+|`Jahr` | Jahr der Messung  | 2011-2025 |
+|`Monat` | Monat der Messung | 1-12 |
+|`Tag` | Tag des Monats der Messung | 1-31 |
+|`Wochentag` | Nummer des Wochentags | 0-6 (Montag-Sonntag) |
+|`Tag des Jahres` | Fortlaufende Tagesnummer im Jahr | 1–365/366 |
+|`Quartal` | Quartal des Jahres | 1-4 |
+|`Woche des Jahres` | Kalenderwoche der Messung | 1–52/53 |
+|`Grundversorgte Kunden` | Anzahl der Kunden, die automatisch mit Strom versorgt werden. | 0-26'090 |
+|`Freie Kunden` | Anzahl der Kunden, die selbst ihren Anbieter wählen können. | 0-32'296 |
+|`Stromverbrauch` | Verbrauch in Kilowattstunden (kWh) für den jeweiligen Zeitraum. | 22'322-68'374 |
+
+| **Wetterdaten** |  |  |
+| `station_abbr` | Stationskürzel (z. B. Basel = BAS) | Text |
+| `reference_timestamp` | Datum und Zeit der Messung | Datum + Uhrzeit |
+| `Lufttemperatur` | Lufttemperatur | -50 bis 50 °C |
+| `Chilltemperatur` | Empfundene Temperatur unter Wind | -50 bis 50 °C |
+| `relative Luftfeuchtigkeit` | Verhältnis aktueller zu maximal möglicher Luftfeuchte | 0–100 % |
+| `Taupunkt` | Temperatur, bei der Luftfeuchte kondensiert | -50 bis 50 °C |
+| `Dampfdruck` | Partialdruck des Wasserdampfs in der Luft | 0–50 hPa |
+| `Luftdruck` | Druck der Luftsäule auf einer Fläche. Hoher Wert bedeutet eher schlechtes Wetter | 900–1100 hPa |
+| `Böenspitze` | Maximale Windböe über 1 Sekunde | 0–50 m/s |
+| `Windgeschwindigkeit` | Durchschnittliche Windgeschwindigkeit | 0–50 m/s |
+| `Windrichtung` | Windrichtung in Grad | 0–360 ° |
+| `Niederschlag` | Höhe von Wasseransammlung, wenn nicht versickert | 0–200 mm |
+| `Globalstrahlung` | Gesamtstrahlung (direkt + diffus) auf horizontale Fläche | 0–1500 W/m² |
+| `Diffustrahlung` | Streustrahlung aus der Atmosphäre ohne direkte Sonne | 0–1000 W/m² |
+| `Langwellige Einstrahlung` | Wärmestrahlung vom Himmel (langwellige IR-Strahlung) | 0–500 W/m² |
+| `Sonnenscheindauer` | Dauer direkter Sonneneinstrahlung in 10 Minuten | 0–10 min |
+
+### Zielvariable (Y)
+Stromverbrauch: 
+- nächste 30 Minuten
+- beliebiger Tag im Jahr
+- beliebiger Monat im Jahr
+- bestimmter Zeitraum
+
+### Modell
+Regressionsmodelle für Prognose Stromverbrauch:
+- Lineare Regression
+
+
+Klassifikator Anomalieerkennung:
+- Logistic Regression
+- Random Forest
+
 
 ### Data Understanding – Energieverbrauch Basel (2012–2025)
 
@@ -92,6 +154,9 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 ---
 
 #### Datenstruktur
+
+
+
 | Typ | Spalten |
 |------|----------|
 | **Numerisch** | `Stromverbrauch`, `Grundversorgte Kunden`, `Freie Kunden`, `Jahr`, `Monat`, `Tag`, `Wochentag`, `Tag des Jahres`, `Quartal`, `Woche des Jahres` |
