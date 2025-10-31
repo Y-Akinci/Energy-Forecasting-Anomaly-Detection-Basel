@@ -25,6 +25,7 @@ Kerem Akkaya:
 Haris Salli:
 - Messdaten analysiert
 - mit chatgpt experimentiert
+
 ## Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
 - Ich möchte mich mehr mit den Python-Paketen ausseinandersetzten und die wichtigsten Funktionen erlernen.
@@ -36,11 +37,11 @@ Kerem Akkaya:
 - Datenaufbereitung über Python recherchieren
 - Wetter- und Energiedaten Joinen und bereinigen
 - Abgrenzungen im Projekt machen und Projekt schildern in Data Understanding und Business understanding
-- 
+  
 Haris Salli:
+-Daten Mergegen
 
-
-## Welche Hindernisse gibtes?
+## Welche Hindernisse gibt es?
 Yaren Akinci:
 - Beim Anlegen der Pakete traf ich auf Herausforderungen und musste mich stark mit den Fehlermeldungen beschäftigen. 
 - Insbesondere hatte ich grosse Mühe, auf Funktionen zuzugreifen, die sich ausserhalb der Ordner befanden, aus denen ich sie aufrufen wollte.
@@ -52,4 +53,4 @@ Kerem Akkaya:
 - Dokumentation nicht klar
 
 Haris Salli:
-
+-Unstimmikeiten beim vorgehen
