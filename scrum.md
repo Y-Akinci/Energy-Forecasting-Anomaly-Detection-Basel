@@ -23,7 +23,8 @@ Kerem Akkaya:
 - Überlegungen zur Abgrenzung des Projektes gemacht
 
 Haris Salli:
-
+- Messdaten analysiert
+- mit chatgpt experimentiert
 ## Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
 - Ich möchte mich mehr mit den Python-Paketen ausseinandersetzten und die wichtigsten Funktionen erlernen.
