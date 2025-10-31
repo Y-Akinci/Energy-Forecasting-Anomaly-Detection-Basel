@@ -63,6 +63,8 @@ Kerem Akkaya:
 - Recherche zu den Wetterdaten gemacht, um sie zu verstehen
 
 Haris Salli:
+- Daten formatiert
+- mergen von daten
 
 ## Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
@@ -73,7 +75,7 @@ Kerem Akkaya:
 - Erklärung aller features und der Zielvariable
 
 Haris Salli:
-
+- Datenaufarbeitung
 
 ## Welche Hindernisse gibtes?
 Yaren Akinci:
@@ -84,6 +86,6 @@ Kerem Akkaya:
 - Die intervalle der Daten bringen fundamentale Fragen zum Projekt auf, die zu jetzigem Zeitpunkt schwer zu Entscheident sind
 
 Haris Salli:
-
+- Entscheidungsschwiereigkeiten
 
 
