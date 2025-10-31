@@ -54,3 +54,36 @@ Kerem Akkaya:
 
 Haris Salli:
 -Unstimmikeiten beim vorgehen
+
+### 24.10.2025
+## Was habe ich in den letzten 7 Tagen gemacht?
+Kerem Akkaya:
+- Rohe Wetterdaten formatiert
+- 2 formatierte Wetterdaten im file "data-manipulation.py" zusammengeführt
+- Recherche zu den Wetterdaten gemacht, um sie zu verstehen
+
+Haris Salli:
+
+## Was möchte ich in den nächsten 7 Tagen tun?
+Yaren Akinci:
+
+Kerem Akkaya:
+- Dokumentation weiterführen Business und Data understanding
+- Formalisierung unseres ML problems
+- Erklärung aller features und der Zielvariable
+
+Haris Salli:
+
+
+## Welche Hindernisse gibtes?
+Yaren Akinci:
+
+
+Kerem Akkaya:
+- Die formatierung war sehr aufwändig
+- Die intervalle der Daten bringen fundamentale Fragen zum Projekt auf, die zu jetzigem Zeitpunkt schwer zu Entscheident sind
+
+Haris Salli:
+
+
+
