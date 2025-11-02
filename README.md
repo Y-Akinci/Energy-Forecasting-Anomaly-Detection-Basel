@@ -78,7 +78,7 @@ Für das Projekt wird ein reproduzierbares Feature-Set entwickelt, das zeitliche
 ### Datenquellen:
 #### Stromverbauch Daten von Basel
 - [Data](data/251006_StromverbrauchBasel2012-2025.csv)
-- [Link](https://de.wikipedia.org/wiki/Data_Science](https://opendata.swiss/de/dataset/kantonaler-stromverbrauch-netzlast))
+- [Link]([https://de.wikipedia.org/wiki/Data_Science](https://opendata.swiss/de/dataset/kantonaler-stromverbrauch-netzlast)](https://opendata.swiss/de/dataset/kantonaler-stromverbrauch-netzlast))
 #### Meteo Daten Basel/Binningen BAS
 - [Data]()
 - [Link](https://www.meteoschweiz.admin.ch/service-und-publikationen/applikationen/ext/daten-ohne-programmierkenntnisse-herunterladen.html#lang=de&mdt=normal&pgid=&sid=BAS&col=ch.meteoschweiz.ogd-smn&di=ten-minutes&tr=historical&hdr=2020-2029)
