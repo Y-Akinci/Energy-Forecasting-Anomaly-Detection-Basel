@@ -1,6 +1,6 @@
 import pandas as pd
 
-# Dateien einlesen ===
+# Dateien einlesen
 strom = pd.read_excel("100233.xlsx")
 meteo = pd.read_csv("Wetterdaten_Basel_2010-2029_merged.csv", sep=";", encoding="utf-8") #sep=";" und encoding="utf-8" weil deutsche CSVs oft Semikolon und Umlaute haben
 
