@@ -35,6 +35,8 @@ Im Rahmen des Projektes übernimmt jeweils ein Teammitglied die Rolle als Scrum-
 - Sprint 4 | Evaluation
 - Sprint 5 | Deployment
 
+[Dokumentation](scrum.md)
+
 
 
 ## Business Understanding
