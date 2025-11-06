@@ -32,7 +32,6 @@ Yaren Akinci:
 - Ausserdem möchte ich meine Arbeit von dieser Woche zur Data & Business Understanding und unserer Methodik dokumentieren.
 - Des Weiteren möchte ich mit der Datenaufbereitung unseres Projekts beginnen. Da ich mit der Datenaufbereitung grundsätzlich vertraut bin, mir jedoch die Umsetzung in Python noch schwerfällt, muss ich mir das entsprechende Wissen zunächst aneignen.
 
-
 Kerem Akkaya:
 - Datenaufbereitung über Python recherchieren
 - Wetter- und Energiedaten Joinen und bereinigen
@@ -45,8 +44,6 @@ Haris Salli:
 Yaren Akinci:
 - Beim Anlegen der Pakete traf ich auf Herausforderungen und musste mich stark mit den Fehlermeldungen beschäftigen. 
 - Insbesondere hatte ich grosse Mühe, auf Funktionen zuzugreifen, die sich ausserhalb der Ordner befanden, aus denen ich sie aufrufen wollte.
-
-
 
 Kerem Akkaya:
 - Freiheit im Projekt und Vogehen bringen Unsicherheiten auf
@@ -80,7 +77,6 @@ Haris Salli:
 ## Welche Hindernisse gibtes?
 Yaren Akinci:
 
-
 Kerem Akkaya:
 - Die formatierung war sehr aufwändig
 - Die intervalle der Daten bringen fundamentale Fragen zum Projekt auf, die zu jetzigem Zeitpunkt schwer zu Entscheident sind
@@ -88,4 +84,60 @@ Kerem Akkaya:
 Haris Salli:
 - Entscheidungsschwiereigkeiten
 
+### 31.11.2025
+## Was habe ich in den letzten 7 Tagen gemacht?
+Yaren Akinci: 
+
+Kerem Akkaya:
+- Scrum Methode dokumentiert
+- ML-Problem formalisiert
+- Allgemeine dokumentation
+
+Haris Salli:
+
+## Was möchte ich in den nächsten 7 Tagen tun?
+Yaren Akinci:
+
+Kerem Akkaya:
+- Strom- und Wetterdaten joinen
+- Datenaufbereitung (analyse, bereinigung usw.)
+- erstes Modell erstellen
+- Dokumentation weiterführen
+
+Haris Salli:
+- Datenaufarbeitung
+
+## Welche Hindernisse gibtes?
+Yaren Akinci:
+
+Kerem Akkaya:
+- Falsche prioritärten im Projekt
+
+Haris Salli:
+
+
+
+### 07.11.2025
+## Was habe ich in den letzten 7 Tagen gemacht?
+Yaren Akinci: 
+
+Kerem Akkaya:
+
+Haris Salli:
+
+
+## Was möchte ich in den nächsten 7 Tagen tun?
+Yaren Akinci:
+
+Kerem Akkaya:
+
+Haris Salli:
+- Datenaufarbeitung
+
+## Welche Hindernisse gibtes?
+Yaren Akinci:
+
+Kerem Akkaya:
+
+Haris Salli:
 
