@@ -28,7 +28,16 @@ Dadurch ist eine einfache, reproduzierbare Nutzung der Ergebnisse möglich, ohne
 ### SCRUM
 Für das effiziente und zielorientierte Management verwendeten wir die agile Scrum-Methode. Ein zyklischer Framework, wo in jedem Zyklus, auch Sprint genannt, ein bestimmtes Ziel gesetzt wird. Dieser dauert mehrere Wochen und hat designierte Rollenverteilungen, wie Prodct-Owner, Scrum Master und das Entwicklungsteam. In regelmässigen Scrum-Meetings wird der Fortschritt von jedem einzelnen Teammitglied evaluiert, und neue Aufgaben werden entsprechend zugewiesen. Am Ende jedes Zyklus wird eine Sprint-Retrospective durchgeführt. Ein Rückblick in dem Positives sowie Negatives betrachtet wird um entsprechende strategische Entscheidungen für den nächsten Sprint zu treffen.
 
-Im Rahmen des Projektes übernimmt jeweils ein Teammitglied die Rolle als Scrum-Master und leitet die Kommilitonen. Einen Product Owner gibt es in diesem Scenario nicht, wobei unser Dozent gewisse Charakteristiken dieser Rolle übernimmt.
+Im Rahmen des Projektes übernimmt jeweils ein Teammitglied die Rolle als Scrum-Master und leitet die Teammitglieder. Einen Product-Owner gibt es in diesem Scenario nicht, wobei unser Dozent gewisse Charakteristiken dieser Rolle übernimmt. Die Sprints sind nach dem CRISP-DM-Zyklus orientiert und sind folgendermassen strukturiert:
+- Sprint 1 | Business & Data Understanding und Data Preparation
+- Sprint 2 | Data Preparation
+- Sprint 3 | Modelling
+- Sprint 4 | Evaluation
+- Sprint 5 | Deployment
+
+[Dokumentation](scrum.md)
+
+
 
 ## Business Understanding
 ### Ziel und Scope
