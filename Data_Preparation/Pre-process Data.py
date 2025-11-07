@@ -1,0 +1,60 @@
+import pandas as pd
+
+# Dateien einlesen
+strom = pd.read_excel("100233.xlsx")
+meteo = pd.read_csv("Wetterdaten_Basel_2010-2029_merged.csv", sep=";", encoding="utf-8") #sep=";" und encoding="utf-8" weil deutsche CSVs oft Semikolon und Umlaute haben
+
+# Zeitspalten konvertieren 
+# Stromdaten
+strom["DateTime"] = pd.to_datetime(strom["Start der Messung (Text)"], errors="coerce", utc=True)
+# Meteodaten
+meteo["DateTime"] = pd.to_datetime(meteo["Date and Time"], errors="coerce", utc=True)
+
+# Nur gültige Zeitstempel behalten 
+strom = strom.dropna(subset=["DateTime"]).sort_values("DateTime")
+meteo = meteo.dropna(subset=["DateTime"]).sort_values("DateTime")
+
+# Index setzen 
+strom = strom.set_index("DateTime")
+meteo = meteo.set_index("DateTime")
+
+print("Index gesetzt und Datumsformat überprüft.")
+print("Strom-Index-Typ:", type(strom.index))
+print("Meteo-Index-Typ:", type(meteo.index))
+
+# VERSION 1: 15-Minuten-Intervall (Meteo gemittelt)
+
+meteo_15min = meteo.resample("15min").mean(numeric_only=True)
+strom_15min = strom.resample("15min").mean(numeric_only=True)
+
+merged_15min = pd.merge_asof(
+    strom_15min.sort_index(),
+    meteo_15min.sort_index(),
+    left_index=True,
+    right_index=True,
+    direction="nearest"
+)
+
+merged_15min.to_csv("merged_strom_meteo_15min.csv", sep=";", encoding="utf-8")
+print("Version 1 (15 Minuten) gespeichert als merged_strom_meteo_15min.csv")
+
+# VERSION 2: 30-Minuten-Intervall (Sampling)
+
+strom_30min = strom.iloc[::2, :]  # jeden 2. Eintrag (15min * 2 = 30min)
+meteo_30min = meteo.iloc[::3, :]  # jeden 3. Eintrag (10min * 3 = 30min)
+
+merged_30min = pd.merge_asof(
+    strom_30min.sort_index(),
+    meteo_30min.sort_index(),
+    left_index=True,
+    right_index=True,
+    direction="nearest"
+)
+
+merged_30min.to_csv("merged_strom_meteo_30min.csv", sep=";", encoding="utf-8")
+print("Version 2 (30 Minuten) gespeichert als merged_strom_meteo_30min.csv")
+
+# Kontrolle
+print("\n Übersicht:")
+print("15 min →", merged_15min.shape)
+print("30 min →", merged_30min.shape)

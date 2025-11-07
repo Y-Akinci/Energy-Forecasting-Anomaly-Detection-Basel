@@ -12,5 +12,12 @@ def csv_file():
     print("Spaltennamen:", df.columns.tolist())
 
     df["Start der Messung"] = pd.to_datetime(df["Start der Messung"], errors="coerce")
-    df = df.set_index("Start der Messung")
+    df = df.set_index("Start der Messung").sort_index()
+    return df
+
+# --- Laden Wetter (2 Dateien mergen) ---
+def _read_weather_csv(path, time_col="timestamp", sep=";"):
+    df = pd.read_csv(path, sep=sep)
+    df[time_col] = pd.to_datetime(df[time_col], errors="coerce")
+    df = df.rename(columns={time_col: "timestamp"})
     return df
