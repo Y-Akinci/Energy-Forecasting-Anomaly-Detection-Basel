@@ -269,6 +269,26 @@ Klassifikator Anomalieerkennung:
 ---
 
 ## Data Preparation
+### Brainstorming & Erste Gedanken zur Data Preparation
+
+Datums-Features müssen fest auf eine Variante reduziert werden, es gibt mehrere Datumsfeature auch in verschiedenen Datentypen.
+Unterschiedliche Skalen wie bei Meteodaten können ML-Ergebnisse verzerren, deshalb später skalieren.​
+
+Feature-Auswahl: Kategorische Daten werden zu numerischen Daten konvertiert. Textuelle Features wie „stationabbr“ oder Messstart werden entfernt.​
+
+Fehlende Werte: Besonders viele NaNs in Spalten wie Grundversorgte Kunden, Freie Kunden, Wetterdaten (bis zu 700 NaNs, z.B. Sonnenscheindauer). Lösung: Erst mit vollständigen Daten starten, dann Varianten (z.B. lineare Interpolation) ausprobieren. In Wetterdaten abgleichen, wie oft Daten fehlen.​
+
+Fehlerhafte Zeitabstände: Es wurden 13 Werte mit einem Abstand von 90 statt 30 Minuten gefunden und sollten per Code korrigiert werden.​
+
+Events und externe Features: Zusätzliche Datenquellen durch Events in Basel, Ferien, Wochenenden, Nacht-Zyklus, saisonale Marker, Schulferien, Feiertagsinfos, besondere Touristenzeiten (Fantasy Basel, ArtBasel, Herbstmesse).​
+
+Neue Features: Arbeitstag vs. Sonntag, saisonale Marker, Lag- und Rolling-Features (Verbrauch 15min, 1h, 1d, 1w vorher, Mittelwerte letzter 3h/12h/24h).​
+
+Datenaufteilung: Trainings- und Testdaten sollen in Jahresintervallen ab 2020-2025 aufgeteilt werden. Fehlende Werte vor 2020 werden mit NaN markiert und später bewertet.​
+
+Beachtung Strompreis/Korrelation: Untersucht werden soll die Korrelation zwischen Sonnenstrahlung und Stromverbrauch (Stichwort Solaranlagen).​
+
+Feature-Selektion: Am Ende fixierte Liste an Features: Stromverbrauch, Tag/Monat/Jahr/Zeit, Freie Kunden, Grundversorgte Kunden, Wetterdaten (Temperatur, Druck, Windgeschwindigkeit, Chilltemperatur, Niederschlag, Sonnenscheindauer, Globalstrahlung).​
 
 ## Modeling
 ## Evaluation
