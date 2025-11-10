@@ -1,4 +1,4 @@
-import panda as pd
+import pandas as pd
 
 #Daten einlesen
 df_weather_til_2019 = pd.read_csv(r'C:\Users\Kerem Akkaya\OneDrive\Desktop\FHNW\3. Semester\Wissensbasierte Systeme und Machine Learning\Wetterdaten_Basel_2010-2019.csv', encoding='latin1')
