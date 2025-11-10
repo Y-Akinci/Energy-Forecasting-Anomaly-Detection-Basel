@@ -54,6 +54,12 @@ Haris Salli:
 
 ### 24.10.2025
 ## Was habe ich in den letzten 7 Tagen gemacht?
+Yaren Akinci:
+-  Mich mit Data & Business Understanding und Methodik befasst und alles dokumentiert.
+-  Projektstruktur in VS Code mit Github-Repo aufgebaut.
+-  Analyse der Zeitreihe.
+-  IWB HIntergründe (Grundversorgung, freie Kunden, Netzbezug, PV-Einspeisung.
+
 Kerem Akkaya:
 - Rohe Wetterdaten formatiert
 - 2 formatierte Wetterdaten im file "data-manipulation.py" zusammengeführt
@@ -65,6 +71,8 @@ Haris Salli:
 
 ## Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
+- Wetterdaten Analyiseren die beiden Datenquellen joinen und bereinigen 
+- Fehlende Werte anaylsieren und bereinigen.
 
 Kerem Akkaya:
 - Dokumentation weiterführen Business und Data understanding
@@ -76,7 +84,9 @@ Haris Salli:
 
 ## Welche Hindernisse gibtes?
 Yaren Akinci:
-
+- Wetterdaten nur bis 2024 verfügbar und die Daten sind in 10min-Intervalle gemessen - nicht wie Stromdverbrauch (15min-Intervalle)
+- Python-Verständnis noch begrenzt.
+ 
 Kerem Akkaya:
 - Die formatierung war sehr aufwändig
 - Die intervalle der Daten bringen fundamentale Fragen zum Projekt auf, die zu jetzigem Zeitpunkt schwer zu Entscheident sind
@@ -87,6 +97,8 @@ Haris Salli:
 ### 31.11.2025
 ## Was habe ich in den letzten 7 Tagen gemacht?
 Yaren Akinci: 
+- Abschluss Business- und Data-Understanding.
+- Weiteres Vorgehen bezgl. Fehlender Werte und Schrtte im Projekt geplant.
 
 Kerem Akkaya:
 - Scrum Methode dokumentiert
@@ -97,6 +109,8 @@ Haris Salli:
 
 ## Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
+- Wetter und Stromdaten Joinen und fehlende Daten beachten(Zeitverschiebung, Fehlende Messung, etc. & notieren (Datentypen korrekt festlegen)
+
 
 Kerem Akkaya:
 - Strom- und Wetterdaten joinen
@@ -109,6 +123,7 @@ Haris Salli:
 
 ## Welche Hindernisse gibtes?
 Yaren Akinci:
+- Unstimmigkeiten zu Vorgehen mit Daten (Welche Intervalle?)
 
 Kerem Akkaya:
 - Falsche prioritärten im Projekt
@@ -120,6 +135,7 @@ Haris Salli:
 ### 07.11.2025
 ## Was habe ich in den letzten 7 Tagen gemacht?
 Yaren Akinci: 
+
 
 Kerem Akkaya:
 
