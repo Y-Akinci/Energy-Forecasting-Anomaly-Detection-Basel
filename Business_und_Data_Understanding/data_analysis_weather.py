@@ -8,7 +8,7 @@ import pandas as pd
 # Pfade
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
 F1 = os.path.join(DATA_DIR, "251107_Wetterdaten_Basel_2010-2019.csv")
-F2 = os.path.join(DATA_DIR, "251107_Wetterdaten_Basel_2020-2029.csv")
+F2 = os.path.join(DATA_DIR, "251107_Wetterdaten_Basel_2020-2024.csv")
 
 OUT_MERGED_10 = os.path.join(DATA_DIR, "wetter_merged_10min.csv")
 OUT_MERGED_15 = os.path.join(DATA_DIR, "wetter_merged_15min.csv")
@@ -127,3 +127,4 @@ print(nonnull_pct_15.head(15).round(2))
 # Speichern der 15-Min-Version
 weather_15.to_csv(OUT_MERGED_15, sep=";", encoding="utf-8")
 print("\nOK ->", OUT_MERGED_15)
+

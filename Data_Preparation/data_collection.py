@@ -21,8 +21,8 @@ full_idx_utc = pd.date_range(power.index.min(), power.index.max(), freq="15min",
 power_15 = power.reindex(full_idx_utc)     # LEFT: evtl. NaNs bleiben NaNs
 
 # === 2) WETTER laden (2 CSVs), direkt in UTC parsen ===
-f1 = os.path.join(DATA_DIR, "251107_WetterdatenBasel2010-2019.csv")
-f2 = os.path.join(DATA_DIR, "251107_WetterdatenBasel2020-2024.csv")
+f1 = os.path.join(DATA_DIR, "251107_Wetterdaten_Basel_2010-2019.csv")
+f2 = os.path.join(DATA_DIR, "251107_Wetterdaten_Basel_2020-2024.csv")
 
 w1 = pd.read_csv(f1, sep=";", decimal=",", encoding="latin1", low_memory=False)
 w2 = pd.read_csv(f2, sep=";", decimal=",", encoding="latin1", low_memory=False)

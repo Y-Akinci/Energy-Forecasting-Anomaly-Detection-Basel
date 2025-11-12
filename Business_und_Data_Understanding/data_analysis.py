@@ -16,7 +16,7 @@ start = df.index.min()
 ende = df.index.max()
 
 # Alle Zeitpunkte, die theoretisch vorhanden sein sollten
-voller_index = pd.date_range(start=start, end=ende, freq="15T", tz="UTC")
+voller_index = pd.date_range(start=start, end=ende, freq="15min", tz="UTC")
 
 # Fehlende Zeitpunkte
 fehlende = voller_index.difference(df.index)
