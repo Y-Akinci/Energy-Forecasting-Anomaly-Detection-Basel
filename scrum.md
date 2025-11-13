@@ -38,7 +38,7 @@ Kerem Akkaya:
 - Abgrenzungen im Projekt machen und Projekt schildern in Data Understanding und Business understanding
   
 Haris Salli:
--Daten Mergegen
+- Daten Mergen
 
 ## Welche Hindernisse gibt es?
 Yaren Akinci:
@@ -106,6 +106,8 @@ Kerem Akkaya:
 - Allgemeine dokumentation
 
 Haris Salli:
+- neue versionen von merged dateien
+- data prep brainstorming
 
 ## Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
@@ -119,7 +121,7 @@ Kerem Akkaya:
 - Dokumentation weiterführen
 
 Haris Salli:
-- Datenaufarbeitung
+- data Prep start
 
 ## Welche Hindernisse gibtes?
 Yaren Akinci:
@@ -129,7 +131,7 @@ Kerem Akkaya:
 - Falsche prioritärten im Projekt
 
 Haris Salli:
-
+- Brainstoming
 
 
 ### 07.11.2025
@@ -140,6 +142,8 @@ Yaren Akinci:
 Kerem Akkaya:
 
 Haris Salli:
+- Data prep brainstorming
+- Data analyse
 
 
 ## Was möchte ich in den nächsten 7 Tagen tun?
@@ -149,6 +153,7 @@ Kerem Akkaya:
 
 Haris Salli:
 - Datenaufarbeitung
+- Dokumentation
 
 ## Welche Hindernisse gibtes?
 Yaren Akinci:
@@ -156,4 +161,5 @@ Yaren Akinci:
 Kerem Akkaya:
 
 Haris Salli:
+- Data Prep decision making
 
