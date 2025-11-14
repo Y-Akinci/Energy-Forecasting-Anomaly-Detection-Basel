@@ -4,8 +4,8 @@ Yaren Akinci, Kerem Akkaya, Haris Salli
 
 ## Sprint 1 | Business & Data Understanding und Datenaufbereitung
 
-### 17.10.2025
-## Was habe ich in den letzten 7 Tagen gemacht?
+##### 17.10.2025
+# Was habe ich in den letzten 7 Tagen gemacht?
 Yaren Akinci: 
 - Ich habe gelernt, wie unsere vorhandenen Daten aufgebaut sind,
 - ...was das Ziel unseres Projektes ist,
@@ -26,7 +26,7 @@ Haris Salli:
 - Messdaten analysiert
 - mit chatgpt experimentiert
 
-## Was möchte ich in den nächsten 7 Tagen tun?
+# Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
 - Ich möchte mich mehr mit den Python-Paketen ausseinandersetzten und die wichtigsten Funktionen erlernen.
 - Ausserdem möchte ich meine Arbeit von dieser Woche zur Data & Business Understanding und unserer Methodik dokumentieren.
@@ -40,7 +40,7 @@ Kerem Akkaya:
 Haris Salli:
 - Daten Mergen
 
-## Welche Hindernisse gibt es?
+# Welche Hindernisse gibt es?
 Yaren Akinci:
 - Beim Anlegen der Pakete traf ich auf Herausforderungen und musste mich stark mit den Fehlermeldungen beschäftigen. 
 - Insbesondere hatte ich grosse Mühe, auf Funktionen zuzugreifen, die sich ausserhalb der Ordner befanden, aus denen ich sie aufrufen wollte.
@@ -52,8 +52,8 @@ Kerem Akkaya:
 Haris Salli:
 -Unstimmikeiten beim vorgehen
 
-### 24.10.2025
-## Was habe ich in den letzten 7 Tagen gemacht?
+##### 24.10.2025
+# Was habe ich in den letzten 7 Tagen gemacht?
 Yaren Akinci:
 -  Mich mit Data & Business Understanding und Methodik befasst und alles dokumentiert.
 -  Projektstruktur in VS Code mit Github-Repo aufgebaut.
@@ -69,7 +69,7 @@ Haris Salli:
 - Daten formatiert
 - mergen von daten
 
-## Was möchte ich in den nächsten 7 Tagen tun?
+# Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
 - Wetterdaten Analyiseren die beiden Datenquellen joinen und bereinigen 
 - Fehlende Werte anaylsieren und bereinigen.
@@ -82,7 +82,7 @@ Kerem Akkaya:
 Haris Salli:
 - Datenaufarbeitung
 
-## Welche Hindernisse gibtes?
+# Welche Hindernisse gibtes?
 Yaren Akinci:
 - Wetterdaten nur bis 2024 verfügbar und die Daten sind in 10min-Intervalle gemessen - nicht wie Stromdverbrauch (15min-Intervalle)
 - Python-Verständnis noch begrenzt.
@@ -94,8 +94,8 @@ Kerem Akkaya:
 Haris Salli:
 - Entscheidungsschwiereigkeiten
 
-### 31.11.2025
-## Was habe ich in den letzten 7 Tagen gemacht?
+##### 31.11.2025
+# Was habe ich in den letzten 7 Tagen gemacht?
 Yaren Akinci: 
 - Abschluss Business- und Data-Understanding.
 - Weiteres Vorgehen bezgl. Fehlender Werte und Schrtte im Projekt geplant.
@@ -109,7 +109,7 @@ Haris Salli:
 - neue versionen von merged dateien
 - data prep brainstorming
 
-## Was möchte ich in den nächsten 7 Tagen tun?
+# Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
 - Wetter und Stromdaten Joinen und fehlende Daten beachten(Zeitverschiebung, Fehlende Messung, etc. & notieren (Datentypen korrekt festlegen)
 
@@ -123,7 +123,7 @@ Kerem Akkaya:
 Haris Salli:
 - data Prep start
 
-## Welche Hindernisse gibtes?
+# Welche Hindernisse gibtes?
 Yaren Akinci:
 - Unstimmigkeiten zu Vorgehen mit Daten (Welche Intervalle?)
 
@@ -134,28 +134,32 @@ Haris Salli:
 - Brainstoming
 
 
-### 07.11.2025
-## Was habe ich in den letzten 7 Tagen gemacht?
+##### 07.11.2025
+# Was habe ich in den letzten 7 Tagen gemacht?
 Yaren Akinci: 
 
 
 Kerem Akkaya:
+- Datenanalyse Notebook
+- Numpy und Pandas tutorial
 
 Haris Salli:
 - Data prep brainstorming
 - Data analyse
 
 
-## Was möchte ich in den nächsten 7 Tagen tun?
+# Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
 
 Kerem Akkaya:
+- Modelling
+- Feature Engineering
 
 Haris Salli:
 - Datenaufarbeitung
 - Dokumentation
 
-## Welche Hindernisse gibtes?
+# Welche Hindernisse gibtes?
 Yaren Akinci:
 
 Kerem Akkaya:
