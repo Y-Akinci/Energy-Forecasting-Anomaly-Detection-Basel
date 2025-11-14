@@ -137,7 +137,7 @@ Haris Salli:
 # 07.11.2025
 ### Was habe ich in den letzten 7 Tagen gemacht?
 Yaren Akinci: 
-
+- Fehlende Werte Analysiert und verstanden.
 
 Kerem Akkaya:
 - Datenanalyse Notebook
@@ -150,6 +150,9 @@ Haris Salli:
 
 ### Was möchte ich in den nächsten 7 Tagen tun?
 Yaren Akinci:
+- Umgang mit Fehlenden Werten dokumentieren
+- Datensatz fertigstellen mit neuen Features
+- Modeling beginnen
 
 Kerem Akkaya:
 - Modelling
@@ -161,6 +164,7 @@ Haris Salli:
 
 ### Welche Hindernisse gibtes?
 Yaren Akinci:
+Verständnis der Fehlendenwerte komplex durch Zeitverschiebung.
 
 Kerem Akkaya:
 
