@@ -31,12 +31,21 @@ for df in (w1, w2):
 
 def make_ts_utc(df):
     if "Date and Time" in df.columns:
-        return pd.to_datetime(df["Date and Time"], errors="coerce", dayfirst=True, utc=True)
+        ts = pd.to_datetime(df["Date and Time"], errors="coerce", dayfirst=True)
     elif {"Date", "Time"}.issubset(df.columns):
-        return pd.to_datetime(df["Date"].astype(str) + " " + df["Time"].astype(str),
-                              errors="coerce", dayfirst=True, utc=True)
+        ts = pd.to_datetime(df["Date"].astype(str) + " " + df["Time"].astype(str),
+                            errors="coerce", dayfirst=True)
     else:
         raise ValueError("Zeitspalte fehlt: erwarte 'Date and Time' oder 'Date'+'Time'.")
+
+    # 1) Strings sind lokale Zeiten -> als Europe/Zurich lokalisieren (keine Verschiebung),
+    # 2) dann sauber nach UTC konvertieren (Verschiebung passiert hier)
+    ts = ts.dt.tz_localize(
+        "Europe/Zurich",
+        nonexistent="shift_forward",  # Frühling: übersprungene Stunde
+        ambiguous="NaT"               # Herbst: doppelte Stunde -> als NaT markieren (oder "infer")
+    ).dt.tz_convert("UTC")
+    return ts
 
 w1["DateTime"] = make_ts_utc(w1)
 w2["DateTime"] = make_ts_utc(w2)
@@ -78,8 +87,11 @@ else:
 # === 4) LEFT-Join auf Strom (keine zeitliche Verschiebung) ===
 merged_15 = power_15.join(weather_15, how="left")
 
-# Optional: Index zurück in Lokalzeit (nur Anzeige)
-merged_15.index = merged_15.index.tz_convert(TZ)
+print("Index tz:", merged_15.index.tz)             # sollte UTC zeigen
+print("Duplikate:", merged_15.index.duplicated().sum())  # 0
+full_idx = pd.date_range(merged_15.index.min(), merged_15.index.max(), freq="15min", tz="UTC")
+print("Fehlende Slots:", len(full_idx.difference(merged_15.index)))  # 0 oder nur echte Datenlücken
+
 
 # === 5) Export ===
 merged_15.to_csv(OUT_15, sep=";", encoding="utf-8")
