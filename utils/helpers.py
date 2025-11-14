@@ -1,23 +1,23 @@
 import pandas as pd
 import os
 
-def csv_file():
+def csv_file(filename="251006_StromverbrauchBasel2012-2025.csv"):
     # Projekt-Root finden (eine Ebene über /utils)
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_path = os.path.join(root_dir, "data", "251006_StromverbrauchBasel2012-2025.csv")
+    data_path = os.path.join(root_dir, "data", "raw data", filename)
 
-    df = pd.read_csv(data_path, sep=";")
 
+    if not os.path.exists(data_path):
+        raise FileNotFoundError(f"Datei nicht gefunden: {data_path}")
+
+    df = pd.read_csv(data_path, sep=";", low_memory=False)
     print("Anzahl Zeilen und Spalten:", df.shape)
     print("Spaltennamen:", df.columns.tolist())
 
-    df["Start der Messung"] = pd.to_datetime(df["Start der Messung"], errors="coerce")
-    df = df.set_index("Start der Messung").sort_index()
+    # Zeitstempel als Datetime setzen
+    if "Start der Messung" in df.columns:
+        df["Start der Messung"] = pd.to_datetime(df["Start der Messung"], errors="coerce")
+        df = df.set_index("Start der Messung").sort_index()
+
     return df
 
-# --- Laden Wetter (2 Dateien mergen) ---
-def _read_weather_csv(path, time_col="timestamp", sep=";"):
-    df = pd.read_csv(path, sep=sep)
-    df[time_col] = pd.to_datetime(df[time_col], errors="coerce")
-    df = df.rename(columns={time_col: "timestamp"})
-    return df
