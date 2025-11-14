@@ -1,0 +1,39 @@
+;NaN_Anzahl;NaN_%
+Freie Kunden;303948;63.058
+Grundversorgte Kunden;297996;61.823
+Stromverbrauch;52;0.011
+Start der Messung (Text);52;0.011
+Jahr;52;0.011
+Monat;52;0.011
+Tag;52;0.011
+Wochentag;52;0.011
+Tag des Jahres;52;0.011
+Quartal;52;0.011
+Woche des Jahres;52;0.011
+"Globalstrahlung; Zehnminutenmittel";0;0.0
+"Diffusstrahlung; Zehnminutenmittel";0;0.0
+"Langwellige Einstrahlung; Zehnminutenmittel";0;0.0
+"Sonnenscheindauer; Zehnminutensumme";0;0.0
+"BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in km/h";0;0.0
+"BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in m/s";0;0.0
+"BÃ¶enspitze (SekundenbÃ¶e); Maximum in km/h";0;0.0
+Böenspitze (Sekundenböe);0;0.0
+Chilltemperatur;0;0.0
+Dampfdruck 2 m ü. Boden;0;0.0
+Date;0;0.0
+Date and Time;0;0.0
+Luftdruck reduziert auf Meeresniveau (QFF);0;0.0
+Luftdruck reduziert auf Meeresniveau mit Standardatmosphäre (QNH);0;0.0
+Luftrdruck auf Barometerhöhe;0;0.0
+Lufttemperatur 2 m ü. Boden;0;0.0
+Lufttemperatur 2 m ü. Gras;0;0.0
+Lufttemperatur Bodenoberfläche;0;0.0
+"Niederschlag; Zehnminutensumme";0;0.0
+Taupunkt 2 m ü. Boden;0;0.0
+Time;0;0.0
+"Windgeschwindigkeit skalar; Zehnminutenmittel in m/s";0;0.0
+Windgeschwindigkeit vektoriell;0;0.0
+"Windgeschwindigkeit; Zehnminutenmittel in km/h";0;0.0
+"Windrichtung; Zehnminutenmittel";0;0.0
+relative Luftfeuchtigkeit;0;0.0
+station_abbr;0;0.0
