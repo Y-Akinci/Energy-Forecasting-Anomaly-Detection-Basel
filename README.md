@@ -308,6 +308,91 @@ Beachtung Strompreis/Korrelation: Untersucht werden soll die Korrelation zwische
 
 Feature-Selektion: Am Ende fixierte Liste an Features: Stromverbrauch, Tag/Monat/Jahr/Zeit, Freie Kunden, Grundversorgte Kunden, Wetterdaten (Temperatur, Druck, Windgeschwindigkeit, Chilltemperatur, Niederschlag, Sonnenscheindauer, Globalstrahlung).​
 
+## Zusammenfassung: Zeitstempel, Intervallwahl und Feature-Entscheidungen
+
+## 1. Zeitumstellung und fehlende Werte
+
+Die Stromverbrauchsdaten werden in lokaler Zeit (Europe/Zurich) gemessen.  
+Das führt jedes Jahr zu diesen Effekten:
+
+### März – Zeit wird vorgestellt  
+- Die Stunde 02:00–03:00 existiert nicht.  
+- → 4 fehlende 15-Minuten-Messwerte.
+
+### Oktober – Zeit wird zurückgestellt  
+- Die Stunde 02:00–03:00 würde doppelt vorkommen.  
+- Da das Messsystem keine doppelten lokalen Zeitstempel speichern darf,  
+  wird **eine der beiden Stunden verworfen**.  
+- → ebenfalls 4 fehlende Messwerte.
+
+### Ergebnis  
+Über alle Jahre fehlen genau **52 Zeitpunkte**.  
+Diese Werte sind real **nie gemessen worden** und können ohne Informationsverlust entfernt werden.
+
+---
+
+## 2. Unterschied lokale Zeit vs. UTC
+
+Die Originaldaten enthalten:
+- `Start der Messung (Text)` → lokale Zeit (Anzeige)
+- Zeitindex im DataFrame → UTC (eindeutig)
+
+Der UTC-Index enthält die sichtbaren Zeitsprünge (März +1h, Oktober –1h),  
+weil hier die fehlenden oder verworfenen Messpunkte offensichtlich werden.
+
+Die Textspalte spielt für das Training **keine Rolle**.
+
+---
+
+## 3. Intervallwahl: 15 Minuten vs. 30 Minuten
+
+### Warum 30 Minuten zuerst überlegt wurde
+- Wetter: 10-Minuten-Daten → durch Sampling → 30 Minuten ohne Interpolation möglich  
+  (jeder 3. Wert)
+- Strom: 15-Minuten-Daten → durch Sampling → 30 Minuten möglich (jeder 2. Wert)
+- Weniger Daten = stabilere Modelle
+
+### Warum die Entscheidung am Ende **15 Minuten** war
+- IWB misst und verrechnet Strom **immer in 15-Minuten-Blöcken**.
+- Stromhandel in Europa läuft ebenfalls in 15-Minuten-Blöcken.
+- Anomalien sind oft kürzer als 30 Minuten → 30 Minuten glätten kritische Peaks.
+- Wetter lässt sich problemlos von 10 → 15 Minuten interpolieren.
+- Fachlich realistischer und aussagekräftiger.
+
+→ **15 Minuten ist der korrekte und professionelle Standard.**
+
+---
+
+## 4. Wetterdaten im Modell: Problem und Lösung
+
+Ein Prognosemodell darf keine Wetterwerte verwenden,  
+die **in der Zukunft liegen** (Data Leakage).
+
+Beispiel:  
+Du kannst den Stromverbrauch um 12:00 nicht mit der Temperatur um 12:00 vorhersagen,  
+weil du die Temperatur um 12:00 zu diesem Zeitpunkt nicht kennst.
+
+### Lösung  
+Alle Wettervariablen werden als **Lag-Features** verwendet:
+
+- `Temperatur(t-15min)`
+- `Luftfeuchtigkeit(t-30min)`
+- `Wind(t-1h)`
+- usw.
+
+Damit nutzt das Modell nur Informationen, die **real verfügbar waren**.
+
+---
+
+## 5. Fazit
+
+- Die 52 fehlenden Werte entstehen **ausschliesslich** durch die Zeitumstellungen.  
+- Diese Werte können **sicher entfernt** werden.  
+- Ein 15-Minuten-Intervall ist fachlich korrekt und entspricht der Messrealität.  
+- Wetterdaten müssen im Modell **zeitversetzt (Lag)** genutzt werden, um Data Leakage zu vermeiden.
+
+
+
 ## Modeling
 ## Evaluation
 ## Demployment
