@@ -164,10 +164,41 @@ Haris Salli:
 
 ### Welche Hindernisse gibtes?
 Yaren Akinci:
-Verständnis der Fehlendenwerte komplex durch Zeitverschiebung.
+- Verständnis der Fehlendenwerte komplex durch Zeitverschiebung. 
 
 Kerem Akkaya:
 
 Haris Salli:
 - Data Prep decision making
+
+# 14.11.2025
+### Was habe ich in den letzten 7 Tagen gemacht?
+Yaren Akinci: 
+- Mit dem Team vorgehen Fehlender Werte besprochen und Datensatz vollständig bereinigt.
+- Feature Creation begonnen
+
+Kerem Akkaya:
+
+Haris Salli:
+
+
+
+### Was möchte ich in den nächsten 7 Tagen tun?
+Yaren Akinci:
+- Feature Creation fertigstellen
+
+Kerem Akkaya:
+
+
+Haris Salli:
+
+
+### Welche Hindernisse gibtes?
+Yaren Akinci:
+-
+
+Kerem Akkaya:
+
+Haris Salli:
+
 
