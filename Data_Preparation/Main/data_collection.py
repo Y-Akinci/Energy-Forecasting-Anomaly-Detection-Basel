@@ -1,10 +1,13 @@
 import os, sys
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if root_dir not in sys.path:
-    sys.path.append(root_dir)
 
-import pandas as pd
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
 from utils import helpers
+import pandas as pd
+from pathlib import Path
+import seaborn as sns
 
 # Pfade
 TZ = "Europe/Zurich"
@@ -94,6 +97,6 @@ print("Fehlende Slots:", len(full_idx.difference(merged_15.index)))  # 0 oder nu
 
 
 # === 5) Export ===
-merged_15.to_csv(OUT_15, sep=";", encoding="utf-8")
-print("OK ->", OUT_15)
-print("Rows:", len(merged_15), "Cols:", merged_15.shape[1])
+#merged_15.to_csv(OUT_15, sep=";", encoding="utf-8")
+#print("OK ->", OUT_15)
+#print("Rows:", len(merged_15), "Cols:", merged_15.shape[1])
