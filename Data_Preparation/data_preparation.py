@@ -56,6 +56,7 @@ w2["DateTime"] = make_ts_utc(w2)
 w1 = w1.dropna(subset=["DateTime"]).set_index("DateTime").sort_index()
 w2 = w2.dropna(subset=["DateTime"]).set_index("DateTime").sort_index()
 
+# === DATA COLLECTON ===
 # Mergen + doppelte Timestamps entfernen
 weather = pd.concat([w1, w2], axis=0)
 weather = weather[~weather.index.duplicated(keep="last")].sort_index()
@@ -100,3 +101,6 @@ print("Fehlende Slots:", len(full_idx.difference(merged_15.index)))  # 0 oder nu
 #merged_15.to_csv(OUT_15, sep=";", encoding="utf-8")
 #print("OK ->", OUT_15)
 #print("Rows:", len(merged_15), "Cols:", merged_15.shape[1])
+
+# === DATA PREPROCCESSING ===
+# === FEATURE ENGINEERING ===
