@@ -384,12 +384,131 @@ Damit nutzt das Modell nur Informationen, die **real verfügbar waren**.
 
 ---
 
-## 5. Fazit
+---
 
-- Die 52 fehlenden Werte entstehen **ausschliesslich** durch die Zeitumstellungen.  
-- Diese Werte können **sicher entfernt** werden.  
-- Ein 15-Minuten-Intervall ist fachlich korrekt und entspricht der Messrealität.  
-- Wetterdaten müssen im Modell **zeitversetzt (Lag)** genutzt werden, um Data Leakage zu vermeiden.
+## 6. Datenquelle Wetter – Herkunft und regionale Relevanz
+
+Die verwendeten Wetterdaten stammen aus externen Messstationen im Raum Basel.  
+Die **exakte Station und deren geografische Abdeckung** sind aktuell noch nicht klar dokumentiert.
+
+In der Diskussion mit Renold konnte dazu keine eindeutige Antwort gegeben werden.  
+Diese Unsicherheit muss noch geklärt werden, da die räumliche Nähe der Wetterstation  
+direkt die Aussagekraft für den Stromverbrauch im Versorgungsgebiet beeinflusst.
+
+Offen:
+- Welche Wetterstation wurde verwendet?
+- Wie weit ist sie vom Fokusgebiet Basel entfernt?
+- Wie repräsentativ sind die Messdaten für das tatsächliche Stromnetzgebiet?
+
+---
+
+## 6. Feature-Reduktion – Wetterdaten
+
+Zur Vermeidung von Redundanz und unnötiger Komplexität wird das Wetter-Feature-Set reduziert.
+
+### Behaltene Features:
+- Böenspitze **(3-Sekundenböe) in m/s**
+- Lufttemperatur 2 m über Boden
+- Luftdruck auf Barometerhöhe
+- Niederschlag
+- Taupunkt
+- Windgeschwindigkeit (skalar) in m/s
+- relative Luftfeuchtigkeit
+- Globalstrahlung
+- Diffusstrahlung
+- Langwellige Einstrahlung
+- Chilltemperatur
+
+### Entfernte Features:
+- Alle anderen Böenspitzenmessungen  
+  (Sekundenböe, km/h Varianten → redundant)
+- `Station`
+- `Time`, `Date`, `Date and Time` (aus Wetterquelle)
+- Luftdruck auf Meeresniveau:
+  - QFF
+  - QNH
+- Lufttemperatur Bodenoberfläche
+- Windgeschwindigkeit in km/h
+
+Ziel:  
+Reduzierte, informationsreiche Features ohne doppelte Messungen.
+
+---
+
+## 7. Feature-Reduktion – Stromverbrauchsdaten
+
+Aus der Stromverbrauchsquelle werden folgende zeitlichen Features entfernt:
+
+- `Tag`
+- `Quartal`
+- `Jahreszeiten`
+
+Begründung:
+Diese Variablen sind abgeleitet und liefern eine geringere Auflösung.  
+Sie sind redundant gegenüber:
+
+- `Monat`
+- `Tag des Jahres`
+- `Wochentag`
+
+Ein Januartag ist nicht gleich wie ein Dezembertag, obwohl beide im Winter liegen.
+
+---
+
+## 8. Zeitproblem zwischen UTC und lokaler Zeit
+
+Aktuell besteht eine Inkonsistenz:
+
+- `DateTime`-Index ist in **UTC**
+- Abgeleitete Zeitfeatures (`Jahr`, `Monat`, `Tag`, `Tag des Jahres`)  
+  wurden jedoch aus **lokaler Zeit (Europe/Zurich)** generiert
+
+Dadurch entsteht eine systematische Verschiebung  
+zwischen Zeitstempel und den zeitlichen Features.
+
+---
+
+## 9. Offene Entscheidungsoptionen
+
+### Option A: Lokale Zeit als Standard
+- `DateTime` wird von UTC → Europe/Zurich konvertiert
+- Alle zeitlichen Features werden neu aus lokaler Zeit berechnet
+- Feature-Lags werden ebenfalls auf lokaler Zeit aufgebaut
+
+### Option B: UTC beibehalten
+- `DateTime` bleibt UTC
+- Alle zeitlichen Features werden neu aus UTC berechnet
+- Alle Lag-Features werden auf UTC-Zeit bezogen
+
+Beide Wege sind technisch möglich,  
+aber es muss **eine konsistente Zeitbasis** festgelegt werden.
+
+---
+
+---
+
+## Fazit
+
+Die Aufbereitung der Strom- und Wetterdaten folgt einer klaren, fachlich begründeten Logik:
+
+- Die **Zeitproblematik durch Sommer-/Winterzeit** wurde korrekt identifiziert und dokumentiert.  
+  Die fehlenden 52 Zeitpunkte entstehen physikalisch durch die Zeitumstellung und sind keine Datenfehler.
+
+- Die Entscheidung für ein **15-Minuten-Intervall** ist fachlich konsistent mit der Messlogik der IWB und dem Stromhandel.  
+  Eine gröbere Auflösung würde relevante Muster und Anomalien verwässern.
+
+- Bei den **Wetterdaten** wurden redundante, doppelte und wenig relevante Features systematisch entfernt.  
+  Übrig bleiben nur physikalisch sinnvolle und nicht redundante Messgrössen.
+
+- Bei den **Zeitfeatures des Stromverbrauchs** wurde unnötige Redundanz (Quartal, Jahreszeit, Tag) beseitigt,  
+  ohne dabei saisonale oder wöchentliche Informationen zu verlieren.
+
+- Das zentrale offene Thema bleibt die **Zeitbasis (UTC vs. lokale Zeit)**:
+  Eine einheitliche Entscheidung ist zwingend notwendig, um Verschiebungen und Inkonsistenzen in den Features zu vermeiden.
+
+Insgesamt wurde eine strukturierte, reduzierte und fachlich saubere Datenbasis geschaffen,  
+die als Grundlage für ein valides, konsistentes und realitätsnahes Stromverbrauchs-Forecasting dienen kann.
+
 
 
 
