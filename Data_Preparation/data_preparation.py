@@ -12,7 +12,7 @@ import seaborn as sns
 # Pfade
 TZ = "Europe/Zurich"
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DATA_DIR = os.path.join(ROOT, "Energy-Forecasting-Anomaly-Detection-Basel", "data")
+DATA_DIR = os.path.join(ROOT, "ENERGYFORECASTANOMALYDETECTION", "data")
 OUT_15 = os.path.join(DATA_DIR, "merged_strom_meteo_15min.csv")
 
 # === 1) STROM laden (helpers -> Europe/Zurich) und auf UTC bringen ===
