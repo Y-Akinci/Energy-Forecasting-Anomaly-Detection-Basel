@@ -192,3 +192,63 @@ merged_15["Time"] = pd.to_datetime(merged_15["Time"], format="%H-%M-%S")
 # Spalte mit dem Tag im Jahr kreieren
 
 print(merged_15.head())
+
+
+
+
+# === FEATURE ENGINEERING === Haris
+
+# Index sauber stellen
+merged_15.reset_index(inplace=True)
+merged_15.rename(columns={"index": "DateTime"}, inplace=True)
+merged_15.set_index("DateTime", inplace=True)
+
+# --- 1) Jahreszeiten ---
+def season(month):
+    if month in [12, 1, 2]:
+        return "Winter"
+    elif month in [3, 4, 5]:
+        return "Frühling"
+    elif month in [6, 7, 8]:
+        return "Sommer"
+    else:
+        return "Herbst"
+
+merged_15["Season"] = merged_15.index.month.map(season).astype("category")
+
+# --- 2) Arbeitstag vs Sonntag ---
+# Montag = 0, ..., Sonntag = 6 (Pandas-Standard)
+merged_15["DayOfWeek"] = merged_15.index.dayofweek
+
+merged_15["IsSunday"] = (merged_15["DayOfWeek"] == 6).astype(int)
+merged_15["IsWorkday"] = (merged_15["DayOfWeek"] < 5).astype(int)
+
+# --- 3) Lag Features (Stromverbrauch) ---
+merged_15["Lag_15min"] = merged_15["Stromverbrauch"].shift(1)
+merged_15["Lag_30min"] = merged_15["Stromverbrauch"].shift(2)
+merged_15["Lag_1h"] = merged_15["Stromverbrauch"].shift(4)
+
+# optional: Vortag gleiche Zeit
+merged_15["Lag_24h"] = merged_15["Stromverbrauch"].shift(96)
+
+# --- 4) Differenz zum letzten Verbrauch ---
+merged_15["Diff_15min"] = merged_15["Stromverbrauch"] - merged_15["Lag_15min"]
+
+print("Feature Engineering erfolgreich abgeschlossen!")
+print(merged_15[[
+    "Season", "IsWorkday", "IsSunday",
+    "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",
+    "Diff_15min"
+]].head())
+
+# === EXPORT FINAL DATAFRAME === um zu schauen wie die neuen feature aussehen
+
+# Zielpfad setzen
+output_path = os.path.join(DATA_DIR, "processed_merged_features.csv")
+
+# CSV exportieren
+merged_15.to_csv(output_path, sep=";", encoding="utf-8")
+
+print("Export erfolgreich!")
+print("Datei gespeichert unter:", output_path)
+print("Shape:", merged_15.shape)
