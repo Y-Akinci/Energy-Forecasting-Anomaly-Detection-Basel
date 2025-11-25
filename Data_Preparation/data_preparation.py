@@ -12,7 +12,7 @@ import seaborn as sns
 # Pfade
 TZ = "Europe/Zurich"
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DATA_DIR = os.path.join(ROOT, "ENERGYFORECASTANOMALYDETECTION", "data")
+DATA_DIR = os.path.join(ROOT, "Energy-Forecasting-Anomaly-Detection-Basel", "data")
 OUT_15 = os.path.join(DATA_DIR, "merged_strom_meteo_15min.csv")
 
 # === 1) STROM laden (helpers -> Europe/Zurich) und auf UTC bringen ===
@@ -231,7 +231,78 @@ merged_15["Lag_1h"] = merged_15["Stromverbrauch"].shift(4)
 # optional: Vortag gleiche Zeit
 merged_15["Lag_24h"] = merged_15["Stromverbrauch"].shift(96)
 
-# --- 4) Differenz zum letzten Verbrauch ---
+# --- 4) Wetter-Lag Features (nur Meteodaten laggen!) ---
+
+# Liste der Wetterspalten (aus deinen float_cols)
+weather_cols = [
+    'Globalstrahlung; Zehnminutenmittel',
+    'Diffusstrahlung; Zehnminutenmittel',
+    'Langwellige Einstrahlung; Zehnminutenmittel',
+    'Sonnenscheindauer; Zehnminutensumme',
+    'BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in km/h',
+    'BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in m/s',
+    'BÃ¶enspitze (SekundenbÃ¶e); Maximum in km/h',
+    'Böenspitze (Sekundenböe)',
+    'Chilltemperatur',
+    'Dampfdruck 2 m ü. Boden',
+    'Luftdruck reduziert auf Meeresniveau (QFF)',
+    'Luftdruck reduziert auf Meeresniveau mit Standardatmosphäre (QNH)',
+    'Luftrdruck auf Barometerhöhe',
+    'Lufttemperatur 2 m ü. Boden',
+    'Lufttemperatur 2 m ü. Gras',
+    'Lufttemperatur Bodenoberfläche',
+    'Niederschlag; Zehnminutensumme',
+    'Taupunkt 2 m ü. Boden',
+    'Windgeschwindigkeit skalar; Zehnminutenmittel in m/s',
+    'Windgeschwindigkeit vektoriell',
+    'Windgeschwindigkeit; Zehnminutenmittel in km/h',
+    'Windrichtung; Zehnminutenmittel',
+    'relative Luftfeuchtigkeit'
+]
+
+# Wetter-Lag = Werte 15min früher
+for col in weather_cols:
+    if col in merged_15.columns:  # falls Spalte existiert
+        merged_15[f"{col}_lag15"] = merged_15[col].shift(1)
+
+print("Wetter-Lags erstellt!")
+
+# --- 5) Originale Meteodaten entfernen (nur Lags behalten) ---
+
+# Liste der originalen Wetterspalten (deine float_cols)
+original_weather_cols = [
+    'Globalstrahlung; Zehnminutenmittel',
+    'Diffusstrahlung; Zehnminutenmittel',
+    'Langwellige Einstrahlung; Zehnminutenmittel',
+    'Sonnenscheindauer; Zehnminutensumme',
+    'BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in km/h',
+    'BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in m/s',
+    'BÃ¶enspitze (SekundenbÃ¶e); Maximum in km/h',
+    'Böenspitze (Sekundenböe)',
+    'Chilltemperatur',
+    'Dampfdruck 2 m ü. Boden',
+    'Luftdruck reduziert auf Meeresniveau (QFF)',
+    'Luftdruck reduziert auf Meeresniveau mit Standardatmosphäre (QNH)',
+    'Luftrdruck auf Barometerhöhe',
+    'Lufttemperatur 2 m ü. Boden',
+    'Lufttemperatur 2 m ü. Gras',
+    'Lufttemperatur Bodenoberfläche',
+    'Niederschlag; Zehnminutensumme',
+    'Taupunkt 2 m ü. Boden',
+    'Windgeschwindigkeit skalar; Zehnminutenmittel in m/s',
+    'Windgeschwindigkeit vektoriell',
+    'Windgeschwindigkeit; Zehnminutenmittel in km/h',
+    'Windrichtung; Zehnminutenmittel',
+    'relative Luftfeuchtigkeit'
+]
+
+# Originale Wetterspalten entfernen
+merged_15.drop(columns=[col for col in original_weather_cols if col in merged_15.columns],
+               inplace=True)
+
+print("Originale Meteodaten entfernt – nur Lag-Wetterdaten bleiben im Dataset!")
+
+# --- 6) Differenz zum letzten Verbrauch ---
 merged_15["Diff_15min"] = merged_15["Stromverbrauch"] - merged_15["Lag_15min"]
 
 print("Feature Engineering erfolgreich abgeschlossen!")
