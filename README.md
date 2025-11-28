@@ -43,6 +43,6 @@ Im Rahmen des Projektes übernimmt jeweils ein Teammitglied die Rolle als Scrum-
 
 
 
-## Modeling
+
 ## Evaluation
 ## Demployment
