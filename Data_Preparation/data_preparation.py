@@ -107,7 +107,6 @@ print("Fehlende Slots:", len(full_idx.difference(merged_15.index)))  # 0 oder nu
 
 # === DATA CLEANING ===
 
-
 # Zeilen löschen, welche keinen Wert bei der Zielvariable "Stromverbrauch" haben
 merged_15.dropna(subset="Stromverbrauch", inplace=True)
 
@@ -192,6 +191,8 @@ merged_15["Time"] = pd.to_datetime(merged_15["Time"], format="%H-%M-%S")
 
 # Spalte mit dem Tag im Jahr kreieren
 
+print(merged_15.head())
+
 
 
 
@@ -229,10 +230,6 @@ merged_15["Lag_1h"] = merged_15["Stromverbrauch"].shift(4)
 
 # optional: Vortag gleiche Zeit
 merged_15["Lag_24h"] = merged_15["Stromverbrauch"].shift(96)
-
-# Zeilen löschen, die durch lag NaN Werte haben
-lag_cols = ["Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h"]
-merged_15 = merged_15.dropna(subset=lag_cols)
 
 # --- 4) Wetter-Lag Features (nur Meteodaten laggen!) ---
 
@@ -314,12 +311,6 @@ print(merged_15[[
     "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",
     "Diff_15min"
 ]].head())
-
-# --- 7) Lag und summen Spalten Stromverbrauch 
-merged_15["Verbrauch_vor_15min"] = merged_15["Stromverbrauch"].shift(1)
-merged_15["Verbrauch_24h"] = merged_15["Stromverbrauch"].shift(1).rolling(window=96).sum()
-merged_15["Verbrauch_letzte_Woche"] = merged_15["Stromverbrauch"].shift(1).rolling(window=672).sum()
-
 
 # === EXPORT FINAL DATAFRAME === um zu schauen wie die neuen feature aussehen
 
