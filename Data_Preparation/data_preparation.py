@@ -173,7 +173,8 @@ for col in categorical_features:
 # === FEATURE SELECTION ===
 
 # Tag, Monat, und Jahr entfernt
-merged_15.drop(["Jahr", "Monat","Tag"], axis=1)
+delete_columns = ["Jahr", "Monat","Tag"]
+merged_15.drop(delete_columns, axis=1, inplace=True)
 
 # === FEATURE ENGINEERING ===
 
