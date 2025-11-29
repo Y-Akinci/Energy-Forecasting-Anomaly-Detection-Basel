@@ -15,6 +15,22 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA_DIR = os.path.join(ROOT, "Energy-Forecasting-Anomaly-Detection-Basel", "data")
 OUT_15 = os.path.join(DATA_DIR, "merged_strom_meteo_15min.csv")
 
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from utils import helpers
+import pandas as pd
+from pathlib import Path
+import seaborn as sns
+
+# Pfade
+TZ = "Europe/Zurich"
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_DIR = os.path.join(ROOT, "Energy-Forecasting-Anomaly-Detection-Basel", "data")
+OUT_15 = os.path.join(DATA_DIR, "merged_strom_meteo_15min.csv")
+
 # === 1) STROM laden (helpers -> Europe/Zurich) und auf UTC bringen ===
 power_local = helpers.csv_file()           # tz-aware Europe/Zurich
 power = power_local.tz_convert("UTC")      # alles in UTC gegen DST-Probleme
@@ -170,12 +186,6 @@ categorical_features = [
 for col in categorical_features:
     merged_15[col] = merged_15[col].astype("category")
 
-# === FEATURE SELECTION ===
-
-# Tag, Monat, und Jahr entfernt
-delete_columns = ["Jahr", "Monat","Tag"]
-merged_15.drop(delete_columns, axis=1, inplace=True)
-
 # === FEATURE ENGINEERING ===
 
 # "Date" und "Time" als eigene Spalten erstellen
@@ -193,8 +203,6 @@ merged_15["Time"] = pd.to_datetime(merged_15["Time"], format="%H-%M-%S")
 # Spalte mit dem Tag im Jahr kreieren
 
 print(merged_15.head())
-
-
 
 
 # === FEATURE ENGINEERING === Haris
@@ -312,6 +320,12 @@ print(merged_15[[
     "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",
     "Diff_15min"
 ]].head())
+
+# === FEATURE SELECTION ===
+
+# Tag, Monat, und Jahr entfernt
+delete_columns = ["Jahr", "Monat","Tag", "Date", "Time", "Date and Time"]
+merged_15.drop(delete_columns, axis=1, inplace=True)
 
 # === EXPORT FINAL DATAFRAME === um zu schauen wie die neuen feature aussehen
 
