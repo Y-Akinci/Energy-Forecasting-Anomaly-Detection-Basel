@@ -54,17 +54,35 @@ print("Zeitraum fürs Modell:", df.index.min(), "→", df.index.max(), "Rows:", 
 # ============================================================
 # 3) FEATURES & ZIEL
 # ============================================================
+# nach df = df.loc[start:end].copy()
 
 target_col = "Stromverbrauch"
-y = df[target_col].copy()
-X = df.drop(columns=[target_col]).copy()
+y = df[target_col].astype(float).copy()
 
-X = pd.get_dummies(X, drop_first=True)
+X_all = df.drop(columns=[target_col]).copy()
 
-mask_valid = ~(X.isna().any(axis=1) | y.isna())
-X, y = X[mask_valid], y[mask_valid]
+# Zeitfeatures aus Index ergänzen (falls du sie willst)
+X_all["hour"] = X_all.index.hour
+X_all["dayofweek"] = X_all.index.dayofweek
+X_all["month"] = X_all.index.month
+X_all["dayofyear"] = X_all.index.dayofyear
+
+# 1) Zeige, welche object-Spalten es sind
+print("Object-Spalten:", X_all.select_dtypes(include="object").columns.tolist())
+
+# 2) Diese object-Spalten aus den Features entfernen
+X_all = X_all.drop(columns=X_all.select_dtypes(include="object").columns)
+
+# 3) Jetzt alles in float umwandeln
+X = X_all.astype(float)
+
+# 4) NaNs bereinigen
+mask = y.notna()
+X = X.loc[mask].dropna(axis=0)
+y = y.loc[X.index]
 
 print("X shape:", X.shape, " y shape:", y.shape)
+print(X.dtypes.value_counts())
 
 # ============================================================
 # 4) ZEITLICHER TRAIN/TEST-SPLIT
@@ -82,7 +100,7 @@ print("Test :", X_test.index.min(), "→", X_test.index.max(), "(", len(X_test),
 # ============================================================
 # 5) MODELL-FUNKTIONEN
 # ============================================================
-
+print("Starte RandomForest-Training...")
 def random_forest_regressor():
     """Gibt ein vorkonfiguriertes RandomForest-Regressionsmodell zurück."""
     return RandomForestRegressor(
@@ -91,7 +109,8 @@ def random_forest_regressor():
         random_state=42,
         n_jobs=-1,
     )
-
+print("RandomForest fertig.")
+#print("Starte GradientBoosting-Training...")
 def gradient_boosting_regressor():
     """Gibt ein vorkonfiguriertes GradientBoosting-Regressionsmodell zurück."""
     return GradientBoostingRegressor(
@@ -101,6 +120,8 @@ def gradient_boosting_regressor():
         random_state=42,
     )
 
+
+print("GradientBoosting fertig.")
 def train_and_evaluate(model, name: str):
     """Trainiert ein Modell, gibt Metriken zurück und druckt sie."""
     print(f"\n===== {name} =====")
