@@ -4,3 +4,4 @@ data/wetter_merged_15min.csv
 data/processed_merged_features.csv
 *.joblib
 *.npy
+*.png

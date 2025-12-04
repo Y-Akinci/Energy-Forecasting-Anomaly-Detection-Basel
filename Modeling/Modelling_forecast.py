@@ -5,6 +5,7 @@ from pathlib import Path
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
+from joblib import dump  
 
 # ============================================================
 # 1) DATEN LADEN
@@ -216,3 +217,21 @@ plt.close()
 
 print("Plot gespeichert unter:", plot_path)
 
+
+# ============================================================
+# 8) MODELL UND FEATURELISTE SPEICHERN
+# ============================================================
+
+model_path = os.path.join(DATA_DIR, "rf_model.joblib")
+feat_path = os.path.join(DATA_DIR, "rf_features.npy")
+
+best_model = best_res["model"]
+
+# Modell speichern
+dump(best_model, model_path)
+
+# Feature-Namen in gleicher Reihenfolge speichern
+np.save(feat_path, X.columns.to_numpy())
+
+print("Modell gespeichert unter:", model_path)
+print("Featureliste gespeichert unter:", feat_path)

@@ -242,7 +242,7 @@ merged_15["Lag_24h"] = merged_15["Stromverbrauch"].shift(96)
 
 # Zeilen löschen, die durch lag NaN Werte haben
 lag_cols = ["Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h"]
-merged_15 = merged_15.dropna(subset=lag_cols, inplace=True)
+merged_15.dropna(subset=lag_cols, inplace=True)
 
 # --- 4) Wetter-Lag Features (nur Meteodaten laggen!) ---
 
