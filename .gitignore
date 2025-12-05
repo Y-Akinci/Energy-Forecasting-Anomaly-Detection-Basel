@@ -2,3 +2,6 @@ data/merged_strom_meteo_15min.csv
 data/wetter_merged_10min.csv
 data/wetter_merged_15min.csv
 data/processed_merged_features.csv
+*.joblib
+*.npy
+*.png
