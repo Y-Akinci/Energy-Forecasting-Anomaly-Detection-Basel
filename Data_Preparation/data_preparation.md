@@ -29,7 +29,7 @@ Das führt jedes Jahr zu diesen Effekten:
 
 ### März – Zeit wird vorgestellt  
 - Die Stunde 02:00–03:00 existiert nicht.  
-- → 4 fehlende 15-Minuten-Messwerte.
+- → 4 fehlende 15-Minuten-Messwerte. (bei Lokaler Zeit)
 
 ### Oktober – Zeit wird zurückgestellt  
 - Die Stunde 02:00–03:00 würde doppelt vorkommen.  
