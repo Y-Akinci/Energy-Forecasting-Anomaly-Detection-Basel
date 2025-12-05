@@ -195,15 +195,6 @@ zwischen Zeitstempel und den zeitlichen Features.
 Beide Wege sind technisch möglich,  
 aber es muss **eine konsistente Zeitbasis** festgelegt werden.
 
-## 10. Data Leakage vermeiden – zentrales Learning
-
-Im Team wurde schnell klar, wie leicht man bei Zeitreihen versehentlich Data Leakage erzeugt. Ein zunächst plausibler Ansatz wie Stromverbrauch(t) − Stromverbrauch(t−1) hätte den aktuellen Zielwert indirekt ins Feature eingeschleust. Das würde das Modell unzulässig mit Zukunftsinformationen „füttern“ und die Performance künstlich verbessern.
-
-Unser Learning:
-Nur echte Vergangenheitswerte dürfen als Features genutzt werden.
-Darum verwenden wir Unterschiede aus bereits gelaggten Werten (z. B. Lag_15min − Lag_30min).
-So bleibt die Idee der Veränderung erhalten – aber vollständig modellkonform und leakage-frei.
-
 ---
 
 ---
@@ -229,6 +220,14 @@ Die Aufbereitung der Strom- und Wetterdaten folgt einer klaren, fachlich begrün
 
 Insgesamt wurde eine strukturierte, reduzierte und fachlich saubere Datenbasis geschaffen,  
 die als Grundlage für ein valides, konsistentes und realitätsnahes Stromverbrauchs-Forecasting dienen kann.
+
+## Reflexion zum Arbeitsaufwand und Lernprozess
+
+Ein wesentlicher Teil unseres Projekts bestand nicht nur darin, funktionierenden Code zu schreiben, sondern die Daten und jeden einzelnen Verarbeitungsschritt wirklich zu verstehen. Der grösste Aufwand – deutlich mehr als das eigentliche Modellieren – lag im gemeinsamen, schrittweisen Durchgehen des gesamten Pipelineskripts. Jede Zeile wurde hinterfragt: Welche Annahmen stecken dahinter? Warum funktioniert eine Methode genau so? Wo entstehen versteckte Fehlerquellen wie Data Leakage oder fehlerhafte Zeitkonvertierungen?
+
+Gerade die Kombination aus lokalen Zeitstempeln, UTC-Konvertierung, Interpolation und Lag-Features führte zu vielen Stellen, an denen scheinbar kleine Details grosse Auswirkungen haben. Ein Beispiel: Der Moment, in dem wir gemerkt haben, dass eine Berechnung wie Stromverbrauch(t) – Stromverbrauch(t−1) das Modell mit Zukunftsinformationen füttert – ein klassischer Fehler, der erst auffällt, wenn man die Logik wirklich versteht. Ein anderes Beispiel war der Samstag, der weder in „Arbeitstag“ noch „Sonntag“ sauber passt und uns gezwungen hat, die Struktur unserer kategorischen Features nochmals komplett zu überdenken.
+
+Diese intensive Auseinandersetzung hat uns gezeigt, dass Datenvorbereitung mehr ist als "Code ausführen": Es geht darum, implizite Fehler zu erkennen, Muster zu verstehen und die Daten so aufzubereiten, dass ein Modell überhaupt realistische Chance hat, sinnvoll zu lernen. In diesem Prozess haben wir nicht nur technische Lösungen entwickelt, sondern vor allem gelernt, skeptisch, strukturiert und logisch zu denken. Rückblickend war dies der mit Abstand wertvollste Teil der gesamten Arbeit.
 
 
 
