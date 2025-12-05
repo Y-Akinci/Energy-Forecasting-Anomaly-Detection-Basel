@@ -195,50 +195,15 @@ zwischen Zeitstempel und den zeitlichen Features.
 Beide Wege sind technisch möglich,  
 aber es muss **eine konsistente Zeitbasis** festgelegt werden.
 
-10. Data Leakage erkennen – und sauber vermeiden
+## 10. Data Leakage vermeiden – zentrales Learning
 
-Ein zentrales Learning unseres Teams war das frühzeitige Erkennen von Data Leakage.
-Ein anfänglich naheliegender Ansatz war, Differenzen wie Stromverbrauch(t) – Stromverbrauch(t−1) zu berechnen.
-Die Analyse zeigte jedoch schnell:
-
-Damit würde das Modell Informationen aus der Zukunft erhalten – ein klarer Verstoß gegen jede Zeitreihenlogik.
-
-Die wichtige Erkenntnis war:
-Nur Werte aus der Vergangenheit dürfen für Features verwendet werden.
-Das führte zu einer korrekten Lösung mit reinen Lag-Differenzen wie Lag_15min – Lag_30min, die das gleiche Muster abbilden, ohne das Modell zu verfälschen.
-
-11. Wochenendlogik: Warum Samstag (0,0) die beste Entscheidung ist
-
-Bei der Modellierung von Arbeitstagen traten Diskussionen über die Rolle des Samstags auf.
-Er ist weder ein klassischer Arbeitstag noch ein Sonntag.
-Anstatt eine dritte Variable einzuführen, entschieden wir uns für eine elegante Zweierkombination:
-
-IstArbeitstag: Montag–Freitag → 1
-
-IstSonntag: Sonntag → 1
-
-Samstag → automatisch (0,0)
+Im Team wurde schnell klar, wie leicht man bei Zeitreihen versehentlich Data Leakage erzeugt. Ein zunächst plausibler Ansatz wie Stromverbrauch(t) − Stromverbrauch(t−1) hätte den aktuellen Zielwert indirekt ins Feature eingeschleust. Das würde das Modell unzulässig mit Zukunftsinformationen „füttern“ und die Performance künstlich verbessern.
 
 Unser Learning:
+Nur echte Vergangenheitswerte dürfen als Features genutzt werden.
+Darum verwenden wir Unterschiede aus bereits gelaggten Werten (z. B. Lag_15min − Lag_30min).
+So bleibt die Idee der Veränderung erhalten – aber vollständig modellkonform und leakage-frei.
 
-Manchmal ist die beste Lösung die minimalistischer e – das Modell erkennt die Kategorie trotzdem eindeutig.
-
-Diese Struktur vermeidet redundante Features und bleibt vollständig interpretierbar.
-
-12. Feature-Selektion: Relevantes behalten, Ballast konsequent entfernen
-
-Im Team wurde klar, dass nicht jede Spalte einen Mehrwert für das Modell bietet.
-Die kritische Auseinandersetzung mit den Rohfeatures führte zu folgenden Entscheidungen:
-
-„Jahr“ und „Tag“ liefern keine sinnvolle Varianz für den Verbrauch → gelöscht.
-
-„Monat“ bleibt, da saisonale Muster existieren und lokal korrekt erfasst sind.
-
-Originale Wettervariablen werden entfernt, sobald Lags davon existieren, um Redundanz und Multikollinearität zu vermeiden.
-
-Das zentrale Learning:
-
-Ein gutes Feature-Set zeichnet sich nicht durch Quantität, sondern durch klare Bedeutung und Modellrelevanz aus.
 ---
 
 ---
