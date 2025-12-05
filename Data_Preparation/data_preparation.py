@@ -1,29 +1,10 @@
 import os, sys
-
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from utils import helpers
 import pandas as pd
-from pathlib import Path
-import seaborn as sns
-
-# Pfade
-TZ = "Europe/Zurich"
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DATA_DIR = os.path.join(ROOT, "Energy-Forecasting-Anomaly-Detection-Basel", "data")
-OUT_15 = os.path.join(DATA_DIR, "merged_strom_meteo_15min.csv")
-
-
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if ROOT not in sys.path:
-    sys.path.insert(0, ROOT)
-
-from utils import helpers
-import pandas as pd
-from pathlib import Path
-import seaborn as sns
 
 # Pfade
 TZ = "Europe/Zurich"
@@ -32,7 +13,7 @@ DATA_DIR = os.path.join(ROOT, "Energy-Forecasting-Anomaly-Detection-Basel", "dat
 OUT_15 = os.path.join(DATA_DIR, "merged_strom_meteo_15min.csv")
 
 # === 1) STROM laden (helpers -> Europe/Zurich) und auf UTC bringen ===
-power_local = helpers.csv_file()           # tz-aware Europe/Zurich
+power_local = helpers.csv_file()      # tz-aware Europe/Zurich
 power = power_local.tz_convert("UTC")      # alles in UTC gegen DST-Probleme
 
 # Exakte 15-min Achse auf Basis der Stromdaten (LEFT-Master-Achse)
@@ -51,25 +32,15 @@ for df in (w1, w2):
 def make_ts_utc(df):
     if "Date and Time" in df.columns:
         ts = pd.to_datetime(df["Date and Time"], errors="coerce", dayfirst=True)
-    elif {"Date", "Time"}.issubset(df.columns):
-        ts = pd.to_datetime(df["Date"].astype(str) + " " + df["Time"].astype(str),
-                            errors="coerce", dayfirst=True)
     else:
-        raise ValueError("Zeitspalte fehlt: erwarte 'Date and Time' oder 'Date'+'Time'.")
+        raise ValueError("Zeitspalte fehlt: erwarte 'Date and Time'")
 
-    # 1) Strings sind lokale Zeiten -> als Europe/Zurich lokalisieren (keine Verschiebung),
-    # 2) dann sauber nach UTC konvertieren (Verschiebung passiert hier)
-    ts = ts.dt.tz_localize(
-        "Europe/Zurich",
-        nonexistent="shift_forward",  # Frühling: übersprungene Stunde
-        ambiguous="NaT"               # Herbst: doppelte Stunde -> als NaT markieren (oder "infer")
-    ).dt.tz_convert("UTC")
+    ts = pd.to_datetime(df["Date and Time"], dayfirst=True, utc=True)
+
     return ts
 
 w1["DateTime"] = make_ts_utc(w1)
 w2["DateTime"] = make_ts_utc(w2)
-
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 w1 = w1.dropna(subset=["DateTime"]).set_index("DateTime").sort_index()
 w2 = w2.dropna(subset=["DateTime"]).set_index("DateTime").sort_index()
@@ -82,11 +53,8 @@ weather = weather[~weather.index.duplicated(keep="last")].sort_index()
 # === 3) 10-min -> 15-min ===
 # Numerische Spalten: zeitbasierte Interpolation exakt auf die 15-min Strom-Achse
 num_cols = weather.select_dtypes(include="number").columns
-num_15 = (
-    weather[num_cols]
-    .reindex(full_idx_utc)                       # exakt gleiche Achse wie Strom
-    .interpolate(method="time", limit_direction="both")
-)
+num_15 = weather[num_cols].reindex(full_idx_utc).interpolate(method="time", limit_direction="both")
+
 
 # Nicht-numerische Spalten: nächster Wert (nearest) ohne Verschiebung
 other_cols = weather.columns.difference(num_cols)
@@ -114,11 +82,6 @@ print("Duplikate:", merged_15.index.duplicated().sum())  # 0
 full_idx = pd.date_range(merged_15.index.min(), merged_15.index.max(), freq="15min", tz="UTC")
 print("Fehlende Slots:", len(full_idx.difference(merged_15.index)))  # 0 oder nur echte Datenlücken
 
-# === 5) Export ===
-#merged_15.to_csv(OUT_15, sep=";", encoding="utf-8")
-#print("OK ->", OUT_15)
-#print("Rows:", len(merged_15), "Cols:", merged_15.shape[1])
-
 # === DATA PREPROCCESSING ===
 
 # === DATA CLEANING ===
@@ -127,7 +90,6 @@ print("Fehlende Slots:", len(full_idx.difference(merged_15.index)))  # 0 oder nu
 merged_15.dropna(subset="Stromverbrauch", inplace=True)
 
 # === DATATYPES ===
-
 
 # Datentyp ändern, integers
 int_cols = [
@@ -173,7 +135,7 @@ float_cols = [
 for col in float_cols:
     merged_15[col] = pd.to_numeric(merged_15[col], errors="coerce").astype("float64")
 
-# Datentypen für KAtegoriale variablen
+# Datentypen für Kategoriale variablen
 categorical_features = [
     "Jahr",
     "Monat",
@@ -186,61 +148,46 @@ categorical_features = [
 for col in categorical_features:
     merged_15[col] = merged_15[col].astype("category")
 
-# === FEATURE ENGINEERING ===
+# FEATURE ENGINEERING
+## Feature CREATION
 
-# "Date" und "Time" als eigene Spalten erstellen
+# Lokale Zeit aus UTC-Index erzeugen
+idx_local = merged_15.index.tz_convert("Europe/Zurich")
+# Lokale Datum- und Zeitspalten erstellen
+merged_15["Datum (Lokal)"] = idx_local.date
+merged_15["Zeit (Lokal)"] = idx_local.time
+# Index-Spalte erzeugen, damit rename funktionieren kann
 merged_15.reset_index(inplace=True)
-merged_15["Date"] = merged_15["index"].dt.strftime("%Y-%m-%d")
-merged_15["Time"] = merged_15["index"].dt.strftime("%H-%M-%S")
-# Spalte mit dem Tag im Jahr kreieren
-merged_15['DayOfYear'] = merged_15["index"].dt.dayofyear
-merged_15.set_index("index", inplace=True)
-
-# Datentyp ändern, Zeitwerte
-merged_15["Date"] = pd.to_datetime(merged_15["Date"], format="%Y-%m-%d")
-merged_15["Time"] = pd.to_datetime(merged_15["Time"], format="%H-%M-%S")
-
-# Spalte mit dem Tag im Jahr kreieren
-
-print(merged_15.head())
-
-
-# === FEATURE ENGINEERING === Haris
-
-# Index sauber stellen
-merged_15.reset_index(inplace=True)
-merged_15.rename(columns={"index": "DateTime"}, inplace=True)
-merged_15.set_index("DateTime", inplace=True)
-
+# Index-Spalte korrekt umbenennen
+merged_15.rename(columns={"index": "Start der Messung (UTC)"}, inplace=True)
+# Index wieder setzen
+merged_15.set_index("Start der Messung (UTC)", inplace=True)
+# Datentyp der lokalen Spalten ändern
 # --- 1) Jahreszeiten ---
-def season(month):
-    if month in [12, 1, 2]:
-        return "Winter"
-    elif month in [3, 4, 5]:
-        return "Frühling"
-    elif month in [6, 7, 8]:
-        return "Sommer"
-    else:
-        return "Herbst"
+#def jahreszeit(month):
+    #if month in [12, 1, 2]:
+        #return "1"
+    #elif month in [3, 4, 5]:
+        #return "2"
+    #elif month in [6, 7, 8]:
+        #return "3"
+    #else:
+        #return "4"
 
-merged_15["Season"] = merged_15.index.month.map(season).astype("category")
+#merged_15["Jahreszeit"] = merged_15["Monat"].map(jahreszeit).astype("category"))
+wd = merged_15["Wochentag"].astype("int")
 
-# --- 2) Arbeitstag vs Sonntag ---
-# Montag = 0, ..., Sonntag = 6 (Pandas-Standard)
-merged_15["DayOfWeek"] = merged_15.index.dayofweek
+# Arbeitstag vs Sonntag
+merged_15["IstSonntag"] = (wd == 6).astype(int)
+merged_15["IstArbeitstag"] = (wd < 5).astype(int)
 
-merged_15["IsSunday"] = (merged_15["DayOfWeek"] == 6).astype(int)
-merged_15["IsWorkday"] = (merged_15["DayOfWeek"] < 5).astype(int)
-
-# --- 3) Lag Features (Stromverbrauch) ---
+# Lag Features (Stromverbrauch)
 merged_15["Lag_15min"] = merged_15["Stromverbrauch"].shift(1)
 merged_15["Lag_30min"] = merged_15["Stromverbrauch"].shift(2)
 merged_15["Lag_1h"] = merged_15["Stromverbrauch"].shift(4)
-
-# optional: Vortag gleiche Zeit
 merged_15["Lag_24h"] = merged_15["Stromverbrauch"].shift(96)
 
-# --- 4) Wetter-Lag Features (nur Meteodaten laggen!) ---
+# Wetter-Lag Features (nur Meteodaten laggen!)
 
 # Liste der Wetterspalten (aus deinen float_cols)
 weather_cols = [
@@ -274,9 +221,7 @@ for col in weather_cols:
     if col in merged_15.columns:  # falls Spalte existiert
         merged_15[f"{col}_lag15"] = merged_15[col].shift(1)
 
-print("Wetter-Lags erstellt!")
-
-# --- 5) Originale Meteodaten entfernen (nur Lags behalten) ---
+# Originale Meteodaten entfernen (nur Lags behalten)
 
 # Liste der originalen Wetterspalten (deine float_cols)
 original_weather_cols = [
@@ -309,31 +254,30 @@ original_weather_cols = [
 merged_15.drop(columns=[col for col in original_weather_cols if col in merged_15.columns],
                inplace=True)
 
-print("Originale Meteodaten entfernt – nur Lag-Wetterdaten bleiben im Dataset!")
+# Originale Meteodaten entfernt – nur Lag-Wetterdaten bleiben im Dataset!")
 
-# --- 6) Differenz zum letzten Verbrauch ---
-merged_15["Diff_15min"] = merged_15["Stromverbrauch"] - merged_15["Lag_15min"]
+# Differenz zum letzten Verbrauch
+merged_15["Diff_15min"] = merged_15["Lag_15min"] - merged_15["Lag_30min"]
 
 print("Feature Engineering erfolgreich abgeschlossen!")
 print(merged_15[[
-    "Season", "IsWorkday", "IsSunday",
-    "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",
-    "Diff_15min"
+    "IstArbeitstag", "IstSonntag",
+    "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h", "Diff_15min"
 ]].head())
 
-# === FEATURE SELECTION ===
-
+# FEATURE SELECTION
 # Tag, Monat, und Jahr entfernt
-delete_columns = ["Jahr", "Monat","Tag", "Date", "Time", "Date and Time"]
-merged_15.drop(delete_columns, axis=1, inplace=True)
+delete_columns = ["Jahr","Tag", "Date", "Time", "Date and Time", "Start der Messung (Text)", "station_abbr"]
+cols_to_drop = [c for c in delete_columns if c in merged_15.columns]
+merged_15.drop(columns=cols_to_drop, inplace=True)
 
-# === EXPORT FINAL DATAFRAME === um zu schauen wie die neuen feature aussehen
+# EXPORT FINAL DATAFRAME
 
 # Zielpfad setzen
 output_path = os.path.join(DATA_DIR, "processed_merged_features.csv")
 
 # CSV exportieren
-merged_15.to_csv(output_path, sep=";", encoding="utf-8")
+merged_15.to_csv(output_path, sep=";", encoding="latin1")
 
 print("Export erfolgreich!")
 print("Datei gespeichert unter:", output_path)
