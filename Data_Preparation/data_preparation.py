@@ -260,13 +260,11 @@ merged_15.drop(columns=[col for col in original_weather_cols if col in merged_15
 
 # Originale Meteodaten entfernt – nur Lag-Wetterdaten bleiben im Dataset!")
 
-# Differenz zum letzten Verbrauch
-merged_15["Diff_15min"] = merged_15["Lag_15min"] - merged_15["Lag_30min"]
 
 print("Feature Engineering erfolgreich abgeschlossen!")
 print(merged_15[[
     "IstArbeitstag", "IstSonntag",
-    "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h", "Diff_15min"
+    "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",
 ]].head())
 
 # FEATURE SELECTION
