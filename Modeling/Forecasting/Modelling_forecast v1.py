@@ -12,9 +12,8 @@ from joblib import dump
 # ============================================================
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-# Repository root is the parent of the Modeling folder
-REPO_ROOT = os.path.abspath(os.path.join(ROOT, ".."))
-DATA_DIR = os.path.join(REPO_ROOT, "data")
+REPO_ROOT = os.path.abspath(os.path.join(ROOT, "..", ".."))  # 2x hoch statt 1x
+DATA_DIR = os.path.join(REPO_ROOT, "Data")  # Großes D!
 INPUT_FILE = os.path.join(DATA_DIR, "processed_merged_features.csv")
 
 print("Lade Daten aus:", INPUT_FILE)
@@ -31,12 +30,13 @@ if not os.path.isfile(INPUT_FILE):
         print(" - Alternatives DATA_DIR:", os.path.join(ROOT, "data"), "exists:", os.path.exists(os.path.join(ROOT, "data")))
         raise FileNotFoundError(
             f"Kann Input-Datei nicht finden: {INPUT_FILE}\nBitte lege 'processed_merged_features.csv' in eines der oben genannten data-Verzeichnisse.")
+
 df = pd.read_csv(
     INPUT_FILE,
     sep=";",
-    encoding="utf-8",
-    parse_dates=["DateTime"],
-    index_col="DateTime",
+    encoding="latin1",  # ← Auch encoding ändern!
+    index_col=0,
+    parse_dates=True
 )
 df = df.sort_index()
 print("Gesamtzeitraum:", df.index.min(), "→", df.index.max(), " Rows:", len(df))
