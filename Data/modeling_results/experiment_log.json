@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-12-06T01:41:22.659832",
+  "config": {
+    "train_ratio": 0.8,
+    "cv_splits": 5,
+    "feature_selection": true,
+    "max_features": 30
+  },
+  "data": {
+    "train_start": "2021-01-01 00:00:00+00:00",
+    "train_end": "2024-03-14 18:45:00+00:00",
+    "test_start": "2024-03-14 19:00:00+00:00",
+    "test_end": "2024-12-31 23:45:00+00:00",
+    "n_train": 112192,
+    "n_test": 28048,
+    "n_features": 30
+  },
+  "baseline": {
+    "rmse": 576.4590372003178,
+    "mae": 441.32908521106674,
+    "r2": 0.9927286383656152
+  },
+  "models": [
+    {
+      "name": "RandomForest (regularized)",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 15,
+        "min_samples_split": 20,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt",
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "train_rmse": 222.9501583891152,
+      "test_rmse": 308.3770951348407,
+      "train_r2": 0.9990667662462137,
+      "test_r2": 0.9979191390193575,
+      "overfitting_score": 0.0011476272268562404,
+      "cv_rmse_mean": 363.07366867271446,
+      "cv_rmse_std": 103.81193255910765
+    },
+    {
+      "name": "GradientBoosting (regularized)",
+      "params": {
+        "n_estimators": 100,
+        "learning_rate": 0.05,
+        "max_depth": 5,
+        "min_samples_split": 20,
+        "min_samples_leaf": 10,
+        "subsample": 0.8,
+        "random_state": 42
+      },
+      "train_rmse": 291.48732345611967,
+      "test_rmse": 319.2074383668023,
+      "train_r2": 0.9984048034099815,
+      "test_r2": 0.997770410829323,
+      "overfitting_score": 0.0006343925806584494,
+      "cv_rmse_mean": 311.39682947301935,
+      "cv_rmse_std": 13.801906476263962
+    },
+    {
+      "name": "Ridge Regression",
+      "params": {
+        "alpha": 10.0,
+        "random_state": 42
+      },
+      "train_rmse": 3.7037845688974667,
+      "test_rmse": 4.063464524762231,
+      "train_r2": 0.9999997424471834,
+      "test_r2": 0.9999996386968187,
+      "overfitting_score": 1.0375036463283749e-07,
+      "cv_rmse_mean": 3.158042274347244,
+      "cv_rmse_std": 2.5527063714112574
+    }
+  ],
+  "best_model": "Ridge Regression"
+}
