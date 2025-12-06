@@ -44,12 +44,12 @@ df = pd.read_csv(
     INPUT_FILE,
     sep=";",
     encoding="latin1",
-    parse_dates=["DateTime"],  
-    index_col="DateTime"        
+    parse_dates=["Start der Messung (UTC)"],  # ← Richtig
+    index_col="Start der Messung (UTC)",       
 )
 df = df.sort_index()
 
-print(f"✓ Geladen: {len(df)} Zeilen, Zeitraum: {df.index.min()} bis {df.index.max()}")
+print(f" Geladen: {len(df)} Zeilen, Zeitraum: {df.index.min()} bis {df.index.max()}")
 
 # Target-Variable
 target = "Stromverbrauch"
@@ -70,7 +70,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '01_zeitreihe_gesamt.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Gesamtzeitreihe gespeichert")
+print("   Gesamtzeitreihe gespeichert")
 
 # 2.2 Zoom: 1 Monat (Januar 2024)
 fig, ax = plt.subplots(figsize=(16, 6))
@@ -83,7 +83,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '02_zeitreihe_1monat.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ 1-Monats-Zoom gespeichert")
+print("   1-Monats-Zoom gespeichert")
 
 # 2.3 Zoom: 1 Woche (erste Woche Januar 2024)
 fig, ax = plt.subplots(figsize=(16, 6))
@@ -97,7 +97,7 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '03_zeitreihe_1woche.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ 1-Wochen-Zoom gespeichert")
+print("   1-Wochen-Zoom gespeichert")
 
 # 2.4 Vergleich Sommer vs Winter
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10))
@@ -120,7 +120,7 @@ ax2.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '04_vergleich_winter_sommer.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Winter/Sommer-Vergleich gespeichert")
+print("   Winter/Sommer-Vergleich gespeichert")
 
 # ============================================================
 # 3) PERIODISCHE MUSTER
@@ -151,7 +151,7 @@ ax.set_ylabel('Stunde des Tages')
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '05_heatmap_stunde_wochentag.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Heatmap Stunde x Wochentag gespeichert")
+print("   Heatmap Stunde x Wochentag gespeichert")
 
 # 3.2 Boxplot: Verbrauch pro Wochentag
 fig, ax = plt.subplots(figsize=(14, 6))
@@ -166,7 +166,7 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '06_boxplot_wochentag.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Boxplot Wochentag gespeichert")
+print("   Boxplot Wochentag gespeichert")
 
 # 3.3 Boxplot: Verbrauch pro Monat
 fig, ax = plt.subplots(figsize=(14, 6))
@@ -181,7 +181,7 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '07_boxplot_monat.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓Boxplot Monat gespeichert")
+print("  Boxplot Monat gespeichert")
 
 # 3.4 Line-Plot: Durchschnittlicher Verbrauch pro Stunde
 fig, ax = plt.subplots(figsize=(14, 6))
@@ -196,7 +196,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '08_tagesprofil.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Tagesprofil gespeichert")
+print("   Tagesprofil gespeichert")
 
 # ============================================================
 # 4) FEATURE-EINFLUSS AUF STROMVERBRAUCH
@@ -228,7 +228,7 @@ if temp_col:
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, '09_scatter_temperatur.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    print("  ✓ Temperatur-Scatter gespeichert")
+    print("   Temperatur-Scatter gespeichert")
 
 # 4.2 Globalstrahlung vs. Verbrauch
 global_col = [col for col in weather_features if 'Globalstrahlung' in col]
@@ -251,7 +251,7 @@ if global_col:
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, '10_scatter_globalstrahlung.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    print("  ✓ Globalstrahlung-Scatter gespeichert")
+    print("   Globalstrahlung-Scatter gespeichert")
 
 # 4.3 Windgeschwindigkeit vs. Verbrauch
 wind_col = [col for col in weather_features if 'Windgeschwindigkeit skalar' in col]
@@ -265,7 +265,7 @@ if wind_col:
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, '11_scatter_wind.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    print("  ✓ Wind-Scatter gespeichert")
+    print("   Wind-Scatter gespeichert")
 
 # 4.4 Korrelations-Heatmap (Top Features)
 # Wähle die wichtigsten numerischen Features
@@ -296,7 +296,7 @@ ax.set_title('Korrelations-Heatmap (Top 20 Features)', fontsize=14, fontweight='
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '12_korrelation_heatmap.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Korrelations-Heatmap gespeichert")
+print("   Korrelations-Heatmap gespeichert")
 
 # ============================================================
 # 5) VERTEILUNGEN & OUTLIERS
@@ -317,7 +317,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '13_histogram_verbrauch.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Histogram gespeichert")
+print("   Histogram gespeichert")
 
 # 5.2 Boxplot mit Outliers
 fig, ax = plt.subplots(figsize=(14, 6))
@@ -328,7 +328,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '14_boxplot_outliers.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Boxplot Outliers gespeichert")
+print("   Boxplot Outliers gespeichert")
 
 # 5.3 Q-Q Plot
 fig, ax = plt.subplots(figsize=(10, 10))
@@ -338,7 +338,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '15_qq_plot.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Q-Q Plot gespeichert")
+print("   Q-Q Plot gespeichert")
 
 # ============================================================
 # 6) SAISONALE DEKOMPOSITION
@@ -390,7 +390,7 @@ if len(df_decomp) > 365 * 24 * 0.9:  # Mindestens 90% der Daten vorhanden
         plt.tight_layout()
         plt.savefig(os.path.join(OUTPUT_DIR, '16_saisonale_dekomposition.png'), dpi=300, bbox_inches='tight')
         plt.close()
-        print("  ✓ Saisonale Dekomposition gespeichert")
+        print("   Saisonale Dekomposition gespeichert")
     except Exception as e:
         print(f"  ⚠ Saisonale Dekomposition fehlgeschlagen: {e}")
 else:
@@ -422,7 +422,7 @@ if 'Lag_15min' in df.columns:
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, '17_lag_15min_scatter.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    print("  ✓ Lag-Scatter gespeichert")
+    print("   Lag-Scatter gespeichert")
 
 # 7.2 Autocorrelation Plot (ACF)
 fig, ax = plt.subplots(figsize=(14, 6))
@@ -434,7 +434,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '18_acf_plot.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ ACF Plot gespeichert")
+print("   ACF Plot gespeichert")
 
 # ============================================================
 # 8) WETTERFEATURES ÜBER ZEIT
@@ -466,7 +466,7 @@ if temp_col:
     fig.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, '19_verbrauch_temperatur_overlay.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    print("  ✓ Temperatur-Overlay gespeichert")
+    print("   Temperatur-Overlay gespeichert")
 
 # 8.2 Globalstrahlung + Verbrauch (Sommer 2023)
 global_col = [col for col in weather_features if 'Globalstrahlung' in col]
@@ -492,10 +492,6 @@ if global_col:
     fig.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, '20_verbrauch_solar_overlay.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    print("  ✓ Globalstrahlung-Overlay gespeichert")
-
-# ============================================================
-# FERTIG!
-# ============================================================
+    print("   Globalstrahlung-Overlay gespeichert")
 
 print("fertig")
