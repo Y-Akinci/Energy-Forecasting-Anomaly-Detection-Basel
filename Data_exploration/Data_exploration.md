@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+## EXECUTIVE SUMMARY
 
 Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch von Basel:
 
@@ -21,7 +21,7 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 
 ---
 
-## 📈 DETAILLIERTE ANALYSE DER VISUALISIERUNGEN
+## DETAILLIERTE ANALYSE DER VISUALISIERUNGEN
 
 ### **Plot 01: Zeitreihe Gesamt (2012-2026)**
 
@@ -86,14 +86,14 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 - **Heizeffekt dominiert** den saisonalen Unterschied
 - Klimaanlagen im Sommer weniger relevant (Basel-Klima)
 - Wochenmuster bleiben über Jahreszeiten **stabil**
-- ⚠️ Modell muss saisonale Features berücksichtigen!
+- Modell muss saisonale Features berücksichtigen!
 
 **Für Präsentation:**
 > "Winter-Verbrauch liegt ca. 10-15% über Sommer-Niveau, primär durch Heizung. Die zeitlichen Muster bleiben aber identisch."
 
 ---
 
-### **Plot 05: Heatmap Stunde x Wochentag ⭐**
+### **Plot 05: Heatmap Stunde x Wochentag **
 
 **Was man sieht:**
 - **Dunkelrot (hoch):** Montag-Freitag, 6-17 Uhr (Peak: 50.000 kWh)
@@ -167,7 +167,7 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 
 ---
 
-### **Plot 09: Temperatur vs. Verbrauch ⭐**
+### **Plot 09: Temperatur vs. Verbrauch **
 
 **Was man sieht:**
 - **U-förmige Beziehung!**
@@ -222,7 +222,7 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 
 ---
 
-### **Plot 12: Korrelations-Heatmap ⭐**
+### **Plot 12: Korrelations-Heatmap **
 
 **Was man sieht:**
 - **Lag-Features:** Perfekte Korrelation (0.97-1.00) mit Zielgrösse
@@ -301,7 +301,7 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 
 ---
 
-### **Plot 16: Saisonale Dekomposition ⭐**
+### **Plot 16: Saisonale Dekomposition **
 
 **Was man sieht:**
 - **Trend (rot):** Schwach fallend über 2023
@@ -357,7 +357,7 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 
 ---
 
-### **Plot 19: Temperatur-Overlay 2023 ⭐**
+### **Plot 19: Temperatur-Overlay 2023 **
 
 **Was man sieht:**
 - **Stromverbrauch (blau):** Wöchentliche Zacken, Sommer niedriger
@@ -394,7 +394,7 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 
 ---
 
-## 🎯 KEY INSIGHTS FÜR DIE PRÄSENTATION
+## KEY INSIGHTS FÜR DIE PRÄSENTATION
 
 ### **Top 5 Take-Aways:**
 
@@ -415,16 +415,16 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 
 ---
 
-## 📋 EMPFEHLUNGEN FÜR MODELLING
+## EMPFEHLUNGEN FÜR MODELLING
 
 ### **Feature Engineering:**
-✅ **Behalten:**
+**Behalten:**
 - Alle Lag-Features (15min, 30min, 1h, 24h)
 - Zeitbasierte Features (Stunde, Wochentag, Monat)
 - Temperatur (evtl. quadriert für U-Form)
 - Binäre Features (IsSunday, IsWorkday)
 
-❌ **Entfernen/Überprüfen:**
+**Entfernen/Überprüfen:**
 - Windgeschwindigkeit (keine Korrelation)
 - Kundenzahlen (fast konstant)
 - Redundante Temperatur-Variablen (nur beste behalten)
@@ -441,7 +441,7 @@ Die explorative Datenanalyse zeigt klare, vorhersagbare Muster im Stromverbrauch
 
 ---
 
-## ✅ FAZIT
+## FAZIT
 
 Die explorative Analyse bestätigt: Stromverbrauch in Basel ist **hochgradig strukturiert und vorhersagbar**. Die dominanten Muster sind:
 - **Zeitlich:** Tag/Nacht, Arbeitstag/Wochenende, Saisonalität
@@ -450,7 +450,7 @@ Die explorative Analyse bestätigt: Stromverbrauch in Basel ist **hochgradig str
 
 Diese Eigenschaften machen das Projekt **ideal für Machine Learning**. Die identifizierten Outliers zeigen reale Extremereignisse, die durch Anomaly Detection frühzeitig erkannt werden können.
 
-**Status:** ✅ Data Understanding abgeschlossen  
+**Status:** Data Understanding abgeschlossen  
 **Nächster Schritt:** Modelling mit optimierten Features
 
 ---

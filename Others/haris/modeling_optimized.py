@@ -100,7 +100,7 @@ df = pd.read_csv(
 
 # Zeitfenster
 df = df.loc[Config.START_DATE:Config.END_DATE].copy()
-print(f"✓ Zeitraum: {df.index.min()} → {df.index.max()} ({len(df)} Zeilen)")
+print(f" Zeitraum: {df.index.min()} → {df.index.max()} ({len(df)} Zeilen)")
 
 # ============================================================
 # 2) FEATURE ENGINEERING
@@ -146,8 +146,8 @@ mask = y.notna()
 X = X_all.loc[mask].dropna(axis=0)
 y = y.loc[X.index]
 
-print(f"✓ Feature-Matrix: {X.shape}")
-print(f"✓ Features: {X.shape[1]}")
+print(f" Feature-Matrix: {X.shape}")
+print(f" Features: {X.shape[1]}")
 
 # ============================================================
 # 3) TRAIN/TEST SPLIT (Zeitlich!)
@@ -160,8 +160,8 @@ n_train = int(len(X) * Config.TRAIN_RATIO)
 X_train, X_test = X.iloc[:n_train], X.iloc[n_train:]
 y_train, y_test = y.iloc[:n_train], y.iloc[n_train:]
 
-print(f"✓ Train: {X_train.index.min()} → {X_train.index.max()} ({len(X_train)} Zeilen)")
-print(f"✓ Test : {X_test.index.min()} → {X_test.index.max()} ({len(X_test)} Zeilen)")
+print(f" Train: {X_train.index.min()} → {X_train.index.max()} ({len(X_train)} Zeilen)")
+print(f" Test : {X_test.index.min()} → {X_test.index.max()} ({len(X_test)} Zeilen)")
 
 # ============================================================
 # 4) BASELINE MODEL (Naive Forecast)
@@ -177,9 +177,9 @@ if 'Lag_15min' in X_test.columns:
     baseline_mae = mean_absolute_error(y_test, y_test_naive)
     baseline_r2 = r2_score(y_test, y_test_naive)
     
-    print(f"✓ Baseline RMSE: {baseline_rmse:.2f}")
-    print(f"✓ Baseline MAE : {baseline_mae:.2f}")
-    print(f"✓ Baseline R²  : {baseline_r2:.3f}")
+    print(f" Baseline RMSE: {baseline_rmse:.2f}")
+    print(f" Baseline MAE : {baseline_mae:.2f}")
+    print(f" Baseline R²  : {baseline_r2:.3f}")
 else:
     print("  ⚠ Lag_15min nicht gefunden, überspringe Baseline")
     baseline_rmse = None
@@ -211,7 +211,7 @@ if Config.USE_FEATURE_SELECTION and X_train.shape[1] > Config.MAX_FEATURES:
     # Top N Features
     top_features = feature_importance.head(Config.MAX_FEATURES)['feature'].tolist()
     
-    print(f"  ✓ Ausgewählte Features ({len(top_features)}):")
+    print(f"   Ausgewählte Features ({len(top_features)}):")
     for i, (feat, imp) in enumerate(zip(top_features[:10], 
                                          feature_importance.head(10)['importance']), 1):
         print(f"    {i:2d}. {feat:40s} {imp:.4f}")
@@ -233,7 +233,7 @@ if Config.USE_FEATURE_SELECTION and X_train.shape[1] > Config.MAX_FEATURES:
     plt.savefig(os.path.join(Config.OUTPUT_DIR, 'feature_importance_quick.png'), 
                 dpi=Config.PLOT_DPI)
     plt.close()
-    print(f"  ✓ Plot gespeichert: feature_importance_quick.png")
+    print(f"   Plot gespeichert: feature_importance_quick.png")
 else:
     print(f"  → Keine Feature Selection (verwende alle {X_train.shape[1]} Features)")
     top_features = X_train.columns.tolist()
@@ -279,7 +279,7 @@ def train_and_evaluate(model, name, params):
     if overfitting_score > 0.1:
         print(f"  ⚠️  OVERFITTING DETECTED: ΔR² = {overfitting_score:.4f}")
     else:
-        print(f"  ✓ Overfitting under control: ΔR² = {overfitting_score:.4f}")
+        print(f"   Overfitting under control: ΔR² = {overfitting_score:.4f}")
     
     # Cross-Validation (Time Series Split)
     print(f"  → Cross-Validation ({Config.CV_SPLITS} splits)...")
@@ -305,8 +305,8 @@ def train_and_evaluate(model, name, params):
     cv_rmse_std = np.std([s['rmse'] for s in cv_scores])
     cv_r2_mean = np.mean([s['r2'] for s in cv_scores])
     
-    print(f"  ✓ CV RMSE: {cv_rmse_mean:.2f} ± {cv_rmse_std:.2f}")
-    print(f"  ✓ CV R²  : {cv_r2_mean:.4f}")
+    print(f"   CV RMSE: {cv_rmse_mean:.2f} ± {cv_rmse_std:.2f}")
+    print(f"   CV R²  : {cv_r2_mean:.4f}")
     
     # Ergebnisse speichern
     result = {
@@ -402,7 +402,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(Config.OUTPUT_DIR, 'forecast_last_7days.png'), dpi=Config.PLOT_DPI)
 plt.close()
-print("  ✓ Plot: forecast_last_7days.png")
+print("   Plot: forecast_last_7days.png")
 
 # Plot 2: Residuals
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -416,7 +416,7 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(Config.OUTPUT_DIR, 'residuals.png'), dpi=Config.PLOT_DPI)
 plt.close()
-print("  ✓ Plot: residuals.png")
+print(" Plot: residuals.png")
 
 # Plot 3: Feature Importance (bestes Modell)
 if hasattr(best_model_result['model'], 'feature_importances_'):
@@ -437,7 +437,7 @@ if hasattr(best_model_result['model'], 'feature_importances_'):
     plt.savefig(os.path.join(Config.OUTPUT_DIR, 'feature_importance_final.png'), 
                 dpi=Config.PLOT_DPI)
     plt.close()
-    print("  ✓ Plot: feature_importance_final.png")
+    print("   Plot: feature_importance_final.png")
 
 # ============================================================
 # MODELL & METADATA SPEICHERN
@@ -446,12 +446,12 @@ if hasattr(best_model_result['model'], 'feature_importances_'):
 # Bestes Modell speichern
 model_path = os.path.join(Config.OUTPUT_DIR, 'best_model.joblib')
 dump(best_model_result['model'], model_path)
-print(f"\n  ✓ Modell gespeichert: {model_path}")
+print(f"\n   Modell gespeichert: {model_path}")
 
 # Features speichern
 features_path = os.path.join(Config.OUTPUT_DIR, 'features.npy')
 np.save(features_path, X_train.columns.to_numpy())
-print(f"  ✓ Features gespeichert: {features_path}")
+print(f"   Features gespeichert: {features_path}")
 
 # Experiment Log
 experiment_log = {
@@ -498,23 +498,8 @@ experiment_log['best_model'] = best_name
 log_path = os.path.join(Config.OUTPUT_DIR, 'experiment_log.json')
 with open(log_path, 'w') as f:
     json.dump(experiment_log, f, indent=2)
-print(f"  ✓ Experiment Log gespeichert: {log_path}")
+print(f"   Experiment Log gespeichert: {log_path}")
 
-# ============================================================
-# FERTIG!
-# ============================================================
 
-print("\n" + "=" * 70)
-print("✅ MODELLIERUNG ABGESCHLOSSEN!")
-print(f"📁 Alle Ergebnisse in: {Config.OUTPUT_DIR}")
-print("=" * 70)
-print("\n📊 Nächste Schritte:")
-print("  1. Schaue dir die Plots an (Feature Importance, Residuals)")
-print("  2. Experimentiere mit Hyperparametern in Config-Klasse")
-print("  3. Versuche andere Features (Rolling Means, etc.)")
-print("  4. Teste längere Forecast-Horizonte (4h, 24h)")
-print("\n💡 Tipps gegen Overfitting:")
-print("  - max_depth reduzieren (aktuell: 15 für RF, 5 für GB)")
-print("  - min_samples_leaf erhöhen (aktuell: 10)")
-print("  - Weniger Features verwenden (aktuell: Top 30)")
-print("  - Mehr Regularisierung (learning_rate für GB senken)")
+print(" MODELLIERUNG ABGESCHLOSSEN!")
+

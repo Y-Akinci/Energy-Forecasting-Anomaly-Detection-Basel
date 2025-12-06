@@ -32,7 +32,7 @@ plt.rcParams['figure.figsize'] = (14, 6)
 plt.rcParams['font.size'] = 10
 
 print("=" * 70)
-print("🔍 DATA EXPLORATION - Energy Forecasting Basel")
+print(" DATA EXPLORATION - Energy Forecasting Basel")
 print("=" * 70)
 
 # ============================================================
@@ -181,7 +181,7 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, '07_boxplot_monat.png'), dpi=300, bbox_inches='tight')
 plt.close()
-print("  ✓ Boxplot Monat gespeichert")
+print("  ✓Boxplot Monat gespeichert")
 
 # 3.4 Line-Plot: Durchschnittlicher Verbrauch pro Stunde
 fig, ax = plt.subplots(figsize=(14, 6))
@@ -498,29 +498,4 @@ if global_col:
 # FERTIG!
 # ============================================================
 
-print("\n" + "=" * 70)
-print("✅ ALLE PLOTS ERFOLGREICH ERSTELLT!")
-print(f"📁 Gespeichert in: {OUTPUT_DIR}")
-print("=" * 70)
-print("\nÜbersicht der erstellten Plots:")
-print("  01 - Zeitreihe gesamt")
-print("  02 - Zeitreihe 1 Monat")
-print("  03 - Zeitreihe 1 Woche")
-print("  04 - Vergleich Winter/Sommer")
-print("  05 - Heatmap Stunde x Wochentag ⭐")
-print("  06 - Boxplot Wochentag")
-print("  07 - Boxplot Monat")
-print("  08 - Tagesprofil")
-print("  09 - Scatter Temperatur ⭐")
-print("  10 - Scatter Globalstrahlung")
-print("  11 - Scatter Wind")
-print("  12 - Korrelations-Heatmap ⭐")
-print("  13 - Histogram Verbrauch")
-print("  14 - Boxplot Outliers")
-print("  15 - Q-Q Plot")
-print("  16 - Saisonale Dekomposition ⭐")
-print("  17 - Lag-Scatter")
-print("  18 - ACF Plot")
-print("  19 - Temperatur-Overlay ⭐")
-print("  20 - Globalstrahlung-Overlay")
-print("\n⭐ = Besonders wichtig für Präsentation")
+print("fertig")

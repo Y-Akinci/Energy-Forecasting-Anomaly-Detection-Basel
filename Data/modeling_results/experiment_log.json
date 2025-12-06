@@ -1,10 +1,8 @@
 {
-  "timestamp": "2025-12-06T01:41:22.659832",
+  "timestamp": "2025-12-06T11:52:51.400375",
   "config": {
     "train_ratio": 0.8,
-    "cv_splits": 5,
-    "feature_selection": true,
-    "max_features": 30
+    "cv_splits": 5
   },
   "data": {
     "train_start": "2021-01-01 00:00:00+00:00",
@@ -13,7 +11,7 @@
     "test_end": "2024-12-31 23:45:00+00:00",
     "n_train": 112192,
     "n_test": 28048,
-    "n_features": 30
+    "n_features": 38
   },
   "baseline": {
     "rmse": 576.4590372003178,
@@ -22,7 +20,7 @@
   },
   "models": [
     {
-      "name": "RandomForest (regularized)",
+      "name": "RandomForest",
       "params": {
         "n_estimators": 100,
         "max_depth": 15,
@@ -32,16 +30,15 @@
         "random_state": 42,
         "n_jobs": -1
       },
-      "train_rmse": 222.9501583891152,
-      "test_rmse": 308.3770951348407,
-      "train_r2": 0.9990667662462137,
-      "test_r2": 0.9979191390193575,
-      "overfitting_score": 0.0011476272268562404,
-      "cv_rmse_mean": 363.07366867271446,
-      "cv_rmse_std": 103.81193255910765
+      "train_rmse": 170.41008175760248,
+      "test_rmse": 242.362707023116,
+      "train_r2": 0.9994547879605469,
+      "test_r2": 0.9987146824736033,
+      "cv_rmse_mean": 325.2536853434009,
+      "cv_rmse_std": 125.61025935975269
     },
     {
-      "name": "GradientBoosting (regularized)",
+      "name": "GradientBoosting",
       "params": {
         "n_estimators": 100,
         "learning_rate": 0.05,
@@ -51,28 +48,26 @@
         "subsample": 0.8,
         "random_state": 42
       },
-      "train_rmse": 291.48732345611967,
-      "test_rmse": 319.2074383668023,
-      "train_r2": 0.9984048034099815,
-      "test_r2": 0.997770410829323,
-      "overfitting_score": 0.0006343925806584494,
-      "cv_rmse_mean": 311.39682947301935,
-      "cv_rmse_std": 13.801906476263962
+      "train_rmse": 67.64934314299846,
+      "test_rmse": 81.01941727058356,
+      "train_r2": 0.9999140784632607,
+      "test_r2": 0.9998563660609803,
+      "cv_rmse_mean": 84.39330911531695,
+      "cv_rmse_std": 15.554713974779162
     },
     {
-      "name": "Ridge Regression",
+      "name": "Ridge",
       "params": {
         "alpha": 10.0,
         "random_state": 42
       },
-      "train_rmse": 3.7037845688974667,
-      "test_rmse": 4.063464524762231,
-      "train_r2": 0.9999997424471834,
-      "test_r2": 0.9999996386968187,
-      "overfitting_score": 1.0375036463283749e-07,
-      "cv_rmse_mean": 3.158042274347244,
-      "cv_rmse_std": 2.5527063714112574
+      "train_rmse": 4.812256392615959e-05,
+      "test_rmse": 5.509929813075926e-05,
+      "train_r2": 1.0,
+      "test_r2": 0.9999999999999999,
+      "cv_rmse_mean": 0.5994075477026197,
+      "cv_rmse_std": 1.1986952819895353
     }
   ],
-  "best_model": "Ridge Regression"
+  "best_model": "Ridge"
 }

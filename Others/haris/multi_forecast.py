@@ -28,7 +28,7 @@ OUTPUT_DIR = os.path.join(DATA_DIR, "multi_horizon_results")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("=" * 70)
-print("🎯 MULTI-HORIZON FORECASTING TEST")
+print(" MULTI-HORIZON FORECASTING TEST")
 print("=" * 70)
 
 # ============================================================
@@ -46,7 +46,7 @@ df = pd.read_csv(
 ).sort_index()
 
 df = df.loc["2021-01-01":"2024-12-31"].copy()
-print(f"✓ Geladen: {len(df)} Zeilen")
+print(f" Geladen: {len(df)} Zeilen")
 
 # ============================================================
 # MULTI-HORIZON FORECASTING FUNCTION
@@ -192,9 +192,9 @@ def forecast_horizon(df, horizon_steps, horizon_name):
     
     overfitting = train_r2 - test_r2
     if overfitting > 0.05:
-        print(f"  ⚠️  OVERFITTING: ΔR² = {overfitting:.4f}")
+        print(f"    OVERFITTING: ΔR² = {overfitting:.4f}")
     else:
-        print(f"  ✓ Overfitting OK: ΔR² = {overfitting:.4f}")
+        print(f"   Overfitting OK: ΔR² = {overfitting:.4f}")
     
     # ============================================================
     # PLOT: Forecast vs. True (letzte 7 Tage)
@@ -288,7 +288,7 @@ for steps, name in horizons:
 # ZUSAMMENFASSUNG
 # ============================================================
 
-print("\n[3/3] Zusammenfassung...")
+print("\n[3/3] Zusammenfassung")
 
 print("\n" + "=" * 70)
 print("  MULTI-HORIZON COMPARISON")
@@ -348,53 +348,6 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, 'horizon_comparison.png'), dpi=150)
 plt.close()
 
-print("\n✓ Vergleichs-Plot gespeichert: horizon_comparison.png")
+print("\n Vergleichs-Plot gespeichert: horizon_comparison.png")
 
-# ============================================================
-# INTERPRETATION
-# ============================================================
-
-print("\n" + "=" * 70)
-print("  💡 INTERPRETATION")
-print("=" * 70)
-
-print("\n  📊 Was die Ergebnisse bedeuten:")
-print()
-print("  15min Forecast:")
-print("    → R² sehr hoch (>0.99) = Zu einfach, Lag_15min dominiert")
-print("    → Nicht interessant für ML (fast wie 'copy last value')")
-print()
-print("  1h Forecast:")
-print("    → Erste realistische Challenge")
-print("    → R² sollte 0.90-0.95 sein")
-print("    → Gute Balance zwischen Accuracy und Schwierigkeit")
-print()
-print("  4h Forecast:")
-print("    → Interessant! Wetter wird wichtiger")
-print("    → R² sollte 0.80-0.90 sein")
-print("    → Zeigt echte ML-Skills")
-print()
-print("  24h Forecast:")
-print("    → Schwierig! Saisonale Muster wichtiger")
-print("    → R² sollte 0.70-0.85 sein")
-print("    → Hier trennt sich Spreu vom Weizen")
-print()
-
-print("  🎯 EMPFEHLUNG für Präsentation:")
-print()
-best_horizon = comparison.loc[
-    (comparison['test_r2'] > 0.80) & (comparison['test_r2'] < 0.95)
-]
-
-if len(best_horizon) > 0:
-    best = best_horizon.iloc[0]
-    print(f"    → Fokus auf **{best['horizon']} Forecast**")
-    print(f"      • R² = {best['test_r2']:.4f} (realistisch)")
-    print(f"      • Overfitting = {best['overfitting']:.4f} (unter Kontrolle)")
-    print(f"      • RMSE = {best['test_rmse']:.0f} kWh")
-else:
-    print("    → Fokus auf 4h Forecast (gute Balance)")
-
-print("\n" + "=" * 70)
-print(f"✅ FERTIG! Alle Ergebnisse in: {OUTPUT_DIR}")
-print("=" * 70)
+print(f" FERTIG! Alle Ergebnisse in: {OUTPUT_DIR}")
