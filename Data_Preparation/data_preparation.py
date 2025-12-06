@@ -139,7 +139,6 @@ for col in float_cols:
 categorical_features = [
     "Jahr",
     "Monat",
-    "Tag",
     "Wochentag",
     "Quartal",
     "Woche des Jahres"
@@ -156,6 +155,8 @@ idx_local = merged_15.index.tz_convert("Europe/Zurich")
 # Lokale Datum- und Zeitspalten erstellen
 merged_15["Datum (Lokal)"] = idx_local.date
 merged_15["Zeit (Lokal)"] = idx_local.time
+merged_15["Stunde (Lokal)"] = idx_local.hour
+merged_15["Stunde (Lokal)"] = pd.to_numeric(merged_15["Stunde (Lokal)"], errors="coerce").astype("int64")
 # Index-Spalte erzeugen, damit rename funktionieren kann
 merged_15.reset_index(inplace=True)
 # Index-Spalte korrekt umbenennen
@@ -271,7 +272,7 @@ print(merged_15[[
 
 # FEATURE SELECTION
 # Tag, Monat, und Jahr entfernt
-delete_columns = ["Jahr","Tag", "Date", "Time", "Date and Time", "Start der Messung (Text)", "station_abbr"]
+delete_columns = ["Jahr", "Date", "Time", "Date and Time", "Start der Messung (Text)", "station_abbr"]
 cols_to_drop = [c for c in delete_columns if c in merged_15.columns]
 merged_15.drop(columns=cols_to_drop, inplace=True)
 
