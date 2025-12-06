@@ -187,9 +187,11 @@ merged_15["Lag_15min"] = merged_15["Stromverbrauch"].shift(1)
 merged_15["Lag_30min"] = merged_15["Stromverbrauch"].shift(2)
 merged_15["Lag_1h"] = merged_15["Stromverbrauch"].shift(4)
 merged_15["Lag_24h"] = merged_15["Stromverbrauch"].shift(96)
+merged_15["Grundversorgte Kunden_Lag_15min"] = merged_15["Grundversorgte Kunden"].shift(1)
+merged_15["Freie Kunden_Lag_15min"] = merged_15["Freie Kunden"].shift(1)
 
 # Zeilen löschen, die durch lag NaN Werte haben
-lag_cols = ["Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h"]
+lag_cols = ["Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",]
 merged_15.dropna(subset=lag_cols, inplace=True)
 
 # --- 4) Wetter-Lag Features (nur Meteodaten laggen!) ---
@@ -272,7 +274,7 @@ print(merged_15[[
 
 # FEATURE SELECTION
 # Tag, Monat, und Jahr entfernt
-delete_columns = ["Jahr", "Date", "Time", "Date and Time", "Start der Messung (Text)", "station_abbr"]
+delete_columns = ["Jahr", "Date", "Time", "Date and Time", "Start der Messung (Text)", "station_abbr", "Grundversorgte Kunden", "Freie Kunden"]
 cols_to_drop = [c for c in delete_columns if c in merged_15.columns]
 merged_15.drop(columns=cols_to_drop, inplace=True)
 
