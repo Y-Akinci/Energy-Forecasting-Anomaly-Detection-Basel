@@ -24,7 +24,7 @@ from datetime import datetime
 
 class Config:
     ROOT = os.path.dirname(os.path.abspath(__file__))
-    REPO_ROOT = os.path.abspath(os.path.join(ROOT, ".."))
+    REPO_ROOT = os.path.abspath(os.path.join(ROOT, "..", ".."))  # 2x hoch
     DATA_DIR = os.path.join(REPO_ROOT, "Data")
     INPUT_FILE = os.path.join(DATA_DIR, "processed_merged_features.csv")
     OUTPUT_DIR = os.path.join(DATA_DIR, "modeling_results")
@@ -73,8 +73,8 @@ df = pd.read_csv(
     Config.INPUT_FILE,
     sep=";",
     encoding="latin1",
-    parse_dates=["DateTime"],
-    index_col="DateTime",
+    index_col=0,
+    parse_dates=True
 ).sort_index()
 
 df = df.loc[Config.START_DATE:Config.END_DATE].copy()
