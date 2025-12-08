@@ -1,0 +1,31 @@
+{
+  "forecast_created": "2025-12-09T00:34:40.800852",
+  "forecast_period": {
+    "start": "2025-09-29 22:00:00+00:00",
+    "end": "2025-10-06 22:00:00+00:00",
+    "days": 7,
+    "n_predictions": 673
+  },
+  "model_info": {
+    "model_name": "GradientBoosting",
+    "training_rmse": 1762.2627467394495,
+    "training_r2": 0.9389959242595012
+  },
+  "forecast_stats": {
+    "mean": 37432.61189500508,
+    "std": 8191.6463688595195,
+    "min": 24930.748919761987,
+    "max": 53728.11354189239
+  },
+  "daily_totals": {
+    "day_1": 221343.81070371452,
+    "day_2": 3561342.1844438133,
+    "day_3": 3695183.8510137876,
+    "day_4": 3793152.701596429,
+    "day_5": 3829013.9213447296,
+    "day_6": 3365368.1695148414,
+    "day_7": 3092452.5365499603,
+    "day_8": 3634290.6301711444
+  },
+  "method": "Rolling forecast with Lag_24h and seasonal weather averages"
+}

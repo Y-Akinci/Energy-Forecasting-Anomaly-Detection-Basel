@@ -865,8 +865,471 @@ Test R²: 0.997
   - Deutlich schlechtere Metriken als bei „Jetzigkeits“-Forecasts (V1–V5), aber starke relative Verbesserung gegenüber Persistence; Performance fällt mit wachsendem Horizont typischerweise ab. [web:39][web:44]  
   - RandomForest als robuster Gewinner bei 30‑Minuten‑Forecast mit geringem Overfitting und guter Ausnutzung der Lag- und Wetterinformationen. [web:39]
 
+v8
+## V8: 24h Forecast mit Top‑Features
+**Datei:** `C:\...\modeling_v8_24h_forecast.py`
 
+### 1) ZEITFENSTER
+- Start: 2021-01-01 00:00:00  
+- Ende: 2024-12-31 23:45:00  
+- Dauer: 4 Jahre (15‑Minuten-Daten, 140240 Zeilen; nach 24h‑Shift: 140144 Samples, Verlust 96 Zeilen durch Shift) [web:36]
+
+### 2) FEATURES & ZIEL
+- Target: Stromverbrauch 24 Stunden in der Zukunft (`FORECAST_HORIZON_STEPS = 96`, `FORECAST_HORIZON_NAME = "24h"`). [web:36]  
+- Features: Top‑20‑Liste wie in V7/V6, davon 15 im Datensatz vorhanden (5 fehlen und werden ignoriert).  
+- Verwendete Features (15):
+  - Lags: `Lag_15min`, `Lag_30min`, `Lag_1h`, `Lag_24h`  
+  - Wetter/Strahlung: `Diffusstrahlung; Zehnminutenmittel_lag15`, `Globalstrahlung; Zehnminutenmittel_lag15`, `Sonnenscheindauer; Zehnminutensumme_lag15`, `Lufttemperatur 2 m ü. Boden_lag15`, `relative Luftfeuchtigkeit_lag15`, `Lufttemperatur 2 m ü. Gras_lag15`, `Chilltemperatur_lag15`, `Böenspitze (Sekundenböe)_lag15`, `Lufttemperatur Bodenoberfläche_lag15`  
+  - Kalender/Binary: `Stunde (Lokal)`, `IstArbeitstag`  
+
+### 3) TRAIN/TEST SPLIT
+- Ratio: 80/20 (Train: 112115 Samples, Test: 28029 Samples).  
+- Methode: Zeitlich (chronologischer Split, gleiches Grundintervall wie V6/V7, aber mit 24h‑shifted Target).  
+- Cross-Validation: TimeSeriesSplit mit 5 Folds auf dem Train-Set, Metriken RMSE und R² je Fold. [web:45]
+
+### 4) MODELLE
+
+**RandomForest**  
+- n_estimators: 100  
+- max_depth: 15  
+- min_samples_split: 20  
+- min_samples_leaf: 10  
+- max_features: "sqrt"  
+- random_state: 42  
+- n_jobs: -1  
+
+**GradientBoosting**  
+- n_estimators: 100  
+- learning_rate: 0.05  
+- max_depth: 5  
+- min_samples_split: 20  
+- min_samples_leaf: 10  
+- subsample: 0.8  
+- random_state: 42  
+
+**XGBoost**  
+- n_estimators: 100  
+- learning_rate: 0.05  
+- max_depth: 5  
+- min_child_weight: 10  
+- subsample: 0.8  
+- colsample_bytree: 0.8  
+- random_state: 42  
+- n_jobs: -1  
+
+**Ridge**  
+- alpha: 10.0  
+- random_state: 42  
+
+*(XGBoost- und Ridge-Ergebnisse müsstest du analog zu RF/GB in die Doku nachtragen, sobald der Run komplett ist.)* [web:59]
+
+### 5) METRIKEN
+
+**Baseline (Lag_24h – Persistence)**  
+- Test RMSE: 5449.78  
+- Test MAE: 3777.78  
+- Test R²: 0.3503  
+
+**RandomForest**  
+- Train RMSE: 2015.76  
+- Test RMSE: 2589.03  
+- Train MAE: 1365.89  
+- Test MAE: 1761.84  
+- Train R²: 0.9237  
+- Test R²: 0.8534  
+- Overfitting (Train R² − Test R²): 0.0704  
+- CV RMSE (Train-Set, 5 Folds): 2687.81 ± 234.81  
+- CV R² (Mean): 0.8622  
+
+**GradientBoosting**  
+- Train RMSE: 2488.04  
+- Test RMSE: 2697.65  
+- Train MAE: 1708.95  
+- Test MAE: 1837.22  
+- Train R²: 0.8838  
+- Test R²: 0.8408  
+- Overfitting: 0.0430  
+
+*(CV‑Werte und XGBoost/Ridge analog einfügen, wenn vollständig.)* [web:36][web:59]
+
+### 6) ERGEBNISSE
+- Bestes Modell (bisheriger Stand): RandomForest mit niedrigstem Test-RMSE 2589.03 und höchstem Test-R² 0.8534 für 24h‑Forecast.  
+- Verbesserung vs Baseline: Test-RMSE von 5449.78 (Lag_24h-Persistence) auf 2589.03 (RandomForest), etwa 52–53 % Reduktion des Fehlers trotz deutlich längerer Vorhersagehorizonte. [web:59][web:65]  
+- Outputs:
+  - `model_comparison.csv` mit allen Modellen und Metriken (inkl. Overfitting, CV).  
+  - Plots: `model_comparison.png`, `overfitting_comparison.png`, `forecast_comparison.png` (14 Tage), `residuals.png`, `feature_importance.png`.  
+
+### 7) ÄNDERUNGEN ZU V7
+- Was wurde geändert:
+  - Forecast-Horizont von 30 Minuten (V7) auf 24 Stunden erweitert (`shift` von −2 auf −96).  
+  - Baseline angepasst: statt Lag_15min nun Lag_24h als Persistence-Benchmark.  
+  - Visualisierung des Forecasts über 14 Tage, um Tagesmuster und Fehler über einen längeren Zeitraum zu sehen.  
+
+- Warum:
+  - Ziel ist die Abbildung eines „Short-Term / Day-Ahead Load Forecasting“-Szenarios, das in der Literatur als zentrale Aufgabe in der Energiewirtschaft beschrieben wird. [web:36][web:75]  
+  - Vergleich zwischen sehr kurzfristen Horizonten (30 min) und Tagesprognosen zeigt, wie stark die Modellgüte mit dem Horizont abnimmt und wie viel Mehrwert ML gegenüber einfachen 24h‑Persistence-Benchmarks bringt. [web:36][web:65]  
+
+- Erwartung:
+  - Deutlich schlechtere absolute Metriken als bei 30‑Minuten‑Forecasts, aber signifikante relative Verbesserung gegenüber der 24h‑Baseline; R² im Bereich 0.8–0.9 ist für Day-Ahead-Lastprognose mit klassischen ML-Modellen typisch. [web:36][web:59]  
+  - RandomForest als robustes Modell mit etwas stärkerem Overfitting, GradientBoosting als stabiler zweiter Kandidat mit geringerer Varianz über CV‑Splits. [web:59][web:67]
+
+v9
+## V9: 24h Forecast mit korrigierten Feature-Namen
+**Datei:** `C:\...\modeling_v9_24h_corrected.py`
+
+### 1) ZEITFENSTER
+- Start: 2021-01-01 00:00:00  
+- Ende: 2024-12-31 23:45:00  
+- Dauer: 4 Jahre (15‑Minuten-Daten, 140240 Zeilen; nach 24h‑Shift 140144 Samples, Verlust 96 Zeilen). [web:36]
+
+### 2) FEATURES & ZIEL
+- Target: Stromverbrauch 24 Stunden in der Zukunft (`FORECAST_HORIZON_STEPS = 96`, `FORECAST_HORIZON_NAME = "24h"`). [web:36]  
+- Features: Top‑20‑Liste mit korrigierten Namen aus der CSV; 18 davon im Datensatz vorhanden (2 fehlen).  
+- Verwendete Features (18):  
+  - Lags: `Lag_15min`, `Lag_30min`, `Lag_1h`, `Lag_24h`  
+  - Kunden: `Freie Kunden_Lag_15min`, `Grundversorgte Kunden_Lag_15min`  
+  - Wetter/Strahlung: `Diffusstrahlung; Zehnminutenmittel_lag15`, `Globalstrahlung; Zehnminutenmittel_lag15`, `Sonnenscheindauer; Zehnminutensumme_lag15`, `Lufttemperatur 2 m ü. Boden_lag15`, `relative Luftfeuchtigkeit_lag15`, `Lufttemperatur 2 m ü. Gras_lag15`, `Chilltemperatur_lag15`, `Böenspitze (Sekundenböe)_lag15`, `Lufttemperatur Bodenoberfläche_lag15`  
+  - Kalender/Binary: `Stunde (Lokal)`, `IstArbeitstag`, `IstSonntag`  
+
+### 3) TRAIN/TEST SPLIT
+- Ratio: 80/20 (Train: 112115 Samples, Test: 28029 Samples).  
+- Methode: Zeitlich (chronologischer Split mit 24h‑shifted Target).  
+- Cross-Validation: TimeSeriesSplit mit 5 Folds auf dem Train-Set, RMSE und R² pro Fold. [web:45]
+
+### 4) MODELLE
+
+**RandomForest**  
+- n_estimators: 100  
+- max_depth: 15  
+- min_samples_split: 20  
+- min_samples_leaf: 10  
+- max_features: "sqrt"  
+- random_state: 42  
+- n_jobs: -1  
+
+**GradientBoosting**  
+- n_estimators: 100  
+- learning_rate: 0.05  
+- max_depth: 5  
+- min_samples_split: 20  
+- min_samples_leaf: 10  
+- subsample: 0.8  
+- random_state: 42  
+
+**XGBoost**  
+- n_estimators: 100  
+- learning_rate: 0.05  
+- max_depth: 5  
+- min_child_weight: 10  
+- subsample: 0.8  
+- colsample_bytree: 0.8  
+- random_state: 42  
+- n_jobs: -1  
+
+**Ridge**  
+- alpha: 10.0  
+- random_state: 42  
+
+### 5) METRIKEN
+
+**Baseline (Lag_24h – Persistence)**  
+- Test RMSE: 5449.78  
+- Test MAE: 3777.78  
+- Test R²: 0.3503  
+
+**RandomForest**  
+- Train RMSE: 1721.79  
+- Test RMSE: 2200.19  
+- Train MAE: 1137.57  
+- Test MAE: 1532.64  
+- Train R²: 0.9444  
+- Test R²: 0.8941  
+- Overfitting (Train R² − Test R²): 0.0503  
+- CV RMSE (Train-Set, 5 Folds): 2307.86 ± 152.75  
+- CV R² (Mean): 0.8987  
+
+**XGBoost**  
+- Train RMSE: 2142.89  
+- Test RMSE: 2223.34  
+- Train MAE: 1447.99  
+- Test MAE: 1557.60  
+- Train R²: 0.9138  
+- Test R²: 0.8919  
+- Overfitting: 0.0219  
+- CV RMSE (Train-Set, 5 Folds): 2274.26 ± 138.91  
+- CV R² (Mean): 0.9016  
+
+**GradientBoosting**  
+- Train RMSE: 2136.25  
+- Test RMSE: 2228.09  
+- Train MAE: 1450.98  
+- Test MAE: 1561.29  
+- Train R²: 0.9143  
+- Test R²: 0.8914  
+- Overfitting: 0.0229  
+- CV RMSE (Train-Set, 5 Folds): 2275.14 ± 140.74  
+- CV R² (Mean): 0.9015  
+
+**Ridge**  
+- Train RMSE: 2986.90  
+- Test RMSE: 2974.57  
+- Train MAE: 2123.90  
+- Test MAE: 2087.95  
+- Train R²: 0.8325  
+- Test R²: 0.8064  
+- Overfitting: 0.0261  
+- CV RMSE (Train-Set, 5 Folds): 3219.96 ± 336.97  
+- CV R² (Mean): 0.8029  
+
+### 6) ERGEBNISSE
+- Bestes Modell: RandomForest (niedrigster Test-RMSE 2200.19, bestes Test-R² 0.8941; etwas stärkeres Overfitting als GB/XGBoost, aber beste Gesamtgüte).  
+- Verbesserung vs Baseline: Test-RMSE von 5449.78 (Lag_24h-Persistence) auf 2200.19 (RandomForest), ca. 59.6 % Fehlerreduktion für 24‑Stunden‑Forecast. [web:36][web:59]  
+- Outputs:
+  - `model_comparison.csv`, Overfitting- und CV-Metriken je Modell.  
+  - Plots: `model_comparison.png`, `overfitting_comparison.png`, `forecast_comparison.png` (14 Tage), `residuals.png`, `feature_importance.png`.  
+  - `feature_importance.csv` mit Importances des besten Modells.  
+
+### 7) ÄNDERUNGEN ZU V8
+- Was wurde geändert:
+  - Korrigierte Featurenamen entsprechend der tatsächlichen Spalten in der CSV (z. B. `Freie Kunden_Lag_15min`, `Grundversorgte Kunden_Lag_15min`, `IstSonntag`); dadurch mehr relevante Features (18 statt 15) im Modell.  
+  - Gleicher 24h‑Forecast-Horizont und gleiche Baseline, aber verbesserte Feature-Mapping-Qualität.  
+
+- Warum:
+  - Ziel: Konsistentes Feature-Set über alle Versionen hinweg mit korrekter Benennung, um Interpretation und Wiederverwendbarkeit zu verbessern und keine wichtigen Kunden-/Kalendermerkmale zu verlieren. [web:54][web:61]  
+
+- Erwartung:
+  - Bessere Performance und stabilere CV-Werte als in V8 durch vollständigere Top‑Feature-Selektion; R² um 0.89 ist für Day-Ahead-Lastprognose mit klassischen ML-Modellen realistisch. [web:36][web:59]
+
+v10
+## V10: 1h Forecast ohne dominante Features
+**Datei:** `C:\...\modeling_v10_1h_no_dominant_features.py`
+
+### 1) ZEITFENSTER
+- Start: 2021-01-01 00:00:00  
+- Ende: 2024-12-31 23:45:00  
+- Dauer: 4 Jahre (15‑Minuten-Daten, 140240 Zeilen; nach 1h‑Shift 140236 Samples). [web:36]
+
+### 2) FEATURES & ZIEL
+- Target: Stromverbrauch 1 Stunde in der Zukunft (`FORECAST_HORIZON_STEPS = 4`, `FORECAST_HORIZON_NAME = "1h"`). [web:36]  
+- Entfernte dominante Features: `Lag_15min`, `Lag_30min`, Freie Kunden, Grundversorgte Kunden.  
+- Verwendete Features (18):  
+  - Lags: `Lag_1h`, `Lag_24h`, `Diff_15min`  
+  - Wetter/Strahlung: `Diffusstrahlung; Zehnminutenmittel_lag15`, `Globalstrahlung; Zehnminutenmittel_lag15`, `Sonnenscheindauer; Zehnminutensumme_lag15`, `Lufttemperatur 2 m ü. Boden_lag15`, `relative Luftfeuchtigkeit_lag15`, `Lufttemperatur 2 m ü. Gras_lag15`, `Chilltemperatur_lag15`, `Böenspitze (Sekundenböe)_lag15`, `Lufttemperatur Bodenoberfläche_lag15`  
+  - Kalender/Binary: `Stunde (Lokal)`, `IstArbeitstag`, `IstSonntag`, `Monat`, `Wochentag`, `Quartal`  
+
+### 3) TRAIN/TEST SPLIT
+- Ratio: 80/20 (Train: 112188 Samples, Test: 28048 Samples).  
+- Methode: Zeitlich (chronologischer Split).  
+- Cross-Validation: TimeSeriesSplit mit 5 Folds auf dem Train-Set (RMSE und R² je Fold). [web:45]
+
+### 4) MODELLE
+
+**RandomForest**  
+- n_estimators: 100  
+- max_depth: 15  
+- min_samples_split: 20  
+- min_samples_leaf: 10  
+- max_features: "sqrt"  
+- random_state: 42  
+- n_jobs: -1  
+
+**GradientBoosting**  
+- n_estimators: 100  
+- learning_rate: 0.05  
+- max_depth: 5  
+- min_samples_split: 20  
+- min_samples_leaf: 10  
+- subsample: 0.8  
+- random_state: 42  
+
+**XGBoost**  
+- n_estimators: 100  
+- learning_rate: 0.05  
+- max_depth: 5  
+- min_child_weight: 10  
+- subsample: 0.8  
+- colsample_bytree: 0.8  
+- random_state: 42  
+- n_jobs: -1  
+
+**Ridge**  
+- alpha: 10.0  
+- random_state: 42  
+
+### 5) METRIKEN
+
+**Baseline (Lag_1h – Persistence)**  
+- Test RMSE: 3681.75  
+- Test MAE: 2794.25  
+- Test R²: 0.7034  
+
+**RandomForest**  
+- Train RMSE: 653.62  
+- Test RMSE: 924.83  
+- Train MAE: 484.46  
+- Test MAE: 653.26  
+- Train R²: 0.9920  
+- Test R²: 0.9813  
+- Overfitting (Train R² − Test R²): 0.0107  
+- CV RMSE (Train-Set, 5 Folds): 1040.06 ± 258.59  
+- CV R² (Mean): 0.9787  
+
+**GradientBoosting**  
+- Train RMSE: 855.31  
+- Test RMSE: 938.20  
+- Train MAE: 636.46  
+- Test MAE: 686.21  
+- Train R²: 0.9863  
+- Test R²: 0.9807  
+- Overfitting: 0.0055  
+- CV RMSE (Train-Set, 5 Folds): 930.65 ± 76.81  
+- CV R² (Mean): 0.9835  
+
+**XGBoost**  
+- Train RMSE: 839.74  
+- Test RMSE: 916.39  
+- Train MAE: 630.52  
+- Test MAE: 674.55  
+- Train R²: 0.9868  
+- Test R²: 0.9816  
+- Overfitting: 0.0051  
+- CV RMSE (Train-Set, 5 Folds): 911.60 ± 85.44  
+- CV R² (Mean): 0.9841  
+
+**Ridge**  
+- Train RMSE: 1877.93  
+- Test RMSE: 1898.68  
+- Train MAE: 1379.58  
+- Test MAE: 1392.87  
+- Train R²: 0.9338  
+- Test R²: 0.9211  
+- Overfitting: 0.0127  
+- CV RMSE (Train-Set, 5 Folds): 2094.94 ± 415.32  
+- CV R² (Mean): 0.9148  
+
+### 6) ERGEBNISSE
+- Bestes Modell: XGBoost (niedrigster Test-RMSE 916.39, bestes Test-R² 0.9816, sehr geringes Overfitting).  
+- Verbesserung vs Baseline: Test-RMSE von 3681.75 (Lag_1h-Persistence) auf 916.39 (XGBoost), ca. 75.1 % Fehlerreduktion bei 1‑Stunden‑Forecast ohne dominante Lags und Kundenfeatures. [web:36][web:77][web:94]  
+- Outputs:
+  - `model_comparison.csv` mit Test-/CV-Metriken und Overfitting je Modell.  
+  - Plots: `model_comparison.png`, `overfitting_comparison.png`, `forecast_comparison.png` (7 Tage), `residuals.png`, `feature_importance.png`.  
+
+### 7) ÄNDERUNGEN ZU V6/V7
+- Was wurde geändert:
+  - Forecast-Horizont auf 1 h festgelegt, aber bewusst stärkste kurzfristige Prädiktoren entfernt (`Lag_15min`, `Lag_30min`, Kunden-Features), um Modellleistung unter „schwierigeren“ Bedingungen zu testen. [web:86][web:88]  
+  - Fokus auf Kombination aus mittel-/langfristigen Lags (`Lag_1h`, `Lag_24h`), Wetter- und Kalendermerkmalen, um strukturelle Muster statt triviale Autokorrelation auszunutzen. [web:88][web:92]  
+
+- Warum:
+  - Ziel: Einschätzen, wie gut die Modelle ohne dominante Autoregressions-Features performen und wie viel Mehrwert Wetter- und Kalenderdaten allein liefern. [web:88][web:92]  
+
+- Erwartung:
+  - Geringfügig schlechter als Setups mit allen Lags, aber immer noch deutlich besser als Persistence; hier bestätigen die Ergebnisse, dass auch ohne sehr nahes Lag starke 1h‑Forecasts möglich sind, insbesondere mit Gradient-Boosting-Modellen. [web:77][web:88]
+
+v11
+trainingszeit gändert 2023-2024
+======================================================================
+           Model   Test_RMSE    Test_MAE  Test_R2  Overfitting     CV_RMSE     CV_Std
+         XGBoost  846.829183  628.491663 0.985248     0.000190 1030.238253 141.845401
+GradientBoosting  866.542103  640.464470 0.984553     0.000273 1052.338172 149.237431
+    RandomForest  907.070517  645.214355 0.983075     0.007835 1298.557508 449.030678
+           Ridge 1858.653924 1368.936498 0.928936    -0.001527 1909.917662  29.272201
+
+Bestes Modell: XGBoost
+Test RMSE: 846.83
+Test R²:   0.9852
+Overfitting: 0.0002
+
+v12
+zeitperiode 2015 bis 2024
+======================================================================
+VERGLEICH - 1H FORECAST OHNE DOMINANTE FEATURES
+======================================================================
+           Model   Test_RMSE    Test_MAE  Test_R2  Overfitting     CV_RMSE     CV_Std
+GradientBoosting 1147.349126  857.349276 0.973264     0.011367 1185.583612  80.847348
+         XGBoost 1155.787167  869.177657 0.972870     0.011084 1175.373847  69.082291
+    RandomForest 1196.086997  889.263392 0.970945     0.019139 1270.800642 130.476269
+           Ridge 2920.290038 2244.534614 0.826798     0.018823 3306.349356 312.446031
+
+Bestes Modell: GradientBoosting
+Test RMSE: 1147.35
+Test R²:   0.9733
+Overfitting: 0.0114
+
+Baseline RMSE:     3814.82
+Best Model RMSE:   1147.35
+Verbesserung:      69.9%
+
+v13
+train zu 70/30
+
+======================================================================
+VERGLEICH - 1H FORECAST OHNE DOMINANTE FEATURES
+======================================================================
+           Model   Test_RMSE    Test_MAE  Test_R2  Overfitting     CV_RMSE     CV_Std
+         XGBoost 1183.520664  897.499843 0.972485     0.011877 1186.523755  76.803095
+GradientBoosting 1195.197414  893.377092 0.971939     0.012938 1179.273372  81.794787
+    RandomForest 1222.539861  921.378238 0.970641     0.019649 1281.544070 118.503987
+           Ridge 2937.120180 2249.743186 0.830542     0.013244 3549.981794 581.452826
+
+Bestes Modell: XGBoost
+Test RMSE: 1183.52
+Test R²:   0.9725
+Overfitting: 0.0119
+
+Baseline RMSE:     3867.15
+Best Model RMSE:   1183.52
+Verbesserung:      69.4%
+
+v14
+grid search mit rf
+Beste Parameter:
+  learning_rate: 0.08
+  max_depth: 7
+  min_samples_leaf: 10
+  min_samples_split: 20
+  n_estimators: 400
+  random_state: 42
+  subsample: 0.9
+Bester CV Score (RMSE): 1014.18
+
+GradientBoosting_GridSearch - Evaluation:
+  Train RMSE: 710.11, MAE: 515.24, R²: 0.9934
+  Test  RMSE: 925.45, MAE: 674.97, R²: 0.9832
+  Overfitting: 0.0102
+
+v15
+# AKTUELL:
+n_estimators=100      → 200-300 (mehr Bäume)
+learning_rate=0.05    → 0.03-0.1 (testen)
+max_depth=5           → 6-8 (tiefer)
+XGBoost:
+python
+
+# AKTUELL:
+n_estimators=100      → 200-300
+learning_rate=0.05    → 0.03-0.1
+max_depth=5           → 6-8
+RandomForest:
+python
+
+# AKTUELL:
+n_estimators=100      → 200 (mehr Bäume)
+max_depth=15          → 20-25 (tiefer)
 ## VERGLEICH ALLER VERSIONEN
+
+======================================================================
+VERGLEICH - 1H FORECAST OHNE DOMINANTE FEATURES
+======================================================================
+           Model   Test_RMSE    Test_MAE  Test_R2  Overfitting     CV_RMSE     CV_Std
+GradientBoosting 1047.458827  763.500356 0.978448     0.010409 1063.981391  71.860319
+    RandomForest 1155.650162  859.375516 0.973766     0.019217 1241.093980 112.683866
+         XGBoost 1209.862901  902.070071 0.971247     0.011843 1227.922827  66.981503
+           Ridge 2937.120180 2249.743186 0.830542     0.013244 3549.981794 581.452826
+
+Bestes Modell: GradientBoosting
+Test RMSE: 1047.46
+Test R²:   0.9784
+Overfitting: 0.0104
 
 | Version | Best Model | Test RMSE | Test R² | Besonderheit |
 |---------|-----------|-----------|---------|--------------|
@@ -875,4 +1338,53 @@ Test R²: 0.997
 | V3      |           |           |         |              |
 
 ---
+v16
+recreating v13 weil beste werte, 70/30, 2015-2024
 
+======================================================================
+VERGLEICH - 1H FORECAST OHNE DOMINANTE FEATURES
+======================================================================
+           Model   Test_RMSE    Test_MAE  Test_R2  Overfitting     CV_RMSE     CV_Std
+         XGBoost 1183.520664  897.499843 0.972485     0.011877 1186.523755  76.803095
+GradientBoosting 1195.197414  893.377092 0.971939     0.012938 1179.273372  81.794787
+    RandomForest 1222.539861  921.378238 0.970641     0.019649 1281.544070 118.503987
+           Ridge 2937.120180 2249.743186 0.830542     0.013244 3549.981794 581.452826
+
+Bestes Modell: XGBoost
+Test RMSE: 1183.52
+Test R²:   0.9725
+Overfitting: 0.0119
+
+v17
+v16 ohne lag 1 h
+'Lag_24h',
+        'Diffusstrahlung; Zehnminutenmittel_lag15',
+        'Globalstrahlung; Zehnminutenmittel_lag15',
+        'Stunde (Lokal)',
+        'IstArbeitstag',
+        'Sonnenscheindauer; Zehnminutensumme_lag15',
+        'Lufttemperatur 2 m ü. Boden_lag15',
+        'IstSonntag',
+        'relative Luftfeuchtigkeit_lag15',
+        'Lufttemperatur 2 m ü. Gras_lag15',
+        'Chilltemperatur_lag15',
+        'Böenspitze (3-Sekundenböe); Maximum in km/h_lag15',
+        'Böenspitze (Sekundenböe)_lag15',
+        'Böenspitze (3-Sekundenböe); Maximum in m/s_lag15',
+        'Lufttemperatur Bodenoberfläche_lag15',
+        'Monat',
+        'Wochentag',
+        'Quartal',
+======================================================================
+VERGLEICH - 1H FORECAST OHNE DOMINANTE FEATURES
+======================================================================
+           Model   Test_RMSE    Test_MAE  Test_R2  Overfitting     CV_RMSE     CV_Std
+GradientBoosting 1762.262747 1234.144288 0.938996     0.021455 1944.481281 141.905102
+         XGBoost 1875.495500 1328.103831 0.930905     0.027770 2003.117556 154.306083
+    RandomForest 2143.871868 1533.206550 0.909715     0.061949 2162.861251 182.950337
+           Ridge 3416.383195 2688.744958 0.770728     0.021248 4112.430418 647.008884
+
+Bestes Modell: GradientBoosting
+Test RMSE: 1762.26
+Test R²:   0.9390
+Overfitting: 0.0215
