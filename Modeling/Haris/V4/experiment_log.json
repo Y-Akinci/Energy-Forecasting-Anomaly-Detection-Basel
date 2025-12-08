@@ -1,0 +1,110 @@
+{
+  "timestamp": "2025-12-07T16:00:42.390782",
+  "version": "V4",
+  "description": "Feature Selection - No Weather Data",
+  "config": {
+    "train_ratio": 0.8,
+    "cv_splits": 5,
+    "feature_selection": "Lags + Time + Customers only (No Weather)"
+  },
+  "data": {
+    "train_start": "2021-01-01 00:00:00+00:00",
+    "train_end": "2024-03-14 18:45:00+00:00",
+    "test_start": "2024-03-14 19:00:00+00:00",
+    "test_end": "2024-12-31 23:45:00+00:00",
+    "n_train": 112192,
+    "n_test": 28048,
+    "n_features": 13,
+    "features_used": [
+      "Lag_15min",
+      "Lag_30min",
+      "Lag_1h",
+      "Lag_24h",
+      "Grundversorgte Kunden_Lag_15min",
+      "Freie Kunden_Lag_15min",
+      "Monat",
+      "Wochentag",
+      "Quartal",
+      "Woche des Jahres",
+      "Tag des Jahres",
+      "IstSonntag",
+      "IstArbeitstag"
+    ]
+  },
+  "baseline": {
+    "rmse": 576.4590372003178,
+    "mae": 441.32908521106674,
+    "r2": 0.9927286383656152
+  },
+  "models": [
+    {
+      "name": "RandomForest",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 15,
+        "min_samples_split": 20,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt",
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "train_rmse": 288.6354915581975,
+      "test_rmse": 372.982482163914,
+      "train_r2": 0.9984358646461585,
+      "test_r2": 0.9969559224657336,
+      "cv_rmse_mean": 399.72286943578786,
+      "cv_rmse_std": 54.8841678407028
+    },
+    {
+      "name": "GradientBoosting",
+      "params": {
+        "n_estimators": 100,
+        "learning_rate": 0.05,
+        "max_depth": 5,
+        "min_samples_split": 20,
+        "min_samples_leaf": 10,
+        "subsample": 0.8,
+        "random_state": 42
+      },
+      "train_rmse": 346.826406643799,
+      "test_rmse": 375.265396134119,
+      "train_r2": 0.9977416087604027,
+      "test_r2": 0.9969185446533202,
+      "cv_rmse_mean": 371.23852227286835,
+      "cv_rmse_std": 19.048573913716055
+    },
+    {
+      "name": "XGBoost",
+      "params": {
+        "n_estimators": 100,
+        "learning_rate": 0.05,
+        "max_depth": 5,
+        "min_child_weight": 10,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "train_rmse": 361.33547046520863,
+      "test_rmse": 386.6483796866514,
+      "train_r2": 0.9975487022866977,
+      "test_r2": 0.9967287688779194,
+      "cv_rmse_mean": 391.39529763056595,
+      "cv_rmse_std": 26.58379703732851
+    },
+    {
+      "name": "Ridge",
+      "params": {
+        "alpha": 10.0,
+        "random_state": 42
+      },
+      "train_rmse": 377.2251907999996,
+      "test_rmse": 392.3213324109301,
+      "train_r2": 0.9973283704306166,
+      "test_r2": 0.9966320728629232,
+      "cv_rmse_mean": 399.51002103534563,
+      "cv_rmse_std": 39.34333687129105
+    }
+  ],
+  "best_model": "RandomForest"
+}

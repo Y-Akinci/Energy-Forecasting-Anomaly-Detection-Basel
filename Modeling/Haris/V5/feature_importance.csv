@@ -1,0 +1,39 @@
+feature,importance
+Lag_30min,0.9768413976148719
+Diff_15min,0.015670342572827296
+Stunde (Lokal),0.004026503996142442
+Freie Kunden_Lag_15min,0.002082811029579457
+Lag_24h,0.0008772198260543744
+Globalstrahlung; Zehnminutenmittel_lag15,0.00015182123868375978
+IstArbeitstag,6.685700705004501e-05
+Diffusstrahlung; Zehnminutenmittel_lag15,6.438297646713416e-05
+Chilltemperatur_lag15,5.4317145062408715e-05
+Wochentag,4.746415312198227e-05
+Lag_1h,3.270331143779333e-05
+Lufttemperatur Bodenoberfläche_lag15,3.140999303872194e-05
+Lufttemperatur 2 m ü. Gras_lag15,1.4326716685675883e-05
+Lufttemperatur 2 m ü. Boden_lag15,1.0356269667842292e-05
+Grundversorgte Kunden_Lag_15min,8.08113533282506e-06
+Tag des Jahres,6.806217815413823e-06
+IstSonntag,6.126888689097063e-06
+Taupunkt 2 m ü. Boden_lag15,2.8385791605488943e-06
+Woche des Jahres,2.112411538382155e-06
+Dampfdruck 2 m ü. Boden_lag15,7.223674963780267e-07
+Niederschlag; Zehnminutensumme_lag15,4.5073294322388843e-07
+Quartal,3.512716574033586e-07
+Langwellige Einstrahlung; Zehnminutenmittel_lag15,3.0616657090646485e-07
+Luftrdruck auf Barometerhöhe_lag15,1.0016160151534986e-07
+Windgeschwindigkeit vektoriell_lag15,7.451308175615791e-08
+Windrichtung; Zehnminutenmittel_lag15,4.2160805883434714e-08
+Sonnenscheindauer; Zehnminutensumme_lag15,3.741105924226024e-08
+Luftdruck reduziert auf Meeresniveau (QFF)_lag15,3.613155659584758e-08
+Monat,0.0
+Tag,0.0
+Böenspitze (Sekundenböe)_lag15,0.0
+BÃ¶enspitze (SekundenbÃ¶e); Maximum in km/h_lag15,0.0
+BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in m/s_lag15,0.0
+BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in km/h_lag15,0.0
+Luftdruck reduziert auf Meeresniveau mit Standardatmosphäre (QNH)_lag15,0.0
+Windgeschwindigkeit skalar; Zehnminutenmittel in m/s_lag15,0.0
+Windgeschwindigkeit; Zehnminutenmittel in km/h_lag15,0.0
+relative Luftfeuchtigkeit_lag15,0.0

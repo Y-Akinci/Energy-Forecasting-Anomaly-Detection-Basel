@@ -1,0 +1,119 @@
+{
+  "timestamp": "2025-12-07T17:16:00.836393",
+  "version": "V7",
+  "description": "30min Forecast mit Top 20 Features",
+  "config": {
+    "train_ratio": 0.8,
+    "cv_splits": 5,
+    "forecast_horizon_steps": 2,
+    "forecast_horizon_name": "30min",
+    "feature_selection": "Top 15 most important features",
+    "features_used": [
+      "Lag_15min",
+      "Lag_30min",
+      "Lag_1h",
+      "Lag_24h",
+      "Diffusstrahlung; Zehnminutenmittel_lag15",
+      "Globalstrahlung; Zehnminutenmittel_lag15",
+      "Stunde (Lokal)",
+      "IstArbeitstag",
+      "Sonnenscheindauer; Zehnminutensumme_lag15",
+      "Lufttemperatur 2 m \u00fc. Boden_lag15",
+      "relative Luftfeuchtigkeit_lag15",
+      "Lufttemperatur 2 m \u00fc. Gras_lag15",
+      "Chilltemperatur_lag15",
+      "B\u00f6enspitze (Sekundenb\u00f6e)_lag15",
+      "Lufttemperatur Bodenoberfl\u00e4che_lag15"
+    ]
+  },
+  "data": {
+    "train_start": "2021-01-01 00:00:00+00:00",
+    "train_end": "2024-03-14 18:15:00+00:00",
+    "test_start": "2024-03-14 18:30:00+00:00",
+    "test_end": "2024-12-31 23:15:00+00:00",
+    "n_train": 112190,
+    "n_test": 28048,
+    "n_features": 15
+  },
+  "baseline": {
+    "method": "Lag_15min",
+    "rmse": 1504.823964011988,
+    "mae": 1149.4624541500286,
+    "r2": 0.9504492493996632
+  },
+  "models": [
+    {
+      "name": "RandomForest",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 15,
+        "min_samples_split": 20,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt",
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "train_rmse": 460.71633156708094,
+      "test_rmse": 575.8213593792847,
+      "train_r2": 0.9960148828233875,
+      "test_r2": 0.9927447165989057,
+      "overfitting": 0.0032701662244817298,
+      "cv_rmse_mean": 619.897750307741,
+      "cv_rmse_std": 77.16596605323267
+    },
+    {
+      "name": "GradientBoosting",
+      "params": {
+        "n_estimators": 100,
+        "learning_rate": 0.05,
+        "max_depth": 5,
+        "min_samples_split": 20,
+        "min_samples_leaf": 10,
+        "subsample": 0.8,
+        "random_state": 42
+      },
+      "train_rmse": 550.4196147439617,
+      "test_rmse": 586.6682577474201,
+      "train_r2": 0.9943119725345625,
+      "test_r2": 0.992468802753539,
+      "overfitting": 0.0018431697810235015,
+      "cv_rmse_mean": 578.0235898414579,
+      "cv_rmse_std": 30.024150474010256
+    },
+    {
+      "name": "XGBoost",
+      "params": {
+        "n_estimators": 100,
+        "learning_rate": 0.05,
+        "max_depth": 5,
+        "min_child_weight": 10,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "train_rmse": 555.1060292904135,
+      "test_rmse": 589.9120242700018,
+      "train_r2": 0.9942147015293068,
+      "test_r2": 0.992385290540291,
+      "overfitting": 0.0018294109890157895,
+      "cv_rmse_mean": 579.0335764481745,
+      "cv_rmse_std": 32.11368559012533
+    },
+    {
+      "name": "Ridge",
+      "params": {
+        "alpha": 10.0,
+        "random_state": 42
+      },
+      "train_rmse": 881.2377953153978,
+      "test_rmse": 866.3351692693493,
+      "train_r2": 0.9854199131381607,
+      "test_r2": 0.9835770666414463,
+      "overfitting": 0.001842846496714401,
+      "cv_rmse_mean": 930.7842957952847,
+      "cv_rmse_std": 104.67216995927208
+    }
+  ],
+  "best_model": "RandomForest"
+}
