@@ -1,0 +1,38 @@
+FEATURES USED IN V5 (WITHOUT LAG_15MIN)
+==================================================
+
+Total Features: 38
+
+Stromverbrauch-Lags (5):
+  - Lag_30min
+  - Lag_1h
+  - Lag_24h
+  - Grundversorgte Kunden_Lag_15min
+  - Freie Kunden_Lag_15min
+
+Wetter-Features (23):
+  - Globalstrahlung; Zehnminutenmittel_lag15
+  - Diffusstrahlung; Zehnminutenmittel_lag15
+  - Langwellige Einstrahlung; Zehnminutenmittel_lag15
+  - Sonnenscheindauer; Zehnminutensumme_lag15
+  - Böenspitze (3-Sekundenböe); Maximum in km/h_lag15
+  - Böenspitze (3-Sekundenböe); Maximum in m/s_lag15
+  - Böenspitze (Sekundenböe); Maximum in km/h_lag15
+  - B�enspitze (Sekundenb�e)_lag15
+  - Chilltemperatur_lag15
+  - Dampfdruck 2 m �. Boden_lag15
+  ... und 13 weitere
+
+Zeit-Features (5):
+  - Monat
+  - Wochentag
+  - Tag des Jahres
+  - Quartal
+  - Woche des Jahres
+
+Sonstige (5):
+  - Tag
+  - Stunde (Lokal)
+  - IstSonntag
+  - IstArbeitstag
+  - Diff_15min

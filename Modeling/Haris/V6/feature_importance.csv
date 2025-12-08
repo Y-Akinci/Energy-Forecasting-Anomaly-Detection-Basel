@@ -1,0 +1,40 @@
+feature,importance
+Lag_15min,0.2121784962800364
+Lag_30min,0.1639090944332484
+Freie Kunden_Lag_15min,0.15603152855886582
+Lag_1h,0.14990542341696436
+Lag_24h,0.06820899850471569
+Grundversorgte Kunden_Lag_15min,0.06328882877548646
+Stunde (Lokal),0.05478726036939643
+Diffusstrahlung; Zehnminutenmittel_lag15,0.03928186860732311
+Globalstrahlung; Zehnminutenmittel_lag15,0.025514430512366914
+Diff_15min,0.015127751848935354
+IstArbeitstag,0.014245438269130101
+Wochentag,0.01037916132400331
+Sonnenscheindauer; Zehnminutensumme_lag15,0.005712771962170696
+IstSonntag,0.004095643735797686
+Lufttemperatur 2 m ü. Gras_lag15,0.0037010724988076832
+Lufttemperatur Bodenoberfläche_lag15,0.003530501379144036
+Lufttemperatur 2 m ü. Boden_lag15,0.002465943489778453
+Chilltemperatur_lag15,0.0020985880045749977
+Tag des Jahres,0.000876942251352965
+Dampfdruck 2 m ü. Boden_lag15,0.0006587788661426707
+Taupunkt 2 m ü. Boden_lag15,0.0006332304614665806
+Woche des Jahres,0.0006195934305714239
+relative Luftfeuchtigkeit_lag15,0.0005643978030581835
+Monat,0.0005108948000253871
+BÃ¶enspitze (SekundenbÃ¶e); Maximum in km/h_lag15,0.00033887076133134173
+Langwellige Einstrahlung; Zehnminutenmittel_lag15,0.0002373968601471353
+Quartal,0.00019331188101626726
+Tag,0.0001141347855239885
+Luftdruck reduziert auf Meeresniveau (QFF)_lag15,0.00010762143006477789
+Luftdruck reduziert auf Meeresniveau mit Standardatmosphäre (QNH)_lag15,0.0001075350415049247
+Luftrdruck auf Barometerhöhe_lag15,0.00010616900702061825
+Windrichtung; Zehnminutenmittel_lag15,0.00010061780418420729
+Böenspitze (Sekundenböe)_lag15,7.746473604246504e-05
+BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in km/h_lag15,7.61060148855897e-05
+BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in m/s_lag15,6.683360374918246e-05
+Windgeschwindigkeit; Zehnminutenmittel in km/h_lag15,5.088835106476013e-05
+Windgeschwindigkeit skalar; Zehnminutenmittel in m/s_lag15,4.700625580864602e-05
+Windgeschwindigkeit vektoriell_lag15,4.501636153174461e-05
+Niederschlag; Zehnminutensumme_lag15,4.387522760977171e-06

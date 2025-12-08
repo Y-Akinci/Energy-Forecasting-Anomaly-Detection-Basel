@@ -1,0 +1,18 @@
+FEATURES USED IN V4 (NO WEATHER)
+==================================================
+
+ 1. Lag_15min
+ 2. Lag_30min
+ 3. Lag_1h
+ 4. Lag_24h
+ 5. Grundversorgte Kunden_Lag_15min
+ 6. Freie Kunden_Lag_15min
+ 7. Monat
+ 8. Wochentag
+ 9. Quartal
+10. Woche des Jahres
+11. Tag des Jahres
+12. IstSonntag
+13. IstArbeitstag
+
+Total: 13 features
