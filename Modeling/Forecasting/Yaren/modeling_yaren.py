@@ -59,7 +59,7 @@ print("Anzahl Zeilen:", len(df))
 # 70 / 30 Split nach Reihenfolge (zeitlich korrekt)
 
 n = len(df)
-split_idx = int(n * 0.8)
+split_idx = int(n * 0.7)
 
 train_df = df.iloc[:split_idx].copy()
 test_df = df.iloc[split_idx:].copy()
@@ -70,32 +70,84 @@ print("Test-Zeilen :", len(test_df), "| Zeitraum:",
       test_df.index.min(), "→", test_df.index.max())
 
 
-EXPERIMENT_NAME = "baseline_full"
-
-USE_WEATHER = True
-USE_LAGS = True
-USE_CALENDAR = True
-
-EXCLUDE_WEATHER = [
-    
-]
-
 TARGET_COL = "Stromverbrauch" 
 DROP_COLS = ["Datum (Lokal)", "Zeit (Lokal)"]
 
-CATEGORICAL_FEATURES = []
-for col in ["Monat", "Wochentag", "Quartal", "Woche des Jahres", "Stunde (Lokal)", "IstArbeitstag", "IstSonntag"]:
-    if col in train_df.columns:
-        CATEGORICAL_FEATURES.append(col)
+EXPERIMENT_NAME = "baseline_full"   # beliebig, du notierst es in markdown
 
-NUMERIC_FEATURES = [
-    c for c in train_df.columns
-    if c not in CATEGORICAL_FEATURES + DROP_COLS + [TARGET_COL]
+USE_WEATHER = True             # komplette Wetterdaten nutzen?
+USE_LAGS = True                # Lag Features nutzen?
+USE_CALENDAR = True  
+
+EXCLUDE_WEATHER = [
+   "BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in km/h_lag15",
+   "BÃ¶enspitze (SekundenbÃ¶e); Maximum in km/h_lag15",
+   "Böenspitze (Sekundenböe)_lag15",
+   "Luftdruck reduziert auf Meeresniveau (QFF)_lag15",
+   "Luftdruck reduziert auf Meeresniveau mit Standardatmosphäre (QNH)_lag15",
+   "Lufttemperatur Bodenoberfläche_lag15",
+   "Windgeschwindigkeit; Zehnminutenmittel in km/h_lag15"
+
 ]
-print("\nKategorische Features:", CATEGORICAL_FEATURES)
-print("Numerische Features   :", NUMERIC_FEATURES[:10], "...")
-print("Anzahl numärische Features:", len(NUMERIC_FEATURES))
-print("Anzahl kategorische Features:", len(CATEGORICAL_FEATURES))
+
+EXCLUDE_LAGS = [
+    
+]
+
+# --------------------------------------
+# Feature-Gruppen
+# --------------------------------------
+
+CALENDAR_FEATURES = [
+    "Monat", "Wochentag", "Quartal", 
+    "Woche des Jahres", "Stunde (Lokal)",
+    "IstArbeitstag", "IstSonntag"
+]
+
+LAG_FEATURES = [
+    "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",
+    "Grundversorgte Kunden_Lag_15min",
+    "Freie Kunden_Lag_15min",
+    "Diff_15min"
+]
+
+# Wetter: alles, was mit _lag15 endet
+WEATHER_FEATURES_ALL = [
+    c for c in df.columns 
+    if c.endswith("_lag15") and c not in LAG_FEATURES
+]
+
+# einzelne Wetterfeatures deaktivieren
+WEATHER_FEATURES = [
+    c for c in WEATHER_FEATURES_ALL 
+    if c not in EXCLUDE_WEATHER
+]
+
+LAG_FEATURES = [
+    c for c in LAG_FEATURES
+    if c not in EXCLUDE_LAGS
+]
+
+# Finales Feature-Set bauen
+FEATURES = []
+if USE_CALENDAR:
+    FEATURES += CALENDAR_FEATURES
+if USE_LAGS:
+    FEATURES += LAG_FEATURES
+if USE_WEATHER:
+    FEATURES += WEATHER_FEATURES
+
+FEATURES = [f for f in FEATURES if f in df.columns]  # Safety
+
+# kategorisch/numerisch trennen
+CATEGORICAL_FEATURES = [c for c in CALENDAR_FEATURES if c in FEATURES]
+NUMERIC_FEATURES = [c for c in FEATURES if c not in CATEGORICAL_FEATURES]
+
+print("\nAktive Features:", len(FEATURES))
+print("Numerische:", len(NUMERIC_FEATURES))
+print("Kategorische:", len(CATEGORICAL_FEATURES))
+
+
 
 # Drop ueberfluessige Spalten, falls vorhanden
 train_df = train_df.drop(columns=[c for c in DROP_COLS if c in train_df.columns])
@@ -114,16 +166,7 @@ X_test = test_df[NUMERIC_FEATURES + CATEGORICAL_FEATURES]
 print("X_train Shape:", X_train.shape, " | y_train:", y_train.shape)
 print("X_test  Shape:", X_test.shape, " | y_test :", y_test.shape)
 
-numeric_transformer = "passthrough" # numärische Featrues durchreichen
-
-categorial_transformer = OneHotEncoder(handle_unknown="ignore")
-
-preprocessor = ColumnTransformer(transformers=[
-    ("num", numeric_transformer, NUMERIC_FEATURES),
-     ("cat", categorial_transformer, CATEGORICAL_FEATURES),
-])
-
-models = {
+MODELS = {
     "LinearRegression": LinearRegression(),
     #"RandomForest": RandomForestRegressor(
         #n_estimators=150,
@@ -139,53 +182,119 @@ models = {
 
 results = {}
 
-for name, model_obj in models.items():
-    print(f"\n Training {name} ")
+numeric_transformer = "passthrough"
+categorical_transformer = OneHotEncoder(handle_unknown="ignore")
 
-    pipe = Pipeline(
-        steps=[
-            ("preprocess", preprocessor),
-            ("model", model_obj)
-        ]
-    )
+preprocessor = ColumnTransformer(transformers=[
+    ("num", numeric_transformer, NUMERIC_FEATURES),
+    ("cat", categorical_transformer, CATEGORICAL_FEATURES),
+])
 
+for name, model_obj in MODELS.items():
 
-    # Training
+    print(f"\n=== Training {name} ===")
+
+    pipe = Pipeline([
+        ("preprocess", preprocessor),
+        ("model", model_obj)
+    ])
+
     pipe.fit(X_train, y_train)
 
-    # Vorhersage auf TRAIN
+    # Predict Train + Test
     y_pred_train = pipe.predict(X_train)
-
-    # Vorhersage auf TEST
     y_pred_test = pipe.predict(X_test)
 
-    # --- Metriken Trainingsdaten ---
-    mae_train = mean_absolute_error(y_train, y_pred_train)
-    rmse_train = np.sqrt(mean_squared_error(y_train, y_pred_train))
-    r2_train = r2_score(y_train, y_pred_train)
-    mape_train = np.mean(
-        np.abs((y_train - y_pred_train) / np.where(y_train == 0, 1e-6, y_train))
-    ) * 100
+    metrics = {
+        "MAE_train": mean_absolute_error(y_train, y_pred_train),
+        "RMSE_train": np.sqrt(mean_squared_error(y_train, y_pred_train)),
+        "R2_train": r2_score(y_train, y_pred_train),
 
-    # --- Metriken Testdaten ---
-    mae_test = mean_absolute_error(y_test, y_pred_test)
-    rmse_test = np.sqrt(mean_squared_error(y_test, y_pred_test))
-    r2_test = r2_score(y_test, y_pred_test)
-    mape_test = np.mean(
-        np.abs((y_test - y_pred_test) / np.where(y_test == 0, 1e-6, y_test))
-    ) * 100
-    
-    # Alles in results speichern
-    results[name] = {
-        "MAE_train": mae_train,
-        "RMSE_train": rmse_train,
-        "R2_train": r2_train,
-        "MAPE_train": mape_train,
-        "MAE_test": mae_test,
-        "RMSE_test": rmse_test,
-        "R2_test": r2_test,
-        "MAPE_test": mape_test,
+        "MAE_test": mean_absolute_error(y_test, y_pred_test),
+        "RMSE_test": np.sqrt(mean_squared_error(y_test, y_pred_test)),
+        "R2_test": r2_score(y_test, y_pred_test),
     }
 
-    print(f"Train: MAE={mae_train:.1f}, RMSE={rmse_train:.1f}, R2={r2_train:.5f}, MAPE={mape_train:.2f}%")
-    print(f"Test : MAE={mae_test:.1f}, RMSE={rmse_test:.1f}, R2={r2_test:.5f}, MAPE={mape_test:.2f}%")
+    results[name] = metrics
+
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", 200)
+
+results_df = pd.DataFrame(results).T
+
+print("\n=== RESULTS (Train/Test) ===")
+print(results_df[[
+    "MAE_train", "RMSE_train", "R2_train",
+    "MAE_test", "RMSE_test", "R2_test"
+]])
+
+
+def forecast_multistep(pipe, df_history, steps=96*7):
+    df_temp = df_history.copy()
+    preds = []
+
+    for _ in range(steps):
+        last_ts = df_temp.index[-1]
+        next_ts = last_ts + pd.Timedelta("15min")
+
+        # Neue Features bauen: Kalender
+        row = {}
+        row["Monat"] = next_ts.month
+        row["Wochentag"] = next_ts.weekday()
+        row["Quartal"] = (next_ts.month-1)//3 + 1
+        row["Woche des Jahres"] = next_ts.isocalendar().week
+        row["Stunde (Lokal)"] = next_ts.tz_convert("Europe/Zurich").hour
+        row["IstArbeitstag"] = int(row["Wochentag"] < 5)
+        row["IstSonntag"] = int(row["Wochentag"] == 6)
+
+        # Lags aus df_temp
+        row["Lag_15min"] = df_temp.iloc[-1]["Stromverbrauch"]
+        row["Lag_30min"] = df_temp.iloc[-2]["Stromverbrauch"]
+        row["Lag_1h"] = df_temp.iloc[-4]["Stromverbrauch"]
+        row["Lag_24h"] = df_temp.iloc[-96]["Stromverbrauch"]
+
+        # Watte: Wetter? -> DU ENTSCHEIDEST
+        # Wenn du Wetter willst, brauchst du Echtzeit- oder Forecast-Daten.
+        # Sonst: lass Wetter weg.
+
+        X = pd.DataFrame([row], index=[next_ts])
+
+        y_hat = pipe.predict(X)[0]
+
+        preds.append((next_ts, y_hat))
+
+        df_temp.loc[next_ts, "Stromverbrauch"] = y_hat
+
+    forecast_df = pd.DataFrame(preds, columns=["ts", "forecast"]).set_index("ts")
+    return forecast_df
+
+
+
+import matplotlib.pyplot as plt
+
+# Für den Plot brauchst du das letzte trainierte Modell:
+last_model_name = list(results.keys())[-1]
+pipe = pipe   # letztes trainiertes Pipeline-Modell
+
+# Vorhersagen
+y_pred_train = pipe.predict(X_train)
+y_pred_test  = pipe.predict(X_test)
+
+# Plot: Vergleich Testzeitraum (erste 500 Punkte)
+N = 500
+plt.figure(figsize=(12,4))
+plt.plot(y_test.index[:N], y_test.values[:N], label="True")
+plt.plot(y_test.index[:N], y_pred_test[:N], label="Pred")
+plt.title("Test: True vs Pred")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Scatter
+plt.figure(figsize=(5,5))
+plt.scatter(y_test, y_pred_test, s=3)
+plt.xlabel("True")
+plt.ylabel("Pred")
+plt.title("Scatter Test")
+plt.tight_layout()
+plt.show()
