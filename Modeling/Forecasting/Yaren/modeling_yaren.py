@@ -21,8 +21,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))
 # Data-Ordner
 DATA_DIR = os.path.join(ROOT, "data")
 
+# Pfad zur CSV
 INPUT_CSV = os.path.join(DATA_DIR, "processed_merged_features.csv")
 
+# CSV einlesen
 df = pd.read_csv(
     INPUT_CSV,
     sep=";",
@@ -30,6 +32,7 @@ df = pd.read_csv(
     parse_dates=["Start der Messung (UTC)"]
 )
 
+# UTC-Zeiten in 15min Intervallen werden als Index gesetzt.
 df.set_index("Start der Messung (UTC)", inplace=True)
 
 # WICHTIG: Nur lokalizen, wenn noch keine TZ dran hängt
@@ -42,7 +45,7 @@ print("Index-TZ:", df.index.tz)
 print(df.head())
 
 # fester Startzeitpunkt, ab dem beide Kundenspalten vorhanden sind
-START_TS = pd.Timestamp("2020-08-31 22:00:00", tz="UTC")
+START_TS = pd.Timestamp("2012-08-31 22:00:00", tz="UTC")
 
 # Ende: nur bis Ende 2024, weil Wetter nur bis dann geht
 END_TS = pd.Timestamp("2024-12-31 23:45:00", tz="UTC")
@@ -51,13 +54,12 @@ END_TS = pd.Timestamp("2024-12-31 23:45:00", tz="UTC")
 df = df.loc[START_TS:END_TS].copy()
 
 # optional: sicherstellen, dass Kunden nicht null sind
-df = df.dropna(subset=["Grundversorgte Kunden_Lag_15min", "Freie Kunden_Lag_15min"])
+#df = df.dropna(subset=["Grundversorgte Kunden_Lag_15min", "Freie Kunden_Lag_15min"])
 
 print("Zeitraum nach Filter:", df.index.min(), "→", df.index.max())
 print("Anzahl Zeilen:", len(df))
 
 # 70 / 30 Split nach Reihenfolge (zeitlich korrekt)
-
 n = len(df)
 split_idx = int(n * 0.7)
 
@@ -80,17 +82,11 @@ USE_LAGS = True                # Lag Features nutzen?
 USE_CALENDAR = True  
 
 EXCLUDE_WEATHER = [
-   "BÃ¶enspitze (3-SekundenbÃ¶e); Maximum in km/h_lag15",
-   "BÃ¶enspitze (SekundenbÃ¶e); Maximum in km/h_lag15",
-   "Böenspitze (Sekundenböe)_lag15",
-   "Luftdruck reduziert auf Meeresniveau (QFF)_lag15",
-   "Luftdruck reduziert auf Meeresniveau mit Standardatmosphäre (QNH)_lag15",
-   "Lufttemperatur Bodenoberfläche_lag15",
-   "Windgeschwindigkeit; Zehnminutenmittel in km/h_lag15"
+   
 
-]
+    ]
 
-EXCLUDE_LAGS = [
+EXCLUDE_LAGS = ["Grundversorgte Kunden_Lag_15min", "Freie Kunden_Lag_15min"
     
 ]
 
@@ -123,12 +119,13 @@ WEATHER_FEATURES = [
     if c not in EXCLUDE_WEATHER
 ]
 
+
 LAG_FEATURES = [
     c for c in LAG_FEATURES
     if c not in EXCLUDE_LAGS
 ]
 
-# Finales Feature-Set bauen
+# Finales Feature-Set 
 FEATURES = []
 if USE_CALENDAR:
     FEATURES += CALENDAR_FEATURES
@@ -167,7 +164,7 @@ print("X_train Shape:", X_train.shape, " | y_train:", y_train.shape)
 print("X_test  Shape:", X_test.shape, " | y_test :", y_test.shape)
 
 MODELS = {
-    "LinearRegression": LinearRegression(),
+    #"LinearRegression": LinearRegression(),
     #"RandomForest": RandomForestRegressor(
         #n_estimators=150,
         #max_depth=15,
