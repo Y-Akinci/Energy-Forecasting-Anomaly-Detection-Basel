@@ -1,9 +1,11 @@
 {
-  "model_name": "GradientBoosting",
-  "test_rmse": 1762.2627467394495,
-  "test_r2": 0.9389959242595012,
+  "model_name": "RandomForest",
+  "test_rmse": 854.9436626350856,
+  "test_r2": 0.9856420470692655,
   "features": [
-    "Lag_24h",
+    "Lag_15min",
+    "Lag_30min",
+    "Lag_1h",
     "Diffusstrahlung; Zehnminutenmittel_lag15",
     "Globalstrahlung; Zehnminutenmittel_lag15",
     "Stunde (Lokal)",
@@ -22,13 +24,13 @@
   ],
   "params": {
     "n_estimators": 100,
-    "learning_rate": 0.05,
-    "max_depth": 5,
+    "max_depth": 15,
     "min_samples_split": 20,
     "min_samples_leaf": 10,
-    "subsample": 0.8,
-    "random_state": 42
+    "max_features": "sqrt",
+    "random_state": 42,
+    "n_jobs": -1
   },
   "forecast_horizon": "1h",
-  "trained_date": "2025-12-09T00:28:56.486534"
+  "trained_date": "2025-12-10T18:49:31.459680"
 }

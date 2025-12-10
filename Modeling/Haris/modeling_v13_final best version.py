@@ -49,6 +49,11 @@ class Config:
     
     # Features OHNE Lag_1h (beste Config)
     SELECTED_FEATURES = [
+        'Lag_15min',
+        'Lag_30min',
+        'Lag_1h',
+        'Freie Kunden_lag15',
+        'Grundversorgte Kunden_lag15'
         'Lag_24h',
         'Diffusstrahlung; Zehnminutenmittel_lag15',
         'Globalstrahlung; Zehnminutenmittel_lag15',
