@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import matplotlib.pyplot as plt
+import joblib
 
 # Ordner, in dem dieses modeling_yaren.py liegt
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -66,7 +67,11 @@ print("Test-Zeilen :", len(test_df), "| Zeitraum:",
       test_df.index.min(), "→", test_df.index.max())
 
 TARGET_COL = "Stromverbrauch"
-DROP_COLS = ["Datum (Lokal)", "Zeit (Lokal)"]
+DROP_COLS = [
+    "Datum (Lokal)", "Zeit (Lokal)",
+    "Monat", "Wochentag", "Stunde (Lokal)",
+    "Tag des Jahres","Quartal"
+]
 
 EXPERIMENT_NAME = "baseline_full"
 
@@ -100,10 +105,25 @@ EXCLUDE_LAGS = [
 # --------------------------------------
 # Feature-Gruppen
 # --------------------------------------
+for d in (train_df, test_df):
+    d["Monat_sin"] = np.sin(2 * np.pi * d["Monat"] / 12)
+    d["Monat_cos"] = np.cos(2 * np.pi * d["Monat"] / 12)
+
+    d["Wochentag_sin"] = np.sin(2 * np.pi * d["Wochentag"] / 7)
+    d["Wochentag_cos"] = np.cos(2 * np.pi * d["Wochentag"] / 7)
+
+    d["Stunde_sin"] = np.sin(2 * np.pi * d["Stunde (Lokal)"] / 24)
+    d["Stunde_cos"] = np.cos(2 * np.pi * d["Stunde (Lokal)"] / 24)
+
+    d["TagJahr_sin"] = np.sin(2 * np.pi * d["Tag des Jahres"] / 365)
+    d["TagJahr_cos"] = np.cos(2 * np.pi * d["Tag des Jahres"] / 365)
+
 
 CALENDAR_FEATURES = [
-    "Monat", "Wochentag", "Quartal",
-    "Woche des Jahres", "Stunde (Lokal)",
+    "Monat_sin", "Monat_cos",
+    "Wochentag_sin", "Wochentag_cos",
+    "Stunde_sin", "Stunde_cos",
+    "TagJahr_sin", "TagJahr_cos", "Woche des Jahres",
     "IstArbeitstag", "IstSonntag"
 ]
 
@@ -143,7 +163,7 @@ if USE_WEATHER:
 FEATURES = [f for f in FEATURES if f in df.columns]  # Safety
 
 # kategorisch/numerisch trennen
-CATEGORICAL_FEATURES = [c for c in CALENDAR_FEATURES if c in FEATURES]
+CATEGORICAL_FEATURES = []
 NUMERIC_FEATURES = [c for c in FEATURES if c not in CATEGORICAL_FEATURES]
 
 print("\nAktive Features:", len(FEATURES))
@@ -187,10 +207,11 @@ results = {}
 numeric_transformer = "passthrough"
 categorical_transformer = OneHotEncoder(handle_unknown="ignore")
 
-preprocessor = ColumnTransformer(transformers=[
-    ("num", numeric_transformer, NUMERIC_FEATURES),
-    ("cat", categorical_transformer, CATEGORICAL_FEATURES),
-])
+transformers = [("num", "passthrough", NUMERIC_FEATURES)]
+if len(CATEGORICAL_FEATURES) > 0:
+    transformers.append(("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL_FEATURES))
+
+preprocessor = ColumnTransformer(transformers=transformers)
 
 for name, model_obj in MODELS.items():
 
@@ -271,6 +292,7 @@ print(f"RMSE : {rmse_15:.2f}")
 print(f"R2   : {r2_15:.4f}")
 
 
+# === 24H - MULTI - Step FORECAST ===
 def forecast_multistep(pipe, df_history, df_full, steps=96):
     """
     pipe      : trainierte Pipeline (z.B. XGBoost)
@@ -459,3 +481,13 @@ else:
         print(f"RMSE 24h : {rmse_24h:.2f}")
         print(f"R2 24h   : {r2_24h:.4f}")
         print(f"MAPE 24h : {mape_24h:.2f} %")
+
+
+MODEL_DIR = os.path.join(ROOT, "models")
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+MODEL_PATH = os.path.join(MODEL_DIR, "xgb_1step_pipeline.joblib")
+
+joblib.dump(pipe, MODEL_PATH)
+
+print("Modell gespeichert unter:", MODEL_PATH)
