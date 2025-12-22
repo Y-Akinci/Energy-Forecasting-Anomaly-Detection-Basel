@@ -50,7 +50,6 @@ class Config:
     # Features OHNE dominante Lags und Kunden
     # ENTFERNT: Lag_15min, Lag_30min, Freie Kunden, Grundversorgte Kunden
     SELECTED_FEATURES = [
-        'Lag_1h',
         'Lag_24h',
         'Diffusstrahlung; Zehnminutenmittel_lag15',
         'Globalstrahlung; Zehnminutenmittel_lag15',
@@ -82,15 +81,15 @@ class Config:
         'n_jobs': -1,
     }
     
-    GB_PARAMS = {
-        'n_estimators': 400,
-        'learning_rate': 0.08,
-        'max_depth': 4,
-        'min_samples_split': 20,
-        'min_samples_leaf': 10,
-        'subsample': 0.9,
-        'random_state': 42,
-    }
+    #GB_PARAMS = {
+        #'n_estimators': 400,
+        #'learning_rate': 0.08,
+        #'max_depth': 4,
+        #'min_samples_split': 20,
+        #'min_samples_leaf': 10,
+        #'subsample': 0.9,
+        #'random_state': 42,
+    #}
     
     XGB_PARAMS = {
         'n_estimators': 250,
@@ -290,8 +289,8 @@ def train_and_evaluate(model, name, params):
 rf_model = RandomForestRegressor(**Config.RF_PARAMS)
 results.append(train_and_evaluate(rf_model, "RandomForest", Config.RF_PARAMS))
 
-gb_model = GradientBoostingRegressor(**Config.GB_PARAMS)
-results.append(train_and_evaluate(gb_model, "GradientBoosting", Config.GB_PARAMS))
+#gb_model = GradientBoostingRegressor(**Config.GB_PARAMS)
+#results.append(train_and_evaluate(gb_model, "GradientBoosting", Config.GB_PARAMS))
 
 if HAS_XGB:
     xgb_model = xgb.XGBRegressor(**Config.XGB_PARAMS)

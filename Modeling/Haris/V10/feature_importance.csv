@@ -1,0 +1,17 @@
+feature,importance
+Lag_24h,0.27958715
+IstArbeitstag,0.21668388
+Globalstrahlung; Zehnminutenmittel_lag15,0.18314119
+Stunde (Lokal),0.1105205
+Wochentag,0.07518837
+Diffusstrahlung; Zehnminutenmittel_lag15,0.050054293
+IstSonntag,0.035616755
+relative Luftfeuchtigkeit_lag15,0.009383946
+Chilltemperatur_lag15,0.008593412
+Lufttemperatur Bodenoberfläche_lag15,0.006614361
+Lufttemperatur 2 m ü. Gras_lag15,0.006476797
+Lufttemperatur 2 m ü. Boden_lag15,0.005061652
+Monat,0.0047839447
+Quartal,0.004031121
+Sonnenscheindauer; Zehnminutensumme_lag15,0.0035402114
+Böenspitze (Sekundenböe)_lag15,0.00072246697

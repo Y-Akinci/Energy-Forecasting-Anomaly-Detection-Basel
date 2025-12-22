@@ -1,0 +1,43 @@
+{
+  "model_name": "GradientBoosting",
+  "test_rmse": 1667.3105011080697,
+  "test_r2": 0.9453927254549112,
+  "train_r2": 0.9737712199450399,
+  "overfitting": 0.028378494490128747,
+  "cv_rmse": 1854.2378552662321,
+  "features": [
+    "Lag_24h",
+    "Diffusstrahlung; Zehnminutenmittel_lag15",
+    "Globalstrahlung; Zehnminutenmittel_lag15",
+    "Sonnenscheindauer; Zehnminutensumme_lag15",
+    "relative Luftfeuchtigkeit_lag15",
+    "Chilltemperatur_lag15",
+    "IstSonntag",
+    "IstArbeitstag",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "weekday_sin",
+    "weekday_cos"
+  ],
+  "cyclic_features": [
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "weekday_sin",
+    "weekday_cos"
+  ],
+  "params": {
+    "n_estimators": 300,
+    "learning_rate": 0.03,
+    "max_depth": 7,
+    "min_samples_split": 20,
+    "min_samples_leaf": 10,
+    "subsample": 0.9,
+    "random_state": 42
+  },
+  "forecast_horizon": "1h",
+  "trained_date": "2025-12-11T16:58:08.487800"
+}

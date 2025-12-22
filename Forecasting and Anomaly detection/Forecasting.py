@@ -96,3 +96,4 @@ if next_time in df_full.index:
     print(f"|Fehler|    : {abs(err_one):.2f}")
 else:
     print("Kein echter Messwert für", next_time,)
+

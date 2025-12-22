@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-12-11T11:58:19.590550",
+  "version": "V11_Cyclic",
+  "description": "1h Forecast, ohne dominante Lags, MIT ZYKLISCHER KODIERUNG (Sin/Cos) f\u00fcr Zeit-Features",
+  "config": {
+    "train_ratio": 0.7,
+    "cv_splits": 5,
+    "forecast_horizon_steps": 4,
+    "forecast_horizon_name": "1h",
+    "feature_selection": "Removed: Lag_15min, Lag_30min, Kunden. Added: Sin/Cos encoding for Time features",
+    "features_used": [
+      "Lag_24h",
+      "Wochentag_Sin",
+      "Wochentag_Cos",
+      "Monat_Sin",
+      "Monat_Cos",
+      "IstArbeitstag",
+      "IstSonntag",
+      "Quartal"
+    ]
+  },
+  "data": {},
+  "baseline": {},
+  "models": []
+}

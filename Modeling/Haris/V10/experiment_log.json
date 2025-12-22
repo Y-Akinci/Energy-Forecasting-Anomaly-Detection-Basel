@@ -1,0 +1,101 @@
+{
+  "timestamp": "2025-12-11T12:20:25.433621",
+  "version": "V10",
+  "description": "1h Forecast OHNE Lag_15min, Lag_30min, Kunden-Features",
+  "config": {
+    "train_ratio": 0.7,
+    "cv_splits": 5,
+    "forecast_horizon_steps": 4,
+    "forecast_horizon_name": "1h",
+    "feature_selection": "Removed: Lag_15min, Lag_30min, Freie Kunden, Grundversorgte Kunden",
+    "features_used": [
+      "Lag_24h",
+      "Diffusstrahlung; Zehnminutenmittel_lag15",
+      "Globalstrahlung; Zehnminutenmittel_lag15",
+      "Stunde (Lokal)",
+      "IstArbeitstag",
+      "Sonnenscheindauer; Zehnminutensumme_lag15",
+      "Lufttemperatur 2 m \u00fc. Boden_lag15",
+      "IstSonntag",
+      "relative Luftfeuchtigkeit_lag15",
+      "Lufttemperatur 2 m \u00fc. Gras_lag15",
+      "Chilltemperatur_lag15",
+      "B\u00f6enspitze (Sekundenb\u00f6e)_lag15",
+      "Lufttemperatur Bodenoberfl\u00e4che_lag15",
+      "Monat",
+      "Wochentag",
+      "Quartal"
+    ]
+  },
+  "data": {
+    "train_start": "2015-01-01 00:00:00+00:00",
+    "train_end": "2022-01-01 01:15:00+00:00",
+    "test_start": "2022-01-01 01:30:00+00:00",
+    "test_end": "2024-12-31 22:45:00+00:00",
+    "n_train": 245450,
+    "n_test": 105194,
+    "n_features": 16
+  },
+  "baseline": {
+    "method": "Lag_1h (Persistence)",
+    "rmse": null,
+    "mae": null,
+    "r2": null
+  },
+  "models": [
+    {
+      "name": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 20,
+        "min_samples_split": 20,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt",
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "train_rmse": 1191.7982039658204,
+      "test_rmse": 1997.129801484001,
+      "train_r2": 0.9814220942645824,
+      "test_r2": 0.9216516030285038,
+      "overfitting": 0.05977049123607858,
+      "cv_rmse_mean": 2105.9122492876354,
+      "cv_rmse_std": 171.72588004325115
+    },
+    {
+      "name": "XGBoost",
+      "params": {
+        "n_estimators": 250,
+        "learning_rate": 0.03,
+        "max_depth": 4,
+        "min_child_weight": 10,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "train_rmse": 1834.6176967562167,
+      "test_rmse": 1922.9497513180816,
+      "train_r2": 0.9559767137619859,
+      "test_r2": 0.9273637521115015,
+      "overfitting": 0.028612961650484436,
+      "cv_rmse_mean": 2051.7113245942846,
+      "cv_rmse_std": 128.6843076612577
+    },
+    {
+      "name": "Ridge",
+      "params": {
+        "alpha": 10.0,
+        "random_state": 42
+      },
+      "train_rmse": 3988.0573533112924,
+      "test_rmse": 3416.383194885848,
+      "train_r2": 0.7919756888861976,
+      "test_r2": 0.7707281769422948,
+      "overfitting": 0.02124751194390284,
+      "cv_rmse_mean": 4112.430418343555,
+      "cv_rmse_std": 647.0088843407189
+    }
+  ],
+  "best_model": "XGBoost"
+}

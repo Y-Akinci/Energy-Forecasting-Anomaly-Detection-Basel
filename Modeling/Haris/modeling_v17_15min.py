@@ -143,8 +143,11 @@ daily_agg['Weekday_avg'] = daily_agg.groupby('Wochentag')['Stromverbrauch'].tran
 print("Tages-Features erstellt")
 
 # Merge zurück zu 15-min Daten
+# Konvertiere date zu datetime für merge
+df['date'] = pd.to_datetime(df['date'])
+
 df = df.merge(
-    daily_agg[['Lag_1day', 'Lag_7days', 'Lag_14days', 'Rolling_7d_mean', 'Rolling_14d_mean', 'Weekday_avg']],
+    daily_agg[['Lag_7days', 'Lag_14days', 'Rolling_7d_mean', 'Rolling_14d_mean', 'Weekday_avg']],
     left_on='date',
     right_index=True,
     how='left'
@@ -162,9 +165,8 @@ print("\n[3/6] Target & Features...")
 target_col = "Stromverbrauch"
 y = df[target_col].shift(-Config.FORECAST_HORIZON_STEPS).astype(float)
 
-# Features - GENAU diese!
+# Features - OHNE Lag_1day (zu groß für 15-min prediction!)
 feature_cols = [
-    'Lag_1day',
     'Lag_7days', 
     'Lag_14days',
     'Rolling_7d_mean',
@@ -211,9 +213,9 @@ print(f"Test:  {len(X_test):,} samples")
 
 print("\n[5/6] Baseline...")
 
-baseline_rmse = np.sqrt(mean_squared_error(y_test, X_test['Lag_1day']))
-baseline_r2 = r2_score(y_test, X_test['Lag_1day'])
-print(f"Baseline (Lag_1day): RMSE={baseline_rmse:.2f} kWh, R²={baseline_r2:.4f}")
+baseline_rmse = np.sqrt(mean_squared_error(y_test, X_test['Lag_7days']))
+baseline_r2 = r2_score(y_test, X_test['Lag_7days'])
+print(f"Baseline (Lag_7days): RMSE={baseline_rmse:.2f} kWh, R²={baseline_r2:.4f}")
 
 # ============================================================
 # MODEL TRAINING
