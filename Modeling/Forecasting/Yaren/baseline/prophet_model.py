@@ -102,10 +102,13 @@ print("Test  days:", len(test_df),  "|", test_df["ds"].min(),  "→", test_df["d
 # Prophet Modell
 # =========================================================
 m = Prophet(
-    daily_seasonality=False,   # daily seasonality macht bei daily daten keinen Sinn
+    daily_seasonality=False,
     weekly_seasonality=True,
     yearly_seasonality=True,
+    changepoint_prior_scale=0.05,   # weniger Trend-Flex
+    seasonality_prior_scale=10.0
 )
+m.add_country_holidays(country_name="CH")
 
 m.fit(train_df)
 
@@ -115,13 +118,18 @@ forecast = m.predict(future)
 
 y_true = test_df["y"].values
 y_pred = forecast["yhat"].values
+bias = np.mean(y_pred - y_true)
+print(f"Bias (yhat - y): {bias:.2f}")
+
 
 mae = mean_absolute_error(y_true, y_pred)
 rmse = np.sqrt(mean_squared_error(y_true, y_pred))
 r2 = r2_score(y_true, y_pred)
+mape = np.mean(np.abs((y_true - y_pred) / np.maximum(y_true, 1e-6))) * 100
+
 
 print("\n=== Prophet Daily Baseline ===")
-print(f"AGG={AGG} | MAE={mae:.2f} | RMSE={rmse:.2f} | R2={r2:.4f}")
+print(f"AGG={AGG} | MAE={mae:.2f} | RMSE={rmse:.2f} | R2={r2:.4f} | MAPE={mape:.2f}%")
 
 
 # =========================================================
@@ -136,5 +144,7 @@ plt.tight_layout()
 plt.show()
 
 # Komponentenplot (optional)
-# m.plot_components(forecast)
-# plt.show()
+fig2 = m.plot_components(forecast)
+plt.tight_layout()
+plt.show()
+

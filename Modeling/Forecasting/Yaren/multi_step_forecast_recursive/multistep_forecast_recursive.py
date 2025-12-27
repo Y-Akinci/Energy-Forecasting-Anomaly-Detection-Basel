@@ -1,23 +1,66 @@
-import os
-import pandas as pd
+import warnings
 import numpy as np
-
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.pipeline import Pipeline
-from xgboost import XGBRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import pandas as pd
 import matplotlib.pyplot as plt
 
+from pathlib import Path
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from lightgbm import LGBMRegressor
 
-# =======================================
-# Pfade / Daten laden
-# =======================================
+warnings.filterwarnings("ignore", message="X does not have valid feature names")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))
-DATA_DIR = os.path.join(ROOT, "data")
-INPUT_CSV = os.path.join(DATA_DIR, "processed_merged_features.csv")
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", 200)
+
+# -----------------------------
+# Settings
+# -----------------------------
+TARGET_COL = "Stromverbrauch"
+HORIZON = 96
+TZ_LOCAL = "Europe/Zurich"
+
+SHOW_EXAMPLE_DAY_PLOT = True
+EXAMPLE_DAY_UTC = pd.Timestamp("2024-11-15 00:00:00", tz="UTC")
+
+MAX_MISSING_PER_BLOCK = 4
+HISTORY_DAYS = 7
+
+# -----------------------------
+# Helper
+# -----------------------------
+def metrics_1d(y_true: np.ndarray, y_pred: np.ndarray):
+    mae = mean_absolute_error(y_true, y_pred)
+    rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
+    r2 = r2_score(y_true, y_pred)
+    y_true_safe = np.where(y_true == 0, 1e-6, y_true)
+    mape = float(np.mean(np.abs((y_true - y_pred) / y_true_safe)) * 100)
+    return float(mae), float(rmse), float(r2), float(mape)
+
+def print_block(title: str, rows: list[tuple[str, float]]):
+    print("\n" + title)
+    for k, v in rows:
+        if k.lower().startswith("r2"):
+            print(f"{k:<10}: {v:.4f}")
+        elif k.lower().startswith("mape"):
+            print(f"{k:<10}: {v:.2f} %")
+        else:
+            print(f"{k:<10}: {v:.2f}")
+
+def _sin_cos(value, period):
+    return np.sin(2 * np.pi * value / period), np.cos(2 * np.pi * value / period)
+
+# -----------------------------
+# Load data
+# -----------------------------
+BASE_DIR = Path(__file__).resolve().parent
+ROOT = BASE_DIR
+while ROOT != ROOT.parent and not (ROOT / "data").exists():
+    ROOT = ROOT.parent
+
+DATA_DIR = ROOT / "data"
+INPUT_CSV = DATA_DIR / "processed_merged_features.csv"
 
 df = pd.read_csv(
     INPUT_CSV,
@@ -25,29 +68,18 @@ df = pd.read_csv(
     encoding="latin1",
     parse_dates=["Start der Messung (UTC)"]
 )
-
 df.set_index("Start der Messung (UTC)", inplace=True)
-
-if df.index.tz is None:
-    df.index = df.index.tz_localize("UTC")
-else:
-    df.index = df.index.tz_convert("UTC")
+df.index = df.index.tz_localize("UTC") if df.index.tz is None else df.index.tz_convert("UTC")
 
 START_TS = pd.Timestamp("2020-08-31 22:00:00", tz="UTC")
 END_TS = pd.Timestamp("2024-12-31 23:45:00", tz="UTC")
 df = df.loc[START_TS:END_TS].copy()
+df_truth = df.copy()
 
-print("Index-TZ:", df.index.tz)
-print("Zeitraum:", df.index.min(), "→", df.index.max())
-print("Anzahl Zeilen:", len(df))
-
-
-# =======================================
-# Feature-Setup (wie dein rekursiver Teil)
-# =======================================
-
-TARGET_COL = "Stromverbrauch"
-DROP_COLS = ["Datum (Lokal)", "Zeit (Lokal)"]
+# -----------------------------
+# Features (wie bei dir)
+# -----------------------------
+DROP_COLS = ["Datum (Lokal)", "Zeit (Lokal)", "Monat", "Wochentag", "Stunde (Lokal)", "Tag des Jahres", "Quartal"]
 
 USE_WEATHER = True
 USE_LAGS = True
@@ -67,7 +99,6 @@ EXCLUDE_WEATHER = [
     'Windrichtung; Zehnminutenmittel_lag15',
     'relative Luftfeuchtigkeit_lag15'
 ]
-
 EXCLUDE_LAGS = [
     "Grundversorgte Kunden_Lag_15min",
     "Freie Kunden_Lag_15min",
@@ -76,30 +107,30 @@ EXCLUDE_LAGS = [
     "Diff_15min"
 ]
 
-CALENDAR_FEATURES = [
-    "Monat", "Wochentag", "Quartal",
-    "Woche des Jahres", "Stunde (Lokal)",
-    "IstArbeitstag", "IstSonntag"
-]
+df["Monat_sin"] = np.sin(2 * np.pi * df["Monat"] / 12)
+df["Monat_cos"] = np.cos(2 * np.pi * df["Monat"] / 12)
+df["Wochentag_sin"] = np.sin(2 * np.pi * df["Wochentag"] / 7)
+df["Wochentag_cos"] = np.cos(2 * np.pi * df["Wochentag"] / 7)
+df["Stunde_sin"] = np.sin(2 * np.pi * df["Stunde (Lokal)"] / 24)
+df["Stunde_cos"] = np.cos(2 * np.pi * df["Stunde (Lokal)"] / 24)
+df["TagJahr_sin"] = np.sin(2 * np.pi * df["Tag des Jahres"] / 365)
+df["TagJahr_cos"] = np.cos(2 * np.pi * df["Tag des Jahres"] / 365)
 
+CALENDAR_FEATURES = [
+    "Monat_sin", "Monat_cos",
+    "Wochentag_sin", "Wochentag_cos",
+    "Stunde_sin", "Stunde_cos",
+    "TagJahr_sin", "TagJahr_cos",
+    "Woche des Jahres", "IstArbeitstag", "IstSonntag"
+]
 LAG_FEATURES = [
     "Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",
     "Grundversorgte Kunden_Lag_15min",
     "Freie Kunden_Lag_15min",
     "Diff_15min"
 ]
-
-# Wetter: alles *_lag15, ausser Lags
-WEATHER_FEATURES_ALL = [
-    c for c in df.columns
-    if c.endswith("_lag15") and c not in LAG_FEATURES
-]
-
-WEATHER_FEATURES = [
-    c for c in WEATHER_FEATURES_ALL
-    if c not in EXCLUDE_WEATHER
-]
-
+WEATHER_FEATURES_ALL = [c for c in df.columns if c.endswith("_lag15") and c not in LAG_FEATURES]
+WEATHER_FEATURES = [c for c in WEATHER_FEATURES_ALL if c not in EXCLUDE_WEATHER]
 LAG_FEATURES = [c for c in LAG_FEATURES if c not in EXCLUDE_LAGS]
 
 FEATURES = []
@@ -110,68 +141,56 @@ if USE_LAGS:
 if USE_WEATHER:
     FEATURES += WEATHER_FEATURES
 
-FEATURES = [f for f in FEATURES if f in df.columns]
-
-CATEGORICAL_FEATURES = [c for c in CALENDAR_FEATURES if c in FEATURES]
-NUMERIC_FEATURES = [c for c in FEATURES if c not in CATEGORICAL_FEATURES]
-
-print("\nAktive Features:", len(FEATURES))
-print("Numerische:", len(NUMERIC_FEATURES))
-print("Kategorische:", len(CATEGORICAL_FEATURES))
-
-# Drop Display-Spalten
+NUMERIC_FEATURES = [f for f in FEATURES if f in df.columns]
 df = df.drop(columns=[c for c in DROP_COLS if c in df.columns])
 
-
-# =======================================
-# Train / Test Split (zeitlich)
-# =======================================
-
+# -----------------------------
+# Train/Test Split
+# -----------------------------
 n = len(df)
 split_idx = int(n * 0.7)
-
 train_df = df.iloc[:split_idx].copy()
-test_df = df.iloc[split_idx:].copy()
+test_df  = df.iloc[split_idx:].copy()
 
-print("\nTrain:", train_df.index.min(), "→", train_df.index.max(), "|", len(train_df))
-print("Test :", test_df.index.min(), "→", test_df.index.max(), "|", len(test_df))
-
-X_train = train_df[NUMERIC_FEATURES + CATEGORICAL_FEATURES]
-X_test = test_df[NUMERIC_FEATURES + CATEGORICAL_FEATURES]
+X_train = train_df[NUMERIC_FEATURES]
 y_train = train_df[TARGET_COL].astype("float64")
-y_test = test_df[TARGET_COL].astype("float64")
+X_test  = test_df[NUMERIC_FEATURES]
+y_test  = test_df[TARGET_COL].astype("float64")
 
-
-# =======================================
-# Pipeline (wie bei dir: OneHot fuer Kalender)
-# =======================================
-
-transformers = [
-    ("num", "passthrough", NUMERIC_FEATURES),
-    ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL_FEATURES),
-]
-preprocessor = ColumnTransformer(transformers=transformers)
+# -----------------------------
+# 1-step model train
+# -----------------------------
+preprocessor = ColumnTransformer([("num", "passthrough", NUMERIC_FEATURES)], remainder="drop")
 
 pipe = Pipeline([
     ("preprocess", preprocessor),
-    ("model", XGBRegressor(
-        n_estimators=300,
-        max_depth=6,
+    ("model", LGBMRegressor(
+        n_estimators=500,
+        learning_rate=0.05,
+        num_leaves=64,
         subsample=0.8,
         colsample_bytree=0.8,
-        learning_rate=0.05,
-        n_jobs=-1
+        random_state=42,
+        n_jobs=-1,
+        verbose=-1,
+        force_col_wise=True
     ))
 ])
 
-print("\n=== Training XGBoost ===")
 pipe.fit(X_train, y_train)
 
+pred_train_1 = pipe.predict(X_train)
+pred_test_1  = pipe.predict(X_test)
 
-# =======================================
-# Rekursiver 24h Multi-Step Forecast
-# =======================================
+mae_tr, rmse_tr, r2_tr, mape_tr = metrics_1d(y_train.values, pred_train_1)
+mae_te, rmse_te, r2_te, mape_te = metrics_1d(y_test.values,  pred_test_1)
 
+print_block("=== REKURSIV Basis-Modell 1-step GLOBAL (Train) ===", [("MAE", mae_tr), ("RMSE", rmse_tr), ("R2", r2_tr), ("MAPE", mape_tr)])
+print_block("=== REKURSIV Basis-Modell 1-step GLOBAL (Test)  ===", [("MAE", mae_te), ("RMSE", rmse_te), ("R2", r2_te), ("MAPE", mape_te)])
+
+# -----------------------------
+# Rekursiv Forecast Funktion
+# -----------------------------
 def forecast_multistep(pipe, df_history, df_full, steps=96):
     df_temp = df_history.copy().sort_index()
     preds = []
@@ -183,22 +202,32 @@ def forecast_multistep(pipe, df_history, df_full, steps=96):
         row = {}
 
         # Kalender
-        if "Monat" in FEATURES:
-            row["Monat"] = next_ts.month
-        if "Wochentag" in FEATURES:
-            row["Wochentag"] = next_ts.weekday()
-        if "Quartal" in FEATURES:
-            row["Quartal"] = (next_ts.month - 1) // 3 + 1
+        if "Monat_sin" in FEATURES or "Monat_cos" in FEATURES:
+            s, c = _sin_cos(next_ts.month, 12)
+            row["Monat_sin"] = s; row["Monat_cos"] = c
+
+        if "Wochentag_sin" in FEATURES or "Wochentag_cos" in FEATURES:
+            s, c = _sin_cos(next_ts.weekday(), 7)
+            row["Wochentag_sin"] = s; row["Wochentag_cos"] = c
+
+        if "Stunde_sin" in FEATURES or "Stunde_cos" in FEATURES:
+            hour_local = next_ts.tz_convert(TZ_LOCAL).hour
+            s, c = _sin_cos(hour_local, 24)
+            row["Stunde_sin"] = s; row["Stunde_cos"] = c
+
+        if "TagJahr_sin" in FEATURES or "TagJahr_cos" in FEATURES:
+            doy = int(next_ts.tz_convert(TZ_LOCAL).dayofyear)
+            s, c = _sin_cos(doy, 365)
+            row["TagJahr_sin"] = s; row["TagJahr_cos"] = c
+
         if "Woche des Jahres" in FEATURES:
             row["Woche des Jahres"] = int(next_ts.isocalendar().week)
-        if "Stunde (Lokal)" in FEATURES:
-            row["Stunde (Lokal)"] = next_ts.tz_convert("Europe/Zurich").hour
         if "IstArbeitstag" in FEATURES:
             row["IstArbeitstag"] = int(next_ts.weekday() < 5)
         if "IstSonntag" in FEATURES:
             row["IstSonntag"] = int(next_ts.weekday() == 6)
 
-        # Lags (Target)
+        # Lags Target
         if "Lag_15min" in FEATURES:
             row["Lag_15min"] = df_temp.iloc[-1][TARGET_COL]
         if "Lag_30min" in FEATURES and len(df_temp) >= 2:
@@ -211,7 +240,7 @@ def forecast_multistep(pipe, df_history, df_full, steps=96):
         if "Diff_15min" in FEATURES and len(df_temp) >= 2:
             row["Diff_15min"] = df_temp.iloc[-1][TARGET_COL] - df_temp.iloc[-2][TARGET_COL]
 
-        # Kunden-Lags (falls vorhanden)
+        # Kunden
         if "Grundversorgte Kunden_Lag_15min" in FEATURES and "Grundversorgte Kunden_Lag_15min" in df_temp.columns:
             row["Grundversorgte Kunden_Lag_15min"] = df_temp.iloc[-1]["Grundversorgte Kunden_Lag_15min"]
         if "Freie Kunden_Lag_15min" in FEATURES and "Freie Kunden_Lag_15min" in df_temp.columns:
@@ -230,13 +259,10 @@ def forecast_multistep(pipe, df_history, df_full, steps=96):
                         row[feat] = df_full.loc[last_known_ts, feat]
 
         X = pd.DataFrame([row], index=[next_ts])
-
-        # Safety: fehlende Spalten fuellen
-        for c in (NUMERIC_FEATURES + CATEGORICAL_FEATURES):
+        for c in NUMERIC_FEATURES:
             if c not in X.columns:
                 X[c] = np.nan
-
-        X = X[NUMERIC_FEATURES + CATEGORICAL_FEATURES]
+        X = X[NUMERIC_FEATURES]
 
         y_hat = pipe.predict(X)[0]
         preds.append((next_ts, y_hat))
@@ -245,118 +271,93 @@ def forecast_multistep(pipe, df_history, df_full, steps=96):
 
     return pd.DataFrame(preds, columns=["ts", "forecast"]).set_index("ts")
 
+# -----------------------------
+# 24h-Block-Auswertung 00:00 lokal (Train/Test)
+# -----------------------------
+def eval_recursive_midnight_blocks(starts: pd.DatetimeIndex, label: str):
+    maes, rmses, r2s, mapes, kept = [], [], [], [], []
 
-# =======================================
-# Tagesmetriken fuer 24h Multi-Step (rekursiv)
-# =======================================
-
-def metrics_24h_block(y_true_vals, y_pred_vals):
-    mae = mean_absolute_error(y_true_vals, y_pred_vals)
-    rmse = np.sqrt(mean_squared_error(y_true_vals, y_pred_vals))
-    r2 = r2_score(y_true_vals, y_pred_vals)
-    y_true_safe = np.where(y_true_vals == 0, 1e-6, y_true_vals)
-    mape = np.mean(np.abs((y_true_vals - y_pred_vals) / y_true_safe)) * 100
-    return mae, rmse, r2, mape
-
-def daily_multistep_metrics(df_full, period_start, period_end, label):
-    """
-    period_start/period_end sind UTC timestamps (inklusive).
-    Pro Tag: forecast 24h (96 steps) und Metriken speichern.
-    """
-    # Tage definieren als UTC-Tage 00:00 → 23:45
-    days = pd.date_range(
-        start=period_start.normalize(),
-        end=period_end.normalize(),
-        freq="D",
-        tz="UTC"
-    )
-
-    rows = []
-    for day in days:
-        target_start = day
-        target_end = day + pd.Timedelta("24h") - pd.Timedelta("15min")
-
-        # Wir brauchen True-Werte fuer den ganzen Tag
-        if target_end not in df_full.index:
+    for start_ts in starts:
+        history_end = start_ts - pd.Timedelta("15min")
+        history_start = history_end - pd.Timedelta(days=HISTORY_DAYS)
+        history = df.loc[history_start:history_end].copy()
+        if len(history) < 96:
             continue
 
-        # Historie: Ende = 24h vor target_end (also day-1 23:45), Start = 7 Tage davor
-        history_end = target_end - pd.Timedelta("24h")
-        history_start = history_end - pd.Timedelta("7D")
+        fc = forecast_multistep(pipe, history, df_full=df, steps=HORIZON)
+        idx_block = fc.index
 
-        # Historie muss existieren
-        if history_start not in df_full.index or history_end not in df_full.index:
+        truth = df.reindex(idx_block)[TARGET_COL]
+        if int(truth.isna().sum()) > MAX_MISSING_PER_BLOCK:
             continue
 
-        history = df_full.loc[history_start:history_end].copy()
-
-        # Forecast
-        fc = forecast_multistep(pipe, history, df_full=df_full, steps=96)
-
-        common_idx = fc.index.intersection(df_full.index)
-        if len(common_idx) != 96:
+        mask = truth.notna()
+        y_true = truth[mask].values
+        y_pred = fc.loc[truth.index[mask], "forecast"].values
+        if len(y_true) < 10:
             continue
 
-        y_true_24h = df_full.loc[common_idx, TARGET_COL].values
-        y_pred_24h = fc.loc[common_idx, "forecast"].values
+        mae, rmse, r2, mape = metrics_1d(y_true, y_pred)
+        maes.append(mae); rmses.append(rmse); r2s.append(r2); mapes.append(mape)
+        kept.append(start_ts)
 
-        mae, rmse, r2, mape = metrics_24h_block(y_true_24h, y_pred_24h)
+    out = pd.DataFrame({"MAE": maes, "RMSE": rmses, "R2": r2s, "MAPE": mapes}, index=pd.DatetimeIndex(kept)).sort_index()
 
-        rows.append([
-            day.date(), mae, rmse, r2, mape
-        ])
+    print("\n=== REKURSIV 24h BLOCK Start 00:00 lokal (" + label + ") ===")
+    print("Tage ausgewertet:", len(out))
+    if len(out) > 0:
+        print(f"MAE_mean  : {out['MAE'].mean():.2f} | RMSE_mean: {out['RMSE'].mean():.2f} | R2_mean: {out['R2'].mean():.4f} | MAPE_mean: {out['MAPE'].mean():.2f} %")
+        print(f"MAE_median: {out['MAE'].median():.2f}")
 
-    out = pd.DataFrame(rows, columns=["Tag", "MAE_24h", "RMSE_24h", "R2_24h", "MAPE_24h_%"])
-    print(f"\n=== Tagesmetriken 24h Multi-Step rekursiv ({label}) ===")
-    print(out.to_string(index=False))
     return out
 
+train_local = train_df.index.tz_convert(TZ_LOCAL)
+test_local  = test_df.index.tz_convert(TZ_LOCAL)
 
-# Train- und Testperiode fuer Tagesliste
-train_start = train_df.index.min()
-train_end = train_df.index.max()
+train_starts = train_df.index[(train_local.hour == 0) & (train_local.minute == 0)]
+test_starts  = test_df.index[(test_local.hour == 0) & (test_local.minute == 0)]
 
-test_start = test_df.index.min()
-test_end = test_df.index.max()
+train_blocks = eval_recursive_midnight_blocks(train_starts, "Train")
+test_blocks  = eval_recursive_midnight_blocks(test_starts,  "Test")
 
-daily_train_24h = daily_multistep_metrics(df, train_start, train_end, "Train")
-daily_test_24h = daily_multistep_metrics(df, test_start, test_end, "Test")
+# Plots
+if len(train_blocks) > 0:
+    plt.figure(figsize=(12, 4))
+    plt.plot(train_blocks.index, train_blocks["MAE"].values)
+    plt.title("Rekursiv: MAE_24h pro Tag (Train, Start 00:00 lokal)")
+    plt.ylabel("MAE_24h")
+    plt.tight_layout()
+    plt.show()
 
+if len(test_blocks) > 0:
+    plt.figure(figsize=(12, 4))
+    plt.plot(test_blocks.index, test_blocks["MAE"].values)
+    plt.title("Rekursiv: MAE_24h pro Tag (Test, Start 00:00 lokal)")
+    plt.ylabel("MAE_24h")
+    plt.tight_layout()
+    plt.show()
 
-# =======================================
-# Plot + Metriken fuer 15.11.2024 (24h rekursiv)
-# =======================================
+# Optional: Beispieltag Plot (Test)
+if SHOW_EXAMPLE_DAY_PLOT and EXAMPLE_DAY_UTC in test_df.index:
+    start_ts = EXAMPLE_DAY_UTC
+    history_end = start_ts - pd.Timedelta("15min")
+    history_start = history_end - pd.Timedelta(days=HISTORY_DAYS)
+    history = df.loc[history_start:history_end].copy()
 
-day_plot = pd.Timestamp("2024-11-15 00:00:00", tz="UTC")
-target_end_plot = day_plot + pd.Timedelta("24h") - pd.Timedelta("15min")
+    fc = forecast_multistep(pipe, history, df_full=df, steps=HORIZON)
+    truth = df.reindex(fc.index)[TARGET_COL]
+    mask = truth.notna()
 
-if target_end_plot not in df.index:
-    raise ValueError("15.11.2024 nicht voll im Datensatz vorhanden.")
+    y_true = truth[mask].values
+    y_pred = fc.loc[truth.index[mask], "forecast"].values
+    mae, rmse, r2, mape = metrics_1d(y_true, y_pred)
 
-history_end = target_end_plot - pd.Timedelta("24h")
-history_start = history_end - pd.Timedelta("7D")
-history = df.loc[history_start:history_end].copy()
+    idx_local = truth.index.tz_convert(TZ_LOCAL)
 
-fc_24h = forecast_multistep(pipe, history, df_full=df, steps=96)
-
-common_idx = fc_24h.index.intersection(df.index)
-y_true_24h = df.loc[common_idx, TARGET_COL]
-y_pred_24h = fc_24h.loc[common_idx, "forecast"]
-
-mae_24h, rmse_24h, r2_24h, mape_24h = metrics_24h_block(y_true_24h.values, y_pred_24h.values)
-
-idx_local = y_true_24h.index.tz_convert("Europe/Zurich")
-
-plt.figure(figsize=(12, 4))
-plt.plot(idx_local, y_true_24h.values, label="True 24h")
-plt.plot(idx_local, y_pred_24h.values, label="Forecast 24h (rekursiv)")
-plt.legend()
-plt.title(f"24h Multi-Step Forecast (rekursiv) fuer 15.11.2024\nMAE={mae_24h:.0f}, RMSE={rmse_24h:.0f}, R2={r2_24h:.3f}, MAPE={mape_24h:.2f}%")
-plt.tight_layout()
-plt.show()
-
-print("\n=== 15.11.2024 24h Multi-Step rekursiv ===")
-print(f"MAE  : {mae_24h:.2f}")
-print(f"RMSE : {rmse_24h:.2f}")
-print(f"R2   : {r2_24h:.4f}")
-print(f"MAPE : {mape_24h:.2f} %")
+    plt.figure(figsize=(12, 4))
+    plt.plot(idx_local[mask], y_true, label="True 24h")
+    plt.plot(idx_local[mask], y_pred, label="Forecast 24h (rekursiv)")
+    plt.title(f"Rekursiv 24h Beispieltag\nMAE={mae:.0f}, RMSE={rmse:.0f}, R2={r2:.3f}, MAPE={mape:.2f}%")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
