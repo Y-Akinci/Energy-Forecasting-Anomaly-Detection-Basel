@@ -1,8 +1,9 @@
 ## Business Understanding
 ### Ziel und Scope
-Das Projekt entwickelt ein zweiteiliges System für Basel-Stadt:
-- Nachfrageprognose des Stromverbrauchs auf 15-Minuten-Basis.
-- Anomalieerkennung im Verbrauchsverhalten.
+Das Projekt entwickelt ein System für Basel-Stadt für die Nachfrageprognose in folgenden detailgraden:
+- 15 Minuten Verbrauchsprognose
+- Tagesprognosen
+- Wochenprognosen
 
 Datenumfang: 
 Daten zum Stromverbrauch: viertelstündlicher Netzbezug im Kanton Basel-Stadt inklusive Netzverluste.
@@ -42,7 +43,6 @@ Freie Kunden: kaufen Energie am Markt, nutzen aber das IWB-Netz. Deren Last ist 
 #### Nachfrageprognose
 1. Planungssicherheit: Eigenproduktion, Speicher, Lastverschiebung und gezielter Marktzukauf können früh geplant werden.
 2. Kosteneffizienz: Weniger teurer Spot-Zukauf, optimierte Fahrpläne für Erzeugung und Speicher, geringere Regelenergie.
-
 3. Operative Steuerung: Personaleinsatz, Instandhaltung und Anlagenbetrieb können an den erwarteten Verbrauch angepasst werden.
 
 Hinweis: IWB kauft nicht täglich Strom, sondern nur bei Bedarf. Prognosen dienen dazu, diese Entscheidungen präziser und kostengünstiger zu treffen.
