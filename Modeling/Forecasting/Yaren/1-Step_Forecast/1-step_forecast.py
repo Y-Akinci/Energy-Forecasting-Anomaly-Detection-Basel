@@ -1,20 +1,20 @@
 import sys
 from pathlib import Path
 
-# --- sys.path: damit "common" gefunden wird ---
+# sys.path: damit "common" gefunden wird 
 ROOT = Path(__file__).resolve()
 while ROOT != ROOT.parent and ROOT.name != "Yaren":
     ROOT = ROOT.parent
 sys.path.append(str(ROOT))
 
-# --- common imports ---
+# common imports
 import common.data as data
 import common.metrics as m
 
 load_dataset_and_split = data.load_dataset_and_split
 train_test_metrics = m.train_test_metrics
 
-# --- normale imports ---
+# imports
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -27,9 +27,7 @@ from sklearn.ensemble import RandomForestRegressor
 from lightgbm import LGBMRegressor
 
 
-# =======================================
 # Daten aus common.data
-# =======================================
 
 bundle = load_dataset_and_split(verbose=True)
 
@@ -46,19 +44,15 @@ y_train = train_df[TARGET_COL].astype("float64")
 y_test  = test_df[TARGET_COL].astype("float64")
 
 
-# =======================================
 # Preprocessor (nur numerisch)
-# =======================================
-
 preprocessor = ColumnTransformer(
     transformers=[("num", "passthrough", NUMERIC_FEATURES)],
     remainder="drop"
 )
 
 
-# =======================================
+
 # Modelle
-# =======================================
 
 MODELS = {
     #"xgb": XGBRegressor(
@@ -88,9 +82,7 @@ MODELS = {
 }
 
 
-# =======================================
 # Train/Test pro Modell + speichern
-# =======================================
 
 MODEL_DIR = ROOT / "models"
 MODEL_DIR.mkdir(exist_ok=True)
@@ -99,7 +91,7 @@ results = {}
 best_name = None
 best_pipe = None
 best_pred_test = None
-best_score = None  # wir nehmen RMSE_test als Kriterium (kleiner = besser)
+best_score = None
 
 for name, model in MODELS.items():
     print(f"\n=== Training {name.upper()} (1-Step) ===")
@@ -136,9 +128,7 @@ for name, model in MODELS.items():
         best_pred_test = y_pred_test
 
 
-# =======================================
 # Vergleichstabelle ausgeben
-# =======================================
 
 results_df = pd.DataFrame(results).T
 print("\n=== MODELLVERGLEICH (1-Step) ===")
@@ -151,10 +141,7 @@ print(results_df[[
 print(f"\nBESTES MODELL (nach RMSE_test): {best_name.upper()} | RMSE_test={best_score:.3f}")
 
 
-# =======================================
-# 1-Step Plot: 15.11.2024 (24h Ausschnitt) – nur bestes Modell
-# =======================================
-
+# 1-Step Plot: 15.11.2024 (24h Ausschnitt)
 y_pred_test_series = pd.Series(best_pred_test, index=y_test.index)
 
 target_start = pd.Timestamp("2024-11-15 00:00:00", tz="UTC")
@@ -189,10 +176,7 @@ print(f"RMSE : {rmse_15:.2f}")
 print(f"R2   : {r2_15:.4f}")
 
 
-# =======================================
-# Optional: bestes Modell extra speichern (klarer Name)
-# =======================================
-
+# bestes Modell extra speichern (klarer Name)
 best_path = MODEL_DIR / "best_1step_pipeline.joblib"
 joblib.dump(best_pipe, best_path)
 print("\nBestes Modell gespeichert unter:", best_path)

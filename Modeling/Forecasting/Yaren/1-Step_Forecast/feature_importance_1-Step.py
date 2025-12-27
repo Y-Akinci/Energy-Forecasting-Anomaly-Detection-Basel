@@ -1,177 +1,118 @@
-import os
-import joblib
-import pandas as pd
+# Permutation Feature Importance für das gespeicherte 1-Step Pipeline-Modell
+import sys
+from pathlib import Path
+
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import joblib
 
 from sklearn.inspection import permutation_importance
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+# sys.path: damit "common" gefunden wird
+ROOT = Path(__file__).resolve()
+while ROOT != ROOT.parent and ROOT.name != "Yaren":
+    ROOT = ROOT.parent
+sys.path.append(str(ROOT))
+
+# common imports
+import common.data as data
+
+load_dataset_and_split = data.load_dataset_and_split
 
 
-# =======================================
-# Pfade
-# =======================================
+# SETTINGS
+MODEL_FILENAME = "best_1step_pipeline.joblib"      # wird aus /models geladen
+N_REPEATS = 10                                     
+SAMPLE_SIZE = 20000                                # permute auf Sample
+RANDOM_STATE = 42
+TOP_N = 25
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))
-DATA_DIR = os.path.join(ROOT, "data")
-MODEL_DIR = os.path.join(ROOT, "models")
+SAVE_CSV = True
+SAVE_PNG = True
 
-MODEL_PATH = os.path.join(MODEL_DIR, "xgb_1step_pipeline.joblib")
-INPUT_CSV = os.path.join(DATA_DIR, "processed_merged_features.csv")
+# Daten laden
+bundle = load_dataset_and_split(verbose=True)
 
+ROOT_DIR = bundle["root"]
+train_df = bundle["train_df"]
+test_df = bundle["test_df"]
+NUMERIC_FEATURES = bundle["numeric_features"]
+TARGET_COL = bundle["cfg"].target_col
 
-# =======================================
+X_test = test_df[NUMERIC_FEATURES]
+y_test = test_df[TARGET_COL].astype("float64")
+
 # Modell laden
-# =======================================
+MODEL_PATH = ROOT_DIR / "models" / MODEL_FILENAME
+if not MODEL_PATH.exists():
+    raise FileNotFoundError(f"Model nicht gefunden: {MODEL_PATH}")
 
 pipe = joblib.load(MODEL_PATH)
-print("Modell geladen:", MODEL_PATH)
+print("Geladen:", MODEL_PATH)
+try:
+    pipe.set_output(transform="pandas")
+    print("Pipeline Output: pandas (Feature-Namen bleiben erhalten)")
+except Exception as e:
+    print("set_output nicht verfuegbar (aeltere sklearn Version):", e)
 
 
-# =======================================
-# Daten laden
-# =======================================
+# Subsample 
+n = len(X_test)
+if SAMPLE_SIZE is not None and SAMPLE_SIZE < n:
+    # für Zeitreihen: nicht random mischen, sondern die letzten SAMPLE_SIZE nehmen
+    X_eval = X_test.iloc[-SAMPLE_SIZE:].copy()
+    y_eval = y_test.iloc[-SAMPLE_SIZE:].copy()
+else:
+    X_eval = X_test.copy()
+    y_eval = y_test.copy()
 
-df = pd.read_csv(
-    INPUT_CSV,
-    sep=";",
-    encoding="latin1",
-    parse_dates=["Start der Messung (UTC)"]
+print("Eval Samples:", len(X_eval))
+
+# Permutation Importance
+perm = permutation_importance(
+    pipe,
+    X_eval,
+    y_eval,
+    n_repeats=N_REPEATS,
+    random_state=RANDOM_STATE,
+    scoring="neg_root_mean_squared_error",
+    n_jobs=-1,
 )
 
-df.set_index("Start der Messung (UTC)", inplace=True)
+importances_mean = perm.importances_mean
+importances_std = perm.importances_std
 
-if df.index.tz is None:
-    df.index = df.index.tz_localize("UTC")
-else:
-    df.index = df.index.tz_convert("UTC")
+fi = pd.DataFrame({
+    "feature": NUMERIC_FEATURES,
+    "importance_mean": importances_mean,
+    "importance_std": importances_std,
+}).sort_values("importance_mean", ascending=False)
 
-TARGET_COL = "Stromverbrauch"
+print("\n=== TOP Feature Importance (Permutation, RMSE) ===")
+print(fi.head(TOP_N).to_string(index=False))
 
-X = df.drop(columns=[TARGET_COL])
-y = df[TARGET_COL]
+# Speichern
+out_dir = ROOT_DIR / "reports" / "feature_importance"
+out_dir.mkdir(parents=True, exist_ok=True)
 
+if SAVE_CSV:
+    out_csv = out_dir / "feature_importance_1step_permutation.csv"
+    fi.to_csv(out_csv, index=False)
+    print("\nCSV gespeichert:", out_csv)
 
-# =======================================
-# 1) XGBoost interne Feature Importance
-# =======================================
+# Plot
+top = fi.head(TOP_N).iloc[::-1]  # fuer horizontalen Plot: oben = groesster
 
-def plot_xgb_importance(pipe, top_n=30):
-    model = pipe.named_steps["model"]
-    booster = model.get_booster()
+plt.figure(figsize=(10, max(5, int(TOP_N * 0.35))))
+plt.barh(top["feature"], top["importance_mean"], xerr=top["importance_std"])
+plt.title(f"Permutation Feature Importance (1-Step) | Top {TOP_N}\nscoring=neg_RMSE, n_repeats={N_REPEATS}, sample={len(X_eval)}")
+plt.xlabel("Importance (Delta neg_RMSE)")
+plt.tight_layout()
 
-    pre = pipe.named_steps["preprocess"]
-    feature_names = []
+if SAVE_PNG:
+    out_png = out_dir / "feature_importance_1step_permutation.png"
+    plt.savefig(out_png, dpi=200)
+    print("PNG gespeichert:", out_png)
 
-    for name, trans, cols in pre.transformers_:
-        if trans == "passthrough":
-            feature_names.extend(cols)
-        else:
-            feature_names.extend(trans.get_feature_names_out(cols))
-
-    gain = booster.get_score(importance_type="gain")
-
-    rows = []
-    for i, fname in enumerate(feature_names):
-        rows.append([fname, gain.get(f"f{i}", 0.0)])
-
-    imp = (
-        pd.DataFrame(rows, columns=["Feature", "Gain"])
-        .sort_values("Gain", ascending=False)
-        .head(top_n)
-    )
-
-    plt.figure(figsize=(10, 0.35 * top_n + 2))
-    plt.barh(imp["Feature"][::-1], imp["Gain"][::-1])
-    plt.title("XGBoost Feature Importance (1-Step, Gain)")
-    plt.tight_layout()
-    plt.show(block=False)
-    plt.pause(0.001)
-    plt.close()
-
-
-    print(imp.to_string(index=False))
-
-
-plot_xgb_importance(pipe)
-
-
-# =======================================
-# 2) Permutation Importance (1-Step)
-# =======================================
-
-def plot_permutation_importance(pipe, X, y, sample_size=8000):
-    if len(X) > sample_size:
-        Xs = X.sample(sample_size, random_state=42)
-        ys = y.loc[Xs.index]
-    else:
-        Xs, ys = X, y
-
-    r = permutation_importance(
-        pipe,
-        Xs,
-        ys,
-        n_repeats=3,
-        random_state=42,
-        scoring="neg_mean_absolute_error"
-    )
-
-    imp = (
-        pd.DataFrame({
-            "Feature": Xs.columns,
-            "Importance": r.importances_mean
-        })
-        .sort_values("Importance", ascending=False)
-        .head(30)
-    )
-
-    plt.figure(figsize=(10, 8))
-    plt.barh(imp["Feature"][::-1], imp["Importance"][::-1])
-    plt.title("Permutation Importance (1-Step)")
-    plt.tight_layout()
-    plt.show()
-
-    print(imp.to_string(index=False))
-
-
-plot_permutation_importance(pipe, X, y)
-
-
-# =======================================
-# 3) Tages-Prediction (1-Step)
-# =======================================
-
-def plot_day_1step(pipe, X, y, day_utc):
-    day_start = pd.Timestamp(f"{day_utc} 00:00:00", tz="UTC")
-    day_end = day_start + pd.Timedelta("24h") - pd.Timedelta("15min")
-
-    mask = (y.index >= day_start) & (y.index <= day_end)
-    Xd = X.loc[mask]
-    yt = y.loc[mask]
-    yp = pipe.predict(Xd)
-
-    mae = mean_absolute_error(yt, yp)
-    rmse = np.sqrt(mean_squared_error(yt, yp))
-    r2 = r2_score(yt, yp)
-
-    idx_local = yt.index.tz_convert("Europe/Zurich")
-
-    plt.figure(figsize=(12, 4))
-    plt.plot(idx_local, yt.values, label="True")
-    plt.plot(idx_local, yp, label="Pred")
-    plt.title(
-        f"1-Step Forecast {day_utc}\n"
-        f"MAE={mae:.0f}, RMSE={rmse:.0f}, R2={r2:.3f}"
-    )
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-
-    print("MAE :", mae)
-    print("RMSE:", rmse)
-    print("R2  :", r2)
-
-
-# Beispiel
-plot_day_1step(pipe, X, y, "2024-11-15")
+plt.show()

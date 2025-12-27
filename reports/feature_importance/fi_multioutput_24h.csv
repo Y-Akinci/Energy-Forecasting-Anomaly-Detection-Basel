@@ -1,0 +1,26 @@
+Feature,Importance
+Stunde_sin,2795.8048816369737
+Stunde_cos,2097.3486306538375
+Lag_1h,1481.9513640120229
+Wochentag_sin,945.2904238185052
+Wochentag_cos,290.5245861735582
+Lag_24h,224.66018874756523
+Globalstrahlung; Zehnminutenmittel_lag15,202.05326638387206
+IstArbeitstag,107.31997355308295
+TagJahr_cos,95.08891194698738
+IstSonntag,93.39775659128388
+Diffusstrahlung; Zehnminutenmittel_lag15,86.10877224092451
+TagJahr_sin,47.47004288634722
+Chilltemperatur_lag15,46.30468479601594
+Lufttemperatur 2 m ü. Boden_lag15,40.91859034736846
+Woche des Jahres,23.016426191360477
+Langwellige Einstrahlung; Zehnminutenmittel_lag15,18.391174985708783
+Sonnenscheindauer; Zehnminutensumme_lag15,6.824301595730655
+Taupunkt 2 m ü. Boden_lag15,5.40550190168392
+Monat_cos,3.600301832609754
+Niederschlag; Zehnminutensumme_lag15,1.1807431276685445
+Böenspitze (Sekundenböe)_lag15,0.0673998989524686
+BÃ¶enspitze (SekundenbÃ¶e); Maximum in km/h_lag15,0.0
+Freie Kunden_Lag_15min,0.0
+Lag_15min,0.0
+Grundversorgte Kunden_Lag_15min,0.0

@@ -1,0 +1,24 @@
+Monat_sin
+Monat_cos
+Wochentag_sin
+Wochentag_cos
+Stunde_sin
+Stunde_cos
+TagJahr_sin
+TagJahr_cos
+Woche des Jahres
+IstArbeitstag
+IstSonntag
+Lag_1h
+Lag_24h
+Globalstrahlung; Zehnminutenmittel_lag15
+Diffusstrahlung; Zehnminutenmittel_lag15
+Langwellige Einstrahlung; Zehnminutenmittel_lag15
+Sonnenscheindauer; Zehnminutensumme_lag15
+Böenspitze (Sekundenböe)_lag15
+Chilltemperatur_lag15
+Dampfdruck 2 m ü. Boden_lag15
+Lufttemperatur 2 m ü. Boden_lag15
+Niederschlag; Zehnminutensumme_lag15
+Taupunkt 2 m ü. Boden_lag15
+Windgeschwindigkeit skalar; Zehnminutenmittel in m/s_lag15

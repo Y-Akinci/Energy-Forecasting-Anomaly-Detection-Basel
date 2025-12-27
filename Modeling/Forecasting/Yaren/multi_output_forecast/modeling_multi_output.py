@@ -11,9 +11,7 @@ from sklearn.multioutput import MultiOutputRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from lightgbm import LGBMRegressor
 
-# -----------------------------
 # Settings
-# -----------------------------
 SHOW_EXAMPLE_DAY_PLOT = True
 EXAMPLE_DAY_UTC = pd.Timestamp("2024-11-15 00:00:00", tz="UTC")
 
@@ -27,9 +25,7 @@ warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 200)
 
-# -----------------------------
 # Helper
-# -----------------------------
 def metrics_1d(y_true: np.ndarray, y_pred: np.ndarray):
     mae = mean_absolute_error(y_true, y_pred)
     rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
@@ -48,9 +44,7 @@ def print_block(title: str, rows: list[tuple[str, float]]):
         else:
             print(f"{k:<10}: {v:.2f}")
 
-# -----------------------------
 # Load data
-# -----------------------------
 BASE_DIR = Path(__file__).resolve().parent
 ROOT = BASE_DIR
 while ROOT != ROOT.parent and not (ROOT / "data").exists():
@@ -73,17 +67,13 @@ END_TS   = pd.Timestamp("2024-12-31 23:45:00", tz="UTC")
 df = df.loc[START_TS:END_TS].copy()
 df_truth = df.copy()
 
-# -----------------------------
 # Targets Multi-Output
-# -----------------------------
 target_cols = [f"{TARGET_COL}_t+{h}" for h in range(1, HORIZON + 1)]
 targets = {col: df[TARGET_COL].shift(-h) for h, col in enumerate(target_cols, start=1)}
 df_targets = pd.DataFrame(targets, index=df.index)
 df = pd.concat([df, df_targets], axis=1).dropna(subset=target_cols)
 
-# -----------------------------
-# Features (wie bei dir)
-# -----------------------------
+# Features
 DROP_COLS = ["Datum (Lokal)", "Zeit (Lokal)", "Monat", "Wochentag", "Stunde (Lokal)", "Tag des Jahres", "Quartal"]
 
 USE_WEATHER = True
@@ -151,9 +141,7 @@ if USE_WEATHER:
 NUMERIC_FEATURES = [f for f in FEATURES if f in df.columns]
 df = df.drop(columns=[c for c in DROP_COLS if c in df.columns])
 
-# -----------------------------
 # Train/Test Split
-# -----------------------------
 n = len(df)
 split_idx = int(n * 0.7)
 train_df = df.iloc[:split_idx].copy()
@@ -164,9 +152,7 @@ X_test  = test_df[NUMERIC_FEATURES]
 y_train = train_df[target_cols].astype("float64")
 y_test  = test_df[target_cols].astype("float64")
 
-# -----------------------------
 # Model + Train
-# -----------------------------
 preprocessor = ColumnTransformer([("num", "passthrough", NUMERIC_FEATURES)], remainder="drop")
 
 base_model = LGBMRegressor(
@@ -191,9 +177,7 @@ pipe.fit(X_train, y_train)
 y_pred_train = pipe.predict(X_train)
 y_pred_test  = pipe.predict(X_test)
 
-# -----------------------------
-# 1) GLOBAL Train/Test (ueber alle Horizonte und alle Zeilen)
-# -----------------------------
+# GLOBAL Train/Test (über alle Horizonte und alle Zeilen)
 yt_train = y_train.values.ravel()
 yp_train = y_pred_train.ravel()
 yt_test  = y_test.values.ravel()
@@ -205,16 +189,14 @@ mae_te, rmse_te, r2_te, mape_te = metrics_1d(yt_test, yp_test)
 print_block("=== MULTI-OUTPUT 24h GLOBAL (Train) ===", [("MAE", mae_tr), ("RMSE", rmse_tr), ("R2", r2_tr), ("MAPE", mape_tr)])
 print_block("=== MULTI-OUTPUT 24h GLOBAL (Test)  ===", [("MAE", mae_te), ("RMSE", rmse_te), ("R2", r2_te), ("MAPE", mape_te)])
 
-# -----------------------------
-# 2) 24h-Block-Auswertung (Start 00:00 lokal) Train/Test
-#    Pro Startpunkt: 96 Werte -> Metriken, danach Mittelwert ueber alle Tage
-# -----------------------------
+# 24h-Block-Auswertung (Start 00:00 lokal) Train/Test
+# Pro Startpunkt: 96 Werte -> Metriken, danach Mittelwert über alle Tage
 def eval_midnight_blocks(y_df: pd.DataFrame, y_pred: np.ndarray, label: str):
     idx_local = y_df.index.tz_convert(TZ_LOCAL)
     mask_mid = (idx_local.hour == 0) & (idx_local.minute == 0)
 
-    y_mid = y_df.loc[mask_mid]                   # DataFrame (rows = Starts)
-    p_mid = y_pred[mask_mid, :]                  # np.array same rows
+    y_mid = y_df.loc[mask_mid]                 
+    p_mid = y_pred[mask_mid, :]               
 
     if len(y_mid) == 0:
         print("\n=== MULTI-OUTPUT 24h BLOCK Start 00:00 lokal (" + label + ") ===")
@@ -240,9 +222,7 @@ def eval_midnight_blocks(y_df: pd.DataFrame, y_pred: np.ndarray, label: str):
 train_mid_df = eval_midnight_blocks(y_train, y_pred_train, "Train")
 test_mid_df  = eval_midnight_blocks(y_test,  y_pred_test,  "Test")
 
-# -----------------------------
-# 3) Optional: 1 Beispieltag Plot (Test)
-# -----------------------------
+# Beispieltag Plot (Test)
 if SHOW_EXAMPLE_DAY_PLOT and EXAMPLE_DAY_UTC in y_test.index:
     row_pos = y_test.index.get_loc(EXAMPLE_DAY_UTC)
     horizon_times = pd.date_range(EXAMPLE_DAY_UTC + pd.Timedelta("15min"), periods=HORIZON, freq="15min", tz="UTC")
@@ -261,9 +241,7 @@ if SHOW_EXAMPLE_DAY_PLOT and EXAMPLE_DAY_UTC in y_test.index:
     plt.tight_layout()
     plt.show()
 
-# -----------------------------
 # Save model
-# -----------------------------
 MODEL_DIR = ROOT / "models"
 MODEL_DIR.mkdir(exist_ok=True)
 best_path = MODEL_DIR / "best_multioutput_24h_lgbm.joblib"

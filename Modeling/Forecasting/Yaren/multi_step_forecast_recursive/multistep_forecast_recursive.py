@@ -2,7 +2,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import joblib
 from pathlib import Path
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -14,9 +14,7 @@ warnings.filterwarnings("ignore", message="X does not have valid feature names")
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 200)
 
-# -----------------------------
 # Settings
-# -----------------------------
 TARGET_COL = "Stromverbrauch"
 HORIZON = 96
 TZ_LOCAL = "Europe/Zurich"
@@ -27,9 +25,8 @@ EXAMPLE_DAY_UTC = pd.Timestamp("2024-11-15 00:00:00", tz="UTC")
 MAX_MISSING_PER_BLOCK = 4
 HISTORY_DAYS = 7
 
-# -----------------------------
+
 # Helper
-# -----------------------------
 def metrics_1d(y_true: np.ndarray, y_pred: np.ndarray):
     mae = mean_absolute_error(y_true, y_pred)
     rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
@@ -51,9 +48,7 @@ def print_block(title: str, rows: list[tuple[str, float]]):
 def _sin_cos(value, period):
     return np.sin(2 * np.pi * value / period), np.cos(2 * np.pi * value / period)
 
-# -----------------------------
 # Load data
-# -----------------------------
 BASE_DIR = Path(__file__).resolve().parent
 ROOT = BASE_DIR
 while ROOT != ROOT.parent and not (ROOT / "data").exists():
@@ -76,9 +71,7 @@ END_TS = pd.Timestamp("2024-12-31 23:45:00", tz="UTC")
 df = df.loc[START_TS:END_TS].copy()
 df_truth = df.copy()
 
-# -----------------------------
-# Features (wie bei dir)
-# -----------------------------
+# Features
 DROP_COLS = ["Datum (Lokal)", "Zeit (Lokal)", "Monat", "Wochentag", "Stunde (Lokal)", "Tag des Jahres", "Quartal"]
 
 USE_WEATHER = True
@@ -144,9 +137,7 @@ if USE_WEATHER:
 NUMERIC_FEATURES = [f for f in FEATURES if f in df.columns]
 df = df.drop(columns=[c for c in DROP_COLS if c in df.columns])
 
-# -----------------------------
 # Train/Test Split
-# -----------------------------
 n = len(df)
 split_idx = int(n * 0.7)
 train_df = df.iloc[:split_idx].copy()
@@ -157,9 +148,7 @@ y_train = train_df[TARGET_COL].astype("float64")
 X_test  = test_df[NUMERIC_FEATURES]
 y_test  = test_df[TARGET_COL].astype("float64")
 
-# -----------------------------
 # 1-step model train
-# -----------------------------
 preprocessor = ColumnTransformer([("num", "passthrough", NUMERIC_FEATURES)], remainder="drop")
 
 pipe = Pipeline([
@@ -188,9 +177,18 @@ mae_te, rmse_te, r2_te, mape_te = metrics_1d(y_test.values,  pred_test_1)
 print_block("=== REKURSIV Basis-Modell 1-step GLOBAL (Train) ===", [("MAE", mae_tr), ("RMSE", rmse_tr), ("R2", r2_tr), ("MAPE", mape_tr)])
 print_block("=== REKURSIV Basis-Modell 1-step GLOBAL (Test)  ===", [("MAE", mae_te), ("RMSE", rmse_te), ("R2", r2_te), ("MAPE", mape_te)])
 
-# -----------------------------
+
+MODEL_DIR = ROOT / "models"
+MODEL_DIR.mkdir(exist_ok=True)
+MODEL_PATH = MODEL_DIR / "best_recursive_1step_pipe.joblib"
+joblib.dump(pipe, MODEL_PATH)
+print("Gespeichert:", MODEL_PATH)
+
+feat_path = MODEL_DIR / "best_recursive_1step_features.txt"
+feat_path.write_text("\n".join(NUMERIC_FEATURES), encoding="utf-8")
+print("Features gespeichert:", feat_path)
+
 # Rekursiv Forecast Funktion
-# -----------------------------
 def forecast_multistep(pipe, df_history, df_full, steps=96):
     df_temp = df_history.copy().sort_index()
     preds = []
@@ -271,9 +269,7 @@ def forecast_multistep(pipe, df_history, df_full, steps=96):
 
     return pd.DataFrame(preds, columns=["ts", "forecast"]).set_index("ts")
 
-# -----------------------------
 # 24h-Block-Auswertung 00:00 lokal (Train/Test)
-# -----------------------------
 def eval_recursive_midnight_blocks(starts: pd.DatetimeIndex, label: str):
     maes, rmses, r2s, mapes, kept = [], [], [], [], []
 
@@ -337,7 +333,7 @@ if len(test_blocks) > 0:
     plt.tight_layout()
     plt.show()
 
-# Optional: Beispieltag Plot (Test)
+# Beispieltag Plot (Test)
 if SHOW_EXAMPLE_DAY_PLOT and EXAMPLE_DAY_UTC in test_df.index:
     start_ts = EXAMPLE_DAY_UTC
     history_end = start_ts - pd.Timedelta("15min")

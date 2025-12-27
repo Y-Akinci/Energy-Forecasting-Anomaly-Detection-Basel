@@ -2,17 +2,11 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-
-# Prophet import (je nach Installation)
-# pip install prophet
 from prophet import Prophet
 
 
-# =========================================================
-# SETTINGS (nur hier anfassen)
-# =========================================================
+# SETTINGS
 CSV_FILENAME = "processed_merged_features.csv"
 DATE_COL = "Start der Messung (UTC)"
 TARGET_COL = "Stromverbrauch"
@@ -20,13 +14,12 @@ TARGET_COL = "Stromverbrauch"
 START_TS = pd.Timestamp("2020-08-31 22:00:00", tz="UTC")
 END_TS   = pd.Timestamp("2024-12-31 23:45:00", tz="UTC")
 
-AGG = "sum"       # "sum" fuer Tagesenergie, "mean" fuer Tagesmittel
-TRAIN_RATIO = 0.7 # wie bei dir
+AGG = "sum"       # "sum" für Tagesenergie
+TRAIN_RATIO = 0.7 
 
 
-# =========================================================
-# Pfade bauen (gleiches Muster wie deine Scripts)
-# =========================================================
+
+# Pfade bauen
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR))))
 DATA_DIR = os.path.join(ROOT, "data")
@@ -35,9 +28,7 @@ INPUT_CSV = os.path.join(DATA_DIR, CSV_FILENAME)
 print("INPUT_CSV:", INPUT_CSV)
 
 
-# =========================================================
 # Daten laden + Index
-# =========================================================
 df = pd.read_csv(
     INPUT_CSV,
     sep=";",
@@ -56,10 +47,8 @@ df = df.loc[START_TS:END_TS].copy()
 print("Zeitraum:", df.index.min(), "→", df.index.max(), "| Zeilen:", len(df))
 
 
-# =========================================================
 # Daily Aggregation
-# =========================================================
-# Optional: auf Lokalzeit aggregieren (macht bei Tagesaggregation oft mehr Sinn)
+# auf Lokalzeit aggregieren
 df_local = df.copy()
 df_local.index = df_local.index.tz_convert("Europe/Zurich")
 
@@ -79,12 +68,10 @@ print("Letzter Daily-Tag:", daily.index.max(), "| count:", counts.loc[daily.inde
 print("Daily rows:", len(daily), "| von", daily.index.min(), "bis", daily.index.max())
 
 
-# =========================================================
 # Prophet Format: ds / y
-# =========================================================
 prophet_df = daily.reset_index()
 prophet_df.columns = ["ds", "y"]
-# Prophet erwartet naive timestamps oder timezone-naive. Wir machen sie naive.
+# naive timestamps
 prophet_df["ds"] = prophet_df["ds"].dt.tz_localize(None)
 
 # Zeitlicher Split
@@ -98,9 +85,7 @@ print("Train days:", len(train_df), "|", train_df["ds"].min(), "→", train_df["
 print("Test  days:", len(test_df),  "|", test_df["ds"].min(),  "→", test_df["ds"].max())
 
 
-# =========================================================
 # Prophet Modell
-# =========================================================
 m = Prophet(
     daily_seasonality=False,
     weekly_seasonality=True,
@@ -112,7 +97,7 @@ m.add_country_holidays(country_name="CH")
 
 m.fit(train_df)
 
-# Forecast exakt fuer Test-Zeitraum
+# Forecast Test-Zeitraum
 future = test_df[["ds"]].copy()
 forecast = m.predict(future)
 
@@ -132,9 +117,7 @@ print("\n=== Prophet Daily Baseline ===")
 print(f"AGG={AGG} | MAE={mae:.2f} | RMSE={rmse:.2f} | R2={r2:.4f} | MAPE={mape:.2f}%")
 
 
-# =========================================================
 # Plot
-# =========================================================
 plt.figure(figsize=(12, 4))
 plt.plot(test_df["ds"], y_true, label="True (Daily)")
 plt.plot(test_df["ds"], y_pred, label="Prophet yhat")
@@ -143,7 +126,7 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-# Komponentenplot (optional)
+# Komponentenplot
 fig2 = m.plot_components(forecast)
 plt.tight_layout()
 plt.show()

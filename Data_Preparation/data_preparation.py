@@ -12,15 +12,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA_DIR = os.path.join(ROOT, "Energy-Forecasting-Anomaly-Detection-Basel", "data")
 OUT_15 = os.path.join(DATA_DIR, "merged_strom_meteo_15min.csv")
 
-# === 1) STROM laden (helpers -> Europe/Zurich) und auf UTC bringen ===
+# STROM laden (helpers -> Europe/Zurich) und auf UTC bringen 
 power_local = helpers.csv_file()      # tz-aware Europe/Zurich
-power = power_local.tz_convert("UTC")      # alles in UTC gegen DST-Probleme
-
+power = power_local.tz_convert("UTC")      
 # Exakte 15-min Achse auf Basis der Stromdaten (LEFT-Master-Achse)
 full_idx_utc = pd.date_range(power.index.min(), power.index.max(), freq="15min", tz="UTC")
 power_15 = power.reindex(full_idx_utc)     # LEFT: evtl. NaNs bleiben NaNs
 
-# === 2) WETTER laden (2 CSVs), direkt in UTC parsen ===
+# WETTER laden (2 CSVs), direkt in UTC parsen
 f1 = os.path.join(DATA_DIR, "raw data", "251107_Wetterdaten_Basel_2010-2019.csv")
 f2 = os.path.join(DATA_DIR, "raw data", "251107_Wetterdaten_Basel_2020-2024.csv")
 
@@ -45,12 +44,12 @@ w2["DateTime"] = make_ts_utc(w2)
 w1 = w1.dropna(subset=["DateTime"]).set_index("DateTime").sort_index()
 w2 = w2.dropna(subset=["DateTime"]).set_index("DateTime").sort_index()
 
-# === DATA COLLECTON ===
+# DATA COLLECTON
 # Mergen + doppelte Timestamps entfernen
 weather = pd.concat([w1, w2], axis=0)
 weather = weather[~weather.index.duplicated(keep="last")].sort_index()
 
-# === 3) 10-min -> 15-min ===
+# 10-min -> 15-min
 # Numerische Spalten: zeitbasierte Interpolation exakt auf die 15-min Strom-Achse
 num_cols = weather.select_dtypes(include="number").columns
 num_15 = weather[num_cols].reindex(full_idx_utc).interpolate(method="time", limit_direction="both")
@@ -74,23 +73,21 @@ if len(other_cols) > 0:
 else:
     weather_15 = num_15
 
-# === 4) LEFT-Join auf Strom (keine zeitliche Verschiebung) ===
+# LEFT-Join auf Strom
 merged_15 = power_15.join(weather_15, how="left")
 
-print("Index tz:", merged_15.index.tz)             # sollte UTC zeigen
+print("Index tz:", merged_15.index.tz)             
 print("Duplikate:", merged_15.index.duplicated().sum())  # 0
 full_idx = pd.date_range(merged_15.index.min(), merged_15.index.max(), freq="15min", tz="UTC")
-print("Fehlende Slots:", len(full_idx.difference(merged_15.index)))  # 0 oder nur echte Datenlücken
+print("Fehlende Slots:", len(full_idx.difference(merged_15.index)))  
 
-# === DATA PREPROCCESSING ===
+# DATA PREPROCCESSING
 
-# === DATA CLEANING ===
-
+#DATA CLEANING
 # Zeilen löschen, welche keinen Wert bei der Zielvariable "Stromverbrauch" haben
 merged_15.dropna(subset="Stromverbrauch", inplace=True)
 
-# === DATATYPES ===
-
+# DATATYPES
 # Datentyp ändern, integers
 int_cols = [
     "Jahr", "Monat", "Tag", "Wochentag", "Tag des Jahres",
@@ -164,7 +161,8 @@ merged_15.rename(columns={"index": "Start der Messung (UTC)"}, inplace=True)
 # Index wieder setzen
 merged_15.set_index("Start der Messung (UTC)", inplace=True)
 # Datentyp der lokalen Spalten ändern
-# --- 1) Jahreszeiten ---
+
+# Jahreszeiten
 #def jahreszeit(month):
     #if month in [12, 1, 2]:
         #return "1"
@@ -194,8 +192,7 @@ merged_15["Freie Kunden_Lag_15min"] = merged_15["Freie Kunden"].shift(1)
 lag_cols = ["Lag_15min", "Lag_30min", "Lag_1h", "Lag_24h",]
 merged_15.dropna(subset=lag_cols, inplace=True)
 
-# --- 4) Wetter-Lag Features (nur Meteodaten laggen!) ---
-
+# Wetter-Lag Features
 # Liste der Wetterspalten (aus deinen float_cols)
 weather_cols = [
     'Globalstrahlung; Zehnminutenmittel',
@@ -225,11 +222,10 @@ weather_cols = [
 
 # Wetter-Lag = Werte 15min früher
 for col in weather_cols:
-    if col in merged_15.columns:  # falls Spalte existiert
+    if col in merged_15.columns:  
         merged_15[f"{col}_lag15"] = merged_15[col].shift(1)
 
 # Originale Meteodaten entfernen (nur Lags behalten)
-
 # Liste der originalen Wetterspalten (deine float_cols)
 original_weather_cols = [
     'Globalstrahlung; Zehnminutenmittel',
@@ -260,8 +256,6 @@ original_weather_cols = [
 # Originale Wetterspalten entfernen
 merged_15.drop(columns=[col for col in original_weather_cols if col in merged_15.columns],
                inplace=True)
-
-# Originale Meteodaten entfernt – nur Lag-Wetterdaten bleiben im Dataset!")
 
 # Differenz zum letzten Verbrauch
 merged_15["Diff_15min"] = merged_15["Lag_15min"] - merged_15["Lag_30min"]
