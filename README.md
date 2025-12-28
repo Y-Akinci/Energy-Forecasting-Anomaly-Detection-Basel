@@ -311,4 +311,4 @@ Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details
 
 ---
 
-**⚡ Entwickelt mit Python, LightGBM und viel Kaffee ☕**
+** Entwickelt mit Python und viel Kaffee **
