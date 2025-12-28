@@ -66,7 +66,7 @@ Ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kant
 - **R² (Ø)**: 0.995
 - Robuste Performance über gesamte Tagesprognose
 
-Detaillierte Ergebnisse und Visualisierungen: → [Results.md](docs/Results.md)
+Detaillierte Ergebnisse: → [Results.md](docs/Results.md)
 
 ---
 
