@@ -285,7 +285,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 - Haris Salii
 - kerem Akkaya
 
-**Kontext:** Data Science Projekt, FHNW
+**Kontext:** ML Projekt, FHNW
 
 ---
 
