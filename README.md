@@ -10,14 +10,15 @@
 
 ## Überblick
 
-Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kanton Basel-Stadt. Die Prognosen ermöglichen optimierte Energiebeschaffung, effizienteres Netzmanagement und kosteneffizientere Planung.
+Ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kanton Basel-Stadt. Die Prognosen ermöglichen optimierte Energiebeschaffung, effizienteres Netzmanagement und kosteneffizientere Planung.
 
 ### Projektziele
 
-- **15-Minuten-Prognosen**: Kurzfristige Verbrauchsvorhersagen im 15-Minuten-Takt
-- **24-Stunden-Forecast**: Tagesprognosen für optimale Planungssicherheit
-- **Hohe Genauigkeit**: R² > 0.998 auf Testdaten
-- **Produktionsreif**: Reproduzierbare Pipeline von Datenaufbereitung bis Deployment
+- Kurzfristige und mittelfristige Verbrauchsvorhersagen im 15-Minuten-Takt
+-	Aufbau eines konsistenten, reproduzierbaren Feature Sets aus den vorhandenen Daten
+-	Ableitung zusätzlicher relevanter Merkmale und Ergänzung durch weitere relevante Datensätze
+-	Training eines Regressionsmodells zur Vorhersage des Stromverbrauchs
+-	Bewertung der Modelgüte anhand transparenter Metriken, erklärbaren Modellen und Grafiken
 
 ---
 
@@ -38,8 +39,8 @@ Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learni
 - **Wetterdaten**: 788.977 Messungen (2010-2024, 10-Minuten-Intervalle)
 - **Features**: 60+ engineered Features (Lags, Kalender, Wetter)
 
-**Production-Ready Pipeline**
-- Automatische Datenaufbereitung
+**Production-Ready**
+- Datenaufbereitung
 - Feature Engineering (Lags, Sin/Cos-Encoding, Weather-Lags)
 - Modell-Persistierung mit joblib
 - Umfassende Evaluation
