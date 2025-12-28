@@ -281,7 +281,8 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 **Projektteam:**
 - Yaren Akinci
-- Haris Berbić
+- Haris Salii
+- kerem Akkaya
 
 **Kontext:** Data Science Projekt, FHNW
 
