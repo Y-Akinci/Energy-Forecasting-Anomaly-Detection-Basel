@@ -2,8 +2,7 @@
 
 > Datengetriebenes System zur Energie-Lastprognose für Basel-Stadt basierend auf historischen Verbrauchs-, Wetter- und Kalenderdaten.
 
-[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
-[![LightGBM](https://img.shields.io/badge/LightGBM-4.6.0-green.svg)](https://lightgbm.readthedocs.io/)
+[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
