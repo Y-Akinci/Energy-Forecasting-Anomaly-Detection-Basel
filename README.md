@@ -8,11 +8,11 @@
 
 ---
 
-## 📋 Überblick
+## Überblick
 
 Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kanton Basel-Stadt. Die Prognosen ermöglichen optimierte Energiebeschaffung, effizienteres Netzmanagement und kosteneffizientere Planung.
 
-### 🎯 Projektziele
+### Projektziele
 
 - **15-Minuten-Prognosen**: Kurzfristige Verbrauchsvorhersagen im 15-Minuten-Takt
 - **24-Stunden-Forecast**: Tagesprognosen für optimale Planungssicherheit
@@ -21,24 +21,24 @@ Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learni
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-✨ **Multi-Horizon Forecasting**
+**Multi-Horizon Forecasting**
 - 1-Step (15min voraus): MAE ~214 kWh, R² 0.998
 - Recursive 24h: Komplette Tagesprognose mit rollierendem Forecast
 
-🧠 **Ensemble von Modellen**
+**Ensemble von Modellen**
 - LightGBM (Hauptmodell)
 - XGBoost
 - Random Forest
 - Prophet (Baseline)
 
-📊 **Umfangreicher Datensatz**
+**Umfangreicher Datensatz**
 - **Stromverbrauch**: 481.959 Messwerte (2012-2025, 15-Minuten-Intervalle)
 - **Wetterdaten**: 788.977 Messungen (2010-2024, 10-Minuten-Intervalle)
 - **Features**: 60+ engineered Features (Lags, Kalender, Wetter)
 
-🔧 **Production-Ready Pipeline**
+**Production-Ready Pipeline**
 - Automatische Datenaufbereitung
 - Feature Engineering (Lags, Sin/Cos-Encoding, Weather-Lags)
 - Modell-Persistierung mit joblib
@@ -46,7 +46,7 @@ Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learni
 
 ---
 
-## 📊 Ergebnisse
+## Ergebnisse
 
 ### Beste Modellperformance (1-Step Forecast)
 
@@ -69,7 +69,7 @@ Detaillierte Ergebnisse und Visualisierungen: → [Results.md](docs/Results.md)
 
 ---
 
-## 🏗️ Projektstruktur
+## Projektstruktur
 
 ```
 Energy-Forecasting-Anomaly-Detection-Basel/
@@ -104,7 +104,7 @@ Energy-Forecasting-Anomaly-Detection-Basel/
 
 ---
 
-## 🛠️ Installation & Verwendung
+## Installation & Verwendung
 
 ### 1️⃣ Repository klonen
 
@@ -200,7 +200,7 @@ Zeigt die wichtigsten Einflussgrößen auf den Stromverbrauch:
 
 ---
 
-## 📈 Methodik: CRISP-DM
+## Methodik: CRISP-DM
 
 Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for Data Mining):
 
@@ -246,9 +246,9 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 🎓 Lessons Learned & Besonderheiten
+## Lessons Learned & Besonderheiten
 
-### 🔑 Kritische Erkenntnisse
+### Kritische Erkenntnisse
 
 1. **Zeitstempel sind komplex**: UTC vs. lokale Zeit, Sommerzeit-Problematik (52 fehlende Messwerte pro Jahr)
 2. **15min ist Standard**: Stromhandel und IWB-Abrechnung basieren auf 15-Minuten-Intervallen
@@ -256,7 +256,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 4. **Wetter-Lags vermeiden Data Leakage**: Wetterfeatures werden 15min verzögert verwendet
 5. **Sin/Cos-Encoding für zyklische Features**: Monat, Wochentag, Stunde werden trigonometrisch kodiert
 
-### 💡 Spannende Code-Stellen
+### Spannende Code-Stellen
 
 - **Rekursiver Forecast** (`multistep_forecast_recursive.py`): Wie das Modell iterativ 96 Schritte vorhersagt
 - **Zeitstempel-Alignment** (`data_preparation.py`): UTC/Lokal-Konvertierung mit Sommerzeit-Handling
@@ -266,7 +266,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 📚 Dokumentation
+## Dokumentation
 
 | Datei | Inhalt |
 |-------|--------|
@@ -277,7 +277,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 🤝 Beitragende
+## Beitragende
 
 **Projektteam:**
 - Yaren Akinci
@@ -288,7 +288,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 📝 Hinweise
+## Hinweise
 
 - **Datenquelle**: Die Rohdaten müssen im `data/raw data/` Ordner liegen
 - **Modelle**: Trainierte Modelle werden in `models/` gespeichert (.joblib)
@@ -297,7 +297,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 📄 Lizenz
+## Lizenz
 
 Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details.
 
