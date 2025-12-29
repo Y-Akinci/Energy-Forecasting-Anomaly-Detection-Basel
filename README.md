@@ -2,51 +2,56 @@
 
 > Datengetriebenes System zur Energie-Lastprognose für Basel-Stadt basierend auf historischen Verbrauchs-, Wetter- und Kalenderdaten.
 
-[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
-[![LightGBM](https://img.shields.io/badge/LightGBM-4.6.0-green.svg)](https://lightgbm.readthedocs.io/)
+[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## 📋 Überblick
+## Überblick
 
-Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kanton Basel-Stadt. Die Prognosen ermöglichen optimierte Energiebeschaffung, effizienteres Netzmanagement und kosteneffizientere Planung.
+Ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kanton Basel-Stadt. Die Prognosen ermöglichen optimierte Energiebeschaffung, effizienteres Netzmanagement und kosteneffizientere Planung.
 
-### 🎯 Projektziele
+### Projektziele
 
-- **15-Minuten-Prognosen**: Kurzfristige Verbrauchsvorhersagen im 15-Minuten-Takt
-- **24-Stunden-Forecast**: Tagesprognosen für optimale Planungssicherheit
-- **Hohe Genauigkeit**: R² > 0.998 auf Testdaten
-- **Produktionsreif**: Reproduzierbare Pipeline von Datenaufbereitung bis Deployment
+- Kurzfristige und mittelfristige Verbrauchsvorhersagen im 15-Minuten-Takt
+-	Aufbau eines konsistenten, reproduzierbaren Feature Sets aus den vorhandenen Daten
+-	Ableitung zusätzlicher relevanter Merkmale und Ergänzung durch weitere relevante Datensätze
+-	Training eines Regressionsmodells zur Vorhersage des Stromverbrauchs
+-	Bewertung der Modelgüte anhand transparenter Metriken, erklärbaren Modellen und Grafiken
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
+<<<<<<< HEAD
 ✨ **Multi-Horizon Forecasting**
 - 1-Step (15min voraus): MAE ~XXX kWh, R² X.XXX
+=======
+**Multi-Horizon Forecasting**
+- 1-Step (15min voraus): MAE ~214 kWh, R² 0.998
+>>>>>>> 6303bc8d7559a7cbe3e568bcc7c73eaf20af195c
 - Recursive 24h: Komplette Tagesprognose mit rollierendem Forecast
 
-🧠 **Ensemble von Modellen**
+**Ensemble von Modellen**
 - LightGBM (Hauptmodell)
 - XGBoost
 - Random Forest
 - Prophet (Baseline)
 
-📊 **Umfangreicher Datensatz**
+**Umfangreicher Datensatz**
 - **Stromverbrauch**: 481.959 Messwerte (2012-2025, 15-Minuten-Intervalle)
 - **Wetterdaten**: 788.977 Messungen (2010-2024, 10-Minuten-Intervalle)
-- **Features**: 60+ engineered Features (Lags, Kalender, Wetter)
+- **Features**: 40+ engineered Features (Lags, Kalender, Wetter)
 
-🔧 **Production-Ready Pipeline**
-- Automatische Datenaufbereitung
+**Production-Ready**
+- Datenaufbereitung
 - Feature Engineering (Lags, Sin/Cos-Encoding, Weather-Lags)
 - Modell-Persistierung mit joblib
 - Umfassende Evaluation
 
 ---
 
-## 📊 Ergebnisse
+## Ergebnisse
 
 ### Beste Modellperformance (1-Step Forecast)
 
@@ -65,11 +70,11 @@ Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learni
 - **R² (Ø)**: X.XXX
 - Robuste Performance über gesamte Tagesprognose
 
-Detaillierte Ergebnisse und Visualisierungen: → [Results.md](docs/Results.md)
+Detaillierte Ergebnisse: → [Results.md](docs/Results.md)
 
 ---
 
-## 🏗️ Projektstruktur
+## Projektstruktur
 
 ```
 Energy-Forecasting-Anomaly-Detection-Basel/
@@ -104,7 +109,7 @@ Energy-Forecasting-Anomaly-Detection-Basel/
 
 ---
 
-## 🛠️ Installation & Verwendung
+## Installation & Verwendung
 
 ### 1️⃣ Repository klonen
 
@@ -200,7 +205,7 @@ Zeigt die wichtigsten Einflussgrößen auf den Stromverbrauch:
 
 ---
 
-## 📈 Methodik: CRISP-DM
+## Methodik: CRISP-DM
 
 Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for Data Mining):
 
@@ -246,9 +251,9 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 🎓 Lessons Learned & Besonderheiten
+## Lessons Learned & Besonderheiten
 
-### 🔑 Kritische Erkenntnisse
+### Kritische Erkenntnisse
 
 1. **Zeitstempel sind komplex**: UTC vs. lokale Zeit, Sommerzeit-Problematik (52 fehlende Messwerte pro Jahr)
 2. **15min ist Standard**: Stromhandel und IWB-Abrechnung basieren auf 15-Minuten-Intervallen
@@ -256,7 +261,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 4. **Wetter-Lags vermeiden Data Leakage**: Wetterfeatures werden 15min verzögert verwendet
 5. **Sin/Cos-Encoding für zyklische Features**: Monat, Wochentag, Stunde werden trigonometrisch kodiert
 
-### 💡 Spannende Code-Stellen
+### Spannende Code-Stellen
 
 - **Rekursiver Forecast** (`multistep_forecast_recursive.py`): Wie das Modell iterativ 96 Schritte vorhersagt
 - **Zeitstempel-Alignment** (`data_preparation.py`): UTC/Lokal-Konvertierung mit Sommerzeit-Handling
@@ -266,7 +271,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 📚 Dokumentation
+## Dokumentation
 
 | Datei | Inhalt |
 |-------|--------|
@@ -277,17 +282,18 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 🤝 Beitragende
+## Beitragende
 
 **Projektteam:**
 - Yaren Akinci
-- Haris Berbić
+- Haris Salii
+- kerem Akkaya
 
-**Kontext:** Data Science Projekt, FHNW
+**Kontext:** ML Projekt, FHNW
 
 ---
 
-## 📝 Hinweise
+## Hinweise
 
 - **Datenquelle**: Die Rohdaten müssen im `data/raw data/` Ordner liegen
 - **Modelle**: Trainierte Modelle werden in `models/` gespeichert (.joblib)
@@ -296,7 +302,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ---
 
-## 📄 Lizenz
+## Lizenz
 
 Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details.
 
@@ -310,4 +316,4 @@ Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details
 
 ---
 
-**⚡ Entwickelt mit Python, LightGBM und viel Kaffee ☕**
+** Entwickelt mit Python und viel Kaffee **
