@@ -24,7 +24,7 @@ Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learni
 ## 🚀 Key Features
 
 ✨ **Multi-Horizon Forecasting**
-- 1-Step (15min voraus): MAE ~214 kWh, R² 0.998
+- 1-Step (15min voraus): MAE ~XXX kWh, R² X.XXX
 - Recursive 24h: Komplette Tagesprognose mit rollierendem Forecast
 
 🧠 **Ensemble von Modellen**
@@ -52,17 +52,17 @@ Dieses Projekt entwickelt für IWB (Industrielle Werke Basel) ein Machine-Learni
 
 | Modell | MAE (kWh) | RMSE (kWh) | R² | MAPE (%) |
 |--------|-----------|------------|-----|----------|
-| **LightGBM** | **214** | **306** | **0.998** | **0.56** |
-| XGBoost | 214 | 306 | 0.998 | 0.56 |
-| Random Forest | 223 | 318 | 0.998 | 0.58 |
-| Prophet (Baseline) | 1518 | 2072 | 0.912 | 3.95 |
+| **LightGBM** | **XXX** | **XXX** | **X.XXX** | **X.XX** |
+| XGBoost | XXX | XXX | X.XXX | X.XX |
+| Random Forest | XXX | XXX | X.XXX | X.XX |
+| Prophet (Baseline) | XXXX | XXXX | X.XXX | X.XX |
 
-> **Interpretation**: Das Modell macht im Durchschnitt einen Fehler von nur 214 kWh bei einem mittleren Verbrauch von ~38.000 kWh - eine Abweichung von unter 1%.
+> **Interpretation**: Das Modell macht im Durchschnitt einen Fehler von nur XXX kWh bei einem mittleren Verbrauch von ~38.000 kWh - eine Abweichung von unter 1%.
 
 ### 24h Recursive Forecast
 
-- **MAE (Ø)**: ~350 kWh pro 15min-Intervall
-- **R² (Ø)**: 0.995
+- **MAE (Ø)**: ~XXX kWh pro 15min-Intervall
+- **R² (Ø)**: X.XXX
 - Robuste Performance über gesamte Tagesprognose
 
 Detaillierte Ergebnisse und Visualisierungen: → [Results.md](docs/Results.md)
