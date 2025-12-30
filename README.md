@@ -23,20 +23,12 @@ Ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kant
 
 ## Key Features
 
-<<<<<<< HEAD
-✨ **Multi-Horizon Forecasting**
-- 1-Step (15min voraus): MAE ~XXX kWh, R² X.XXX
-=======
 **Multi-Horizon Forecasting**
-- 1-Step (15min voraus): MAE ~214 kWh, R² 0.998
->>>>>>> 6303bc8d7559a7cbe3e568bcc7c73eaf20af195c
-- Recursive 24h: Komplette Tagesprognose mit rollierendem Forecast
+- 1-Step (15min voraus): MAE ~413 kWh, R² 0.994
+- Recursive 24h: MAE ~858 kWh, R² 0.863
 
-**Ensemble von Modellen**
-- LightGBM (Hauptmodell)
-- XGBoost
-- Random Forest
-- Prophet (Baseline)
+**Modell**
+- LightGBM
 
 **Umfangreicher Datensatz**
 - **Stromverbrauch**: 481.959 Messwerte (2012-2025, 15-Minuten-Intervalle)
@@ -53,22 +45,47 @@ Ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kant
 
 ## Ergebnisse
 
-### Beste Modellperformance (1-Step Forecast)
+### Modellperformance (LightGBM)
 
-| Modell | MAE (kWh) | RMSE (kWh) | R² | MAPE (%) |
-|--------|-----------|------------|-----|----------|
-| **LightGBM** | **XXX** | **XXX** | **X.XXX** | **X.XX** |
-| XGBoost | XXX | XXX | X.XXX | X.XX |
-| Random Forest | XXX | XXX | X.XXX | X.XX |
-| Prophet (Baseline) | XXXX | XXXX | X.XXX | X.XX |
+#### 1-Step Forecast (15min voraus)
 
-> **Interpretation**: Das Modell macht im Durchschnitt einen Fehler von nur XXX kWh bei einem mittleren Verbrauch von ~38.000 kWh - eine Abweichung von unter 1%.
+| Datensatz | MAE (kWh) | RMSE (kWh) | R² | MAPE (%) |
+|-----------|-----------|------------|-----|----------|
+| **Train** | **298.15** | **394.22** | **0.9971** | **0.86%** |
+| **Test** | **412.54** | **564.30** | **0.9935** | **1.19%** |
 
-### 24h Recursive Forecast
+> **Interpretation**: Das Modell macht im Test-Datensatz einen durchschnittlichen Fehler von 413 kWh bei einem mittleren Verbrauch von ~35.000 kWh - eine Abweichung von nur 1,19%.
 
-- **MAE (Ø)**: ~XXX kWh pro 15min-Intervall
-- **R² (Ø)**: X.XXX
-- Robuste Performance über gesamte Tagesprognose
+#### Multi-Output 24h Global
+
+| Datensatz | MAE (kWh) | RMSE (kWh) | R² | MAPE (%) |
+|-----------|-----------|------------|-----|----------|
+| **Train** | **568.11** | **744.87** | **0.9897** | **1.63%** |
+| **Test** | **1069.02** | **1551.08** | **0.9510** | **3.10%** |
+
+Hier wird der gesamte 24-Stunden-Horizont gleichzeitig als Vektor vorhergesagt.
+
+#### Multi-Output 24h Block (Start 00:00 lokal)
+
+**Train (1108 Tage):**
+- MAE (Mean): 701.25 kWh | RMSE (Mean): 866.82 kWh | R² (Mean): 0.9649 | MAPE (Mean): 2.03%
+- MAE (Median): 649.74 kWh
+
+**Test (475 Tage):**
+- MAE (Mean): 1405.26 kWh | RMSE (Mean): 1723.25 kWh | R² (Mean): 0.7809 | MAPE (Mean): 4.07%
+- MAE (Median): 1234.68 kWh
+
+#### Recursive 24h Block (Start 00:00 lokal) ⭐ Empfohlen
+
+**Train (1108 Tage):**
+- MAE (Mean): 516.30 kWh | RMSE (Mean): 660.73 kWh | R² (Mean): 0.9575 | MAPE (Mean): 1.51%
+- MAE (Median): 451.20 kWh
+
+**Test (474 Tage):**
+- MAE (Mean): 858.15 kWh | RMSE (Mean): 1073.77 kWh | R² (Mean): 0.8632 | MAPE (Mean): 2.48%
+- MAE (Median): 677.15 kWh
+
+> **💡 ML-Einschätzung**: Der rekursive Ansatz zeigt im Test-Datensatz eine deutlich bessere Generalisierung als der Multi-Output Block (MAPE 2.48% vs. 4.07%). Das Modell profitiert stark von der zeitlichen Abhängigkeit der Daten. Die R² Werte über 0.95 unterstreichen die hohe Güte des LightGBM-Modells für die Lastprognose in Basel.
 
 Detaillierte Ergebnisse: → [Results.md](docs/Results.md)
 
@@ -164,7 +181,7 @@ Erstellt 20+ Visualisierungen zur Datenanalyse:
 python Modeling/Forecasting/Yaren/1-Step_Forecast/1-step_forecast.py
 ```
 
-Trainiert LightGBM, XGBoost, Random Forest für 15-Minuten-Prognosen.
+Trainiert LightGBM für 15-Minuten-Prognosen.
 
 #### Option B: Recursive 24h Forecast (⭐ empfohlen für Tagesprognosen)
 
@@ -174,21 +191,13 @@ python Modeling/Forecasting/Yaren/multi_step_forecast_recursive/multistep_foreca
 
 Erstellt rekursive 24h-Prognosen durch iteratives 1-Step-Forecasting.
 
-#### Option C: Multi-Output Forecast (experimentell)
+#### Option C: Multi-Output Forecast
 
 ```bash
 python Modeling/Forecasting/Yaren/multi_output_forecast/modeling_multi_output.py
 ```
 
 Trainiert ein Modell, das direkt alle 96 Zeitpunkte (24h) vorhersagt.
-
-#### Option D: Prophet Baseline
-
-```bash
-python Modeling/Forecasting/Yaren/baseline/prophet_model.py
-```
-
-Facebook Prophet als Benchmark für Zeitreihen-Forecasting.
 
 ### 6️⃣ Feature Importance analysieren
 
@@ -233,7 +242,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
    - Datensplit: 70% Training, 30% Test (chronologisch)
 
 4. **Modeling**
-   - Ensemble-Approach: LightGBM, XGBoost, Random Forest
+   - LightGBM Gradient Boosting
    - Hyperparameter-Tuning
    - Cross-Validation auf Zeitreihen
 
