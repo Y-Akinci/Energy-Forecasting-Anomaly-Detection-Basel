@@ -1,4 +1,4 @@
-# ⚡ Energy Forecasting Basel
+# ⚡ Electricity Forecasting Basel
 
 > Datengetriebenes System zur Energie-Lastprognose für Basel-Stadt basierend auf historischen Verbrauchs-, Wetter- und Kalenderdaten.
 
