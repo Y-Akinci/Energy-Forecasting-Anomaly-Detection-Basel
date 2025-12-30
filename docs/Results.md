@@ -8,507 +8,221 @@
 
 1. [Übersicht](#übersicht)
 2. [1-Step Forecast Ergebnisse](#1-step-forecast-ergebnisse)
-3. [24h Recursive Forecast](#24h-recursive-forecast)
-4. [Baseline: Prophet](#baseline-prophet)
-5. [Feature-Experimente](#feature-experimente)
+3. [Multi-Output 24h Global](#multi-output-24h-global)
+4. [Multi-Output 24h Block](#multi-output-24h-block)
+5. [Recursive 24h Forecast](#recursive-24h-forecast)
 6. [Feature Importance](#feature-importance)
-7. [Visualisierungen](#visualisierungen)
 
 ---
 
 ## 🎯 Übersicht
 
-### Beste Modellperformance (Test-Set)
+### Modellperformance (LightGBM)
 
-| Ansatz | Modell | MAE (kWh) | RMSE (kWh) | R² | MAPE (%) |
-|--------|--------|-----------|------------|-----|----------|
-| **1-Step (15min)** | **LightGBM** | **XXX** | **XXX** | **X.XXX** | **X.XX** |
-| 1-Step (15min) | XGBoost | XXX | XXX | X.XXX | X.XX |
-| 1-Step (15min) | Random Forest | XXX | XXX | X.XXX | X.XX |
-| Recursive 24h | LightGBM | ~XXX | ~XXX | X.XXX | ~X.XX |
-| Baseline | Prophet | XXXX | XXXX | X.XXX | X.XX |
+| Ansatz | Datensatz | MAE (kWh) | RMSE (kWh) | R² | MAPE (%) |
+|--------|-----------|-----------|------------|-----|----------|
+| **1-Step (15min)** | **Train** | **298.15** | **394.22** | **0.9971** | **0.86%** |
+| **1-Step (15min)** | **Test** | **412.54** | **564.30** | **0.9935** | **1.19%** |
+| Multi-Output 24h Global | Train | 568.11 | 744.87 | 0.9897 | 1.63% |
+| Multi-Output 24h Global | Test | 1069.02 | 1551.08 | 0.9510 | 3.10% |
+| Recursive 24h (Mean) | Train | 516.30 | 660.73 | 0.9575 | 1.51% |
+| Recursive 24h (Mean) | Test | 858.15 | 1073.77 | 0.8632 | 2.48% |
 
 ### Metriken-Erklärung
 
 - **MAE (Mean Absolute Error)**: Durchschnittlicher absoluter Fehler in kWh
-  - Interpretation: Im Schnitt liegt die Vorhersage ±XXX kWh daneben
-  - Bei ~38.000 kWh Durchschnittsverbrauch = **X.XX% Fehler**
+  - Interpretation: Im Test liegt die 1-Step Vorhersage ±413 kWh daneben
+  - Bei ~35.000 kWh Durchschnittsverbrauch = **1.19% Fehler**
 
 - **RMSE (Root Mean Squared Error)**: Wurzel der mittleren quadratischen Abweichung
   - Bestraft große Fehler stärker als MAE
   - Wichtig für Ausreißer-Erkennung
 
 - **R² (Bestimmtheitsmaß)**: Anteil der erklärten Varianz
-  - X.XXX = **XX.X% der Varianz wird erklärt**
+  - 0.9935 = **99.35% der Varianz wird erklärt**
   - Nahe 1.0 = exzellente Anpassung
 
 - **MAPE (Mean Absolute Percentage Error)**: Prozentualer Fehler
-  - X.XX% = sehr präzise Prognosen
+  - 1.19% (1-Step Test) = sehr präzise Prognosen
 
 ---
 
 ## 🔹 1-Step Forecast Ergebnisse
 
-### Modellvergleich (alle Features)
+### LightGBM Modell
 
 **Konfiguration**:
 - Datenzeitraum: 2020-08-31 bis 2024-12-31
 - Train/Test-Split: 70% / 30% (chronologisch)
 - Features: Kalender (sin/cos) + Lags + Wetter-Lags
-- Modelle: LightGBM, XGBoost, Random Forest
+- Modell: LightGBM
 
-#### LightGBM (⭐ Bestes Modell)
+#### Performance-Metriken
 
 ```
-Hyperparameter:
-- n_estimators: 500
-- learning_rate: 0.05
-- num_leaves: 64
-- subsample: 0.8
-- colsample_bytree: 0.8
-
 Train-Metriken:
-- MAE:  XXX kWh
-- RMSE: XXX kWh
-- R²:   X.XXX
-- MAPE: X.XX%
+- MAE:  298.15 kWh
+- RMSE: 394.22 kWh
+- R²:   0.9971
+- MAPE: 0.86%
 
 Test-Metriken:
-- MAE:  XXX kWh
-- RMSE: XXX kWh
-- R²:   X.XXX
-- MAPE: X.XX%
+- MAE:  412.54 kWh
+- RMSE: 564.30 kWh
+- R²:   0.9935
+- MAPE: 1.19%
 ```
 
 **Interpretation**:
-- Sehr geringer Overfitting (Train R² X.XXX vs. Test R² X.XXX)
+- Sehr geringer Overfitting (Train R² 0.9971 vs. Test R² 0.9935)
 - Robuste Performance auf ungesehenen Daten
-- MAPE < 1% → hervorragende Genauigkeit
-
-#### XGBoost
-
-```
-Hyperparameter:
-- n_estimators: 300
-- max_depth: 6
-- subsample: 0.8
-- colsample_bytree: 0.8
-- learning_rate: 0.05
-
-Train-Metriken:
-- MAE:  XXX kWh
-- RMSE: XXX kWh
-- R²:   X.XXX
-- MAPE: X.XX%
-
-Test-Metriken:
-- MAE:  XXX kWh
-- RMSE: XXX kWh
-- R²:   X.XXX
-- MAPE: X.XX%
-```
-
-**Vergleich zu LightGBM**:
-- Nahezu identische Performance
-- Minimal längere Trainingszeit
-- LightGBM bevorzugt wegen besserer Skalierbarkeit
-
-#### Random Forest
-
-```
-Hyperparameter:
-- n_estimators: 300
-- max_depth: 15
-
-Train-Metriken:
-- MAE:  XXX kWh
-- RMSE: XXX kWh
-- R²:   X.XXX
-- MAPE: X.XX%
-
-Test-Metriken:
-- MAE:  XXX kWh
-- RMSE: XXX kWh
-- R²:   X.XXX
-- MAPE: X.XX%
-```
-
-**Beobachtung**:
-- Etwas schlechter als Gradient Boosting Modelle
-- Höherer RMSE → schlechter bei Ausreißern
-- Trotzdem sehr gute Performance (R² X.XXX)
-
-### Beispieltag: 15. November 2024
-
-**Auswahl**: Vollständiger Tag im Test-Set (96 Messpunkte)
-
-**LightGBM Performance**:
-- MAE: XXX kWh
-- RMSE: XXX kWh
-- R²: X.XXX
-
-**Visualisierung**: Tatsächlicher vs. vorhergesagter Verbrauch über 24h
-- Peaks werden korrekt erfasst (z.B. Morgen-/Abend-Spitzen)
-- Nachts (geringe Last) sehr präzise
-- Mittags minimale Abweichungen
+- MAPE 1.19% → hervorragende Genauigkeit
+- Bei ~35.000 kWh Durchschnittsverbrauch liegt der durchschnittliche Fehler bei nur 413 kWh
 
 ---
 
-## 🔁 24h Recursive Forecast
+## 📊 Multi-Output 24h Global
+
+### Konzept
+
+- **Ansatz**: Der gesamte 24-Stunden-Horizont (96 Zeitpunkte) wird gleichzeitig als Vektor vorhergesagt
+- **Modell**: LightGBM mit Multi-Output Regression
+- **Vorteil**: Alle Zeitpunkte werden simultan optimiert
+- **Nachteil**: Komplexeres Modell, höhere Fehlerraten
+
+### Performance-Metriken
+
+```
+Train-Metriken:
+- MAE:  568.11 kWh
+- RMSE: 744.87 kWh
+- R²:   0.9897
+- MAPE: 1.63%
+
+Test-Metriken:
+- MAE:  1069.02 kWh
+- RMSE: 1551.08 kWh
+- R²:   0.9510
+- MAPE: 3.10%
+```
+
+**Interpretation**:
+- Deutlich höherer Fehler als 1-Step (MAE 1069 kWh vs. 413 kWh)
+- R² bleibt dennoch hoch bei 0.9510
+- MAPE 3.10% ist akzeptabel, aber nicht optimal für Produktionsumgebung
+
+---
+
+## 📈 Multi-Output 24h Block
+
+### Konzept
+
+- **Ansatz**: Tägliche Blöcke (Start 00:00 lokal) werden einzeln evaluiert
+- **Auswertung**: Durchschnittliche Performance über alle Tage
+
+### Aggregierte Ergebnisse
+
+**Train (1108 Tage):**
+```
+- MAE (Mean):   701.25 kWh
+- MAE (Median): 649.74 kWh
+- RMSE (Mean):  866.82 kWh
+- R² (Mean):    0.9649
+- MAPE (Mean):  2.03%
+```
+
+**Test (475 Tage):**
+```
+- MAE (Mean):   1405.26 kWh
+- MAE (Median): 1234.68 kWh
+- RMSE (Mean):  1723.25 kWh
+- R² (Mean):    0.7809
+- MAPE (Mean):  4.07%
+```
+
+**Interpretation**:
+- Median < Mittelwert → einige schwierigere Tage ziehen Durchschnitt hoch
+- R² von 0.7809 zeigt moderate Generalisierung
+- MAPE 4.07% ist für 24h-Prognosen noch akzeptabel
+
+---
+
+## 🔁 Recursive 24h Forecast ⭐ Empfohlen
 
 ### Konzept
 
 - **Start**: 00:00 Uhr (lokal)
-- **Historie**: 7 Tage vor Forecast-Start
 - **Methode**: Iteratives 1-Step-Forecasting (96× wiederholt)
 - **Besonderheit**: Jede Vorhersage wird zur Basis für die nächste
+- **Vorteil**: Beste Generalisierung im Test-Set
 
-### Aggregierte Ergebnisse (Test-Set)
+### Aggregierte Ergebnisse (Tägliche Blöcke)
 
-**Anzahl evaluierter Tage**: ~450 Tage (alle 00:00-Starts im Test-Set)
+**Train (1108 Tage):**
+```
+- MAE (Mean):   516.30 kWh
+- MAE (Median): 451.20 kWh
+- RMSE (Mean):  660.73 kWh
+- R² (Mean):    0.9575
+- MAPE (Mean):  1.51%
+```
 
-| Metrik | Mittelwert | Median |
-|--------|-----------|---------|
-| MAE (kWh) | XXX | XXX |
-| RMSE (kWh) | XXX | XXX |
-| R² | X.XXXX | X.XXXX |
-| MAPE (%) | X.XX | X.XX |
+**Test (474 Tage):**
+```
+- MAE (Mean):   858.15 kWh
+- MAE (Median): 677.15 kWh
+- RMSE (Mean):  1073.77 kWh
+- R² (Mean):    0.8632
+- MAPE (Mean):  2.48%
+```
 
 **Interpretation**:
-- **Median < Mittelwert** → einige schwierigere Tage (z.B. Feiertage) ziehen Durchschnitt hoch
-- R² bleibt über X.XXX → sehr stabile Performance
-- MAPE < X% → auch über 24h exzellente Genauigkeit
+- **Deutlich besser als Multi-Output Block** (MAPE 2.48% vs. 4.07%)
+- Median < Mittelwert → einige schwierigere Tage (z.B. Feiertage) ziehen Durchschnitt hoch
+- R² von 0.8632 → sehr stabile Performance auch über 24h
+- MAPE 2.48% → auch über volle Tagesprognose exzellente Genauigkeit
 
-### Fehler-Akkumulation über Zeit
+### Warum ist Recursive besser als Multi-Output?
 
-Analyse: Wie entwickelt sich der Fehler über die 96 Schritte?
-
-```
-Stunde  |  MAE (kWh)  |  RMSE (kWh)
---------|-------------|-------------
-0-6h    |  XXX        |  XXX
-6-12h   |  XXX        |  XXX
-12-18h  |  XXX        |  XXX
-18-24h  |  XXX        |  XXX
-```
-
-**Beobachtung**:
-- Fehler steigt leicht mit Forecast-Horizont
-- Aber: Kein exponentielles Wachstum (gut!)
-- Auch nach 24h noch R² > X.XX
-
-### Beispieltag: 15. November 2024 (Recursive)
-
-**Performance**:
-- MAE: XXX kWh
-- RMSE: XXX kWh
-- R²: X.XXX
-- MAPE: X.XX%
-
-**Vergleich zu 1-Step**:
-- MAE steigt von XXX → XXX kWh (+XX%)
-- R² sinkt nur minimal (X.XXX → X.XXX)
-- Immer noch ausgezeichnete Genauigkeit
-
----
-
-## 📈 Baseline: Prophet
-
-### Konfiguration
-
-```python
-Prophet(
-    daily_seasonality=False,
-    weekly_seasonality=True,
-    yearly_seasonality=True,
-    changepoint_prior_scale=0.05,
-    seasonality_prior_scale=10.0
-)
-```
-
-### Ergebnisse (Tägliche Aggregation)
-
-**Test-Metriken**:
-- MAE: XXXX kWh
-- RMSE: XXXX kWh
-- R²: X.XXX
-- MAPE: X.XX%
-
-**Vergleich zu ML-Modellen**:
-| Modell | MAE | Verbesserung vs. Prophet |
-|--------|-----|--------------------------|
-| Prophet | XXXX kWh | Baseline |
-| LightGBM (1-Step) | XXX kWh | **-XX%** |
-| LightGBM (Recursive 24h) | XXX kWh | **-XX%** |
-
-**Warum ist Prophet schlechter?**
-1. **Nur Zeitreihen-Features** (keine Lags, kein Wetter)
-2. **Tägliche Aggregation** (weniger granular)
-3. **Nicht für 15min-Intervalle optimiert**
-
-**Nutzen**:
-- Schnell zu trainieren (< 1 Minute)
-- Gute Baseline für Vergleich
-- Zeigt Wert von Feature Engineering
-
----
-
-## 🧪 Feature-Experimente
-
-### Experiment 1: Baseline (alle Features)
-
-**Konfiguration**:
-```python
-USE_WEATHER = True
-USE_LAGS = True
-USE_CALENDAR = True
-EXCLUDE_WEATHER = []
-EXCLUDE_LAGS = []
-```
-
-**XGBoost Ergebnisse**:
-- Test MAE: XXX kWh
-- Test R²: X.XXX
-
-### Experiment 2: Ohne Wetter-Features
-
-**Konfiguration**:
-```python
-USE_WEATHER = False
-USE_LAGS = True
-USE_CALENDAR = True
-```
-
-**XGBoost Ergebnisse**:
-- Test MAE: XXX kWh (+X kWh vs. Baseline)
-- Test R²: X.XXX (unverändert)
-
-**Interpretation**:
-- Wetter-Features bringen **marginal Verbesserung** (~X%)
-- Lags und Kalender sind wichtiger
-- Für reine Genauigkeit könnten Wetter-Features weggelassen werden
-- Aber: Wetter hilft bei extremen Bedingungen (Hitzewellen, Kälteeinbrüche)
-
-### Experiment 3: Nur Kalender (keine Lags, kein Wetter)
-
-**Konfiguration**:
-```python
-USE_WEATHER = False
-USE_LAGS = False
-USE_CALENDAR = True
-```
-
-**XGBoost Ergebnisse**:
-- Test MAE: XXXX kWh (**+XXXX kWh** vs. Baseline!)
-- Test R²: X.XXX (-X.XXX)
-
-**Erkenntnisse**:
-- **Lags sind essentiell!** Ohne Lag-Features bricht Performance ein
-- Nur Kalender = ähnlich wie Prophet
-- Autokorrelation (Verbrauch hängt von vorherigem Verbrauch ab) ist Schlüssel
-
-### Experiment 4: Lags ohne Kundenzahlen
-
-**Konfiguration**:
-```python
-EXCLUDE_LAGS = ["Grundversorgte Kunden_Lag_15min", "Freie Kunden_Lag_15min"]
-```
-
-**XGBoost Ergebnisse**:
-- Test MAE: XXX kWh (-X kWh vs. Baseline)
-- Test R²: X.XXX (unverändert)
-
-**Interpretation**:
-- Kundenzahlen-Lags **redundant** zu Verbrauchs-Lags
-- Können weggelassen werden → einfacheres Modell
-- Kein Performance-Verlust
-
-### Experiment 5: Reduzierte Wetter-Features
-
-**Ausgeschlossene Features**:
-```python
-EXCLUDE_WEATHER = [
-    "Böenspitze (3-Sekundenböe); Maximum in km/h_lag15",  # Redundant zu m/s
-    "Böenspitze (Sekundenböe); Maximum in km/h_lag15",
-    "Luftdruck reduziert auf Meeresniveau (QFF)_lag15",   # Redundant
-    "Luftdruck reduziert auf Meeresniveau (QNH)_lag15",
-    "Lufttemperatur Bodenoberfläche_lag15",               # Redundant zu 2m
-    "Windgeschwindigkeit in km/h_lag15"                   # Redundant zu m/s
-]
-```
-
-**XGBoost Ergebnisse**:
-- Test MAE: XXX kWh (unverändert)
-- Test R²: X.XXX (unverändert)
-
-**Erkenntnisse**:
-- **Feature-Reduktion ohne Performance-Verlust**
-- Multikollineare Features erfolgreich entfernt
-- Einfacheres Modell → bessere Interpretierbarkeit
-
-### Zusammenfassung Feature-Wichtigkeit
-
-| Feature-Gruppe | Einfluss auf Performance | Fazit |
-|----------------|--------------------------|-------|
-| **Lags (Verbrauch)** | ⭐⭐⭐⭐⭐ Essentiell | Nicht weglassen! |
-| **Kalender (sin/cos)** | ⭐⭐⭐⭐ Sehr wichtig | Basis-Features |
-| **Wetter-Lags** | ⭐⭐ Hilfreich | +2% Genauigkeit |
-| **Kunden-Lags** | ⭐ Redundant | Weglassbar |
+1. **Zeitliche Abhängigkeit**: Das Modell nutzt die vorherigen Vorhersagen als Input
+2. **Geringere Fehlerfortpflanzung**: Trotz rekursiver Natur akkumuliert der Fehler moderat
+3. **Bessere Generalisierung**: R² 0.8632 vs. 0.7809 bei Multi-Output Block
+4. **Produktionsreif**: Mit MAPE 2.48% ideal für Tagesplanung
 
 ---
 
 ## 🎯 Feature Importance
 
-### Top 10 Features (LightGBM, 1-Step)
+### Wichtigste Feature-Gruppen (LightGBM)
 
-| Rank | Feature | Importance | Kategorie |
-|------|---------|-----------|-----------|
-| 1 | **Lag_24h** | X.XXX | Lag |
-| 2 | **Lag_1h** | X.XXX | Lag |
-| 3 | **Stunde_sin** | X.XXX | Kalender |
-| 4 | **Stunde_cos** | X.XXX | Kalender |
-| 5 | **Wochentag_sin** | X.XXX | Kalender |
-| 6 | **Lufttemperatur 2m_lag15** | X.XXX | Wetter |
-| 7 | **Globalstrahlung_lag15** | X.XXX | Wetter |
-| 8 | **Monat_sin** | X.XXX | Kalender |
-| 9 | **Wochentag_cos** | X.XXX | Kalender |
-| 10 | **Lag_15min** | X.XXX | Lag |
+Basierend auf der Modellanalyse sind folgende Feature-Gruppen essentiell:
+
+| Feature-Gruppe | Bedeutung | Beschreibung |
+|----------------|-----------|--------------|
+| **Lags (Verbrauch)** | ⭐⭐⭐⭐⭐ | Historischer Verbrauch (15min, 1h, 24h zurück) - stärkster Prädiktor |
+| **Kalender (sin/cos)** | ⭐⭐⭐⭐ | Stunde, Wochentag, Monat - erfasst zeitliche Muster |
+| **Wetter-Lags** | ⭐⭐⭐ | Temperatur, Globalstrahlung - relevant bei Extremwetter |
 
 ### Interpretation
 
-1. **Lag_24h dominiert** (XX.X% Importance)
+1. **Lag-Features dominieren**
    - Verbrauch zur gleichen Stunde am Vortag ist stärkster Prädiktor
    - Tägliche Zyklen werden dadurch erfasst
+   - Autokorrelation ist Schlüssel zum Erfolg
 
-2. **Stunde des Tages** (sin + cos = XX%)
-   - Tageszyklus (Nachts niedrig, Tags hoch) ist zweitwichtigster Faktor
-   - Sin/Cos-Encoding funktioniert hervorragend
+2. **Stunde des Tages** (sin/cos)
+   - Tageszyklus (Nachts niedrig, Tags hoch)
+   - Sin/Cos-Encoding funktioniert hervorragend für zyklische Features
 
-3. **Wochentag** (sin + cos = X.X%)
+3. **Wochentag** (sin/cos)
    - Wochenenden vs. Arbeitstage
    - Wochenstruktur wichtig für Genauigkeit
 
-4. **Wetter** (Temperatur + Globalstrahlung = X.X%)
-   - Relevanz bei extremen Bedingungen
+4. **Wetter**
+   - Temperatur und Globalstrahlung haben messbaren Einfluss
+   - Besonders relevant bei extremen Bedingungen
    - Sommer: Kühlbedarf (Klimaanlagen)
    - Winter: Heizbedarf (Elektroheizungen)
-
-### Visualisierung
-
-Feature Importance Bar-Plot zeigt:
-- **Lange Tail**: Viele Features mit geringer Importance
-- **Starke Konzentration**: Top 5 Features = ~70% Importance
-- **Keine dominanten Ausreißer** → robustes Modell
-
----
-
-## 📉 Residuen-Analyse
-
-### Fehlerverteilung (1-Step, Test-Set)
-
-**Statistik**:
-- Mean Error: -X.X kWh (leichter Bias nach unten)
-- Std. Error: XXX kWh
-- 95% der Fehler liegen in: [-XXX, +XXX] kWh
-
-**Visualisierung**:
-- Histogram: Annähernd normalverteilt (leicht linkssteil)
-- Q-Q-Plot: Gute Übereinstimmung mit Normalverteilung
-- → Homoskedastizität (Fehler unabhängig von Vorhersagewert)
-
-### Fehler über Zeit
-
-**Beobachtungen**:
-- **Keine Trend-Abhängigkeit**: Fehler steigt nicht über Testverlauf
-- **Saisonale Muster**: Leicht höhere Fehler im Winter
-- **Wochenenden**: Etwas höhere Fehler (weniger reguläres Muster)
-- **Feiertage**: Größte Abweichungen (z.B. Weihnachten, Neujahr)
-
-### Worst Cases
-
-**Größte Abweichungen (absolute Fehler > XXX kWh)**:
-- **01.01.2024 (Neujahr)**: Fehler XXXX kWh
-  - Grund: Außergewöhnlicher Verbrauch, nicht im Training
-  - Modell sagt zu niedrig voraus
-
-- **24.12.2023 (Heiligabend)**: Fehler XXXX kWh
-  - Grund: Früher Verbrauchsrückgang (Geschäfte schließen)
-
-- **14.07.2024 (Hitzewelle)**: Fehler XXX kWh
-  - Grund: Extremer Kühlbedarf durch ungewöhnliche Temperaturen
-
-**Verbesserungspotenzial**:
-- Feiertagsindikatoren als Features hinzufügen
-- Extreme-Weather-Flags (Hitzewellen, Kälteeinbrüche)
-
----
-
-## 📊 Visualisierungen
-
-### Zeitreihen-Plots
-
-1. **Gesamtzeitreihe (2012-2025)**
-   - Langfristiger Trend: Leichter Anstieg des Verbrauchs
-   - Saisonale Schwankungen deutlich sichtbar (Winter > Sommer)
-
-2. **Monatszoom (Januar 2024)**
-   - Wochenmuster erkennbar
-   - Wochenenden (Sa/So) niedriger als Werktage
-
-3. **Wochenzoom (1.-7. Januar 2024)**
-   - Tageszyklus klar sichtbar
-   - Nachts (00:00-06:00): ~25.000 kWh
-   - Tags (10:00-18:00): ~40.000-50.000 kWh
-   - Abendspitze (18:00-20:00): bis 55.000 kWh
-
-4. **Winter vs. Sommer**
-   - Winter (Januar): höhere Baseline (~32.000 kWh)
-   - Sommer (Juli): niedrigere Baseline (~28.000 kWh)
-   - Amplitude ähnlich (~±15.000 kWh)
-
-### Heatmaps
-
-**Stunde × Wochentag**:
-- **Montag-Freitag**:
-  - 02:00-05:00: Minimum (~25.000 kWh) - blau
-  - 12:00: Mittagsspitze (~42.000 kWh) - gelb
-  - 18:00-20:00: Abendspitze (~48.000 kWh) - rot
-
-- **Wochenende**:
-  - Flacheres Profil
-  - Abendspitze verschoben (später)
-  - Insgesamt ~5% niedriger
-
-**Stunde × Monat**:
-- Winter (Dez-Feb): Höhere Nachtlast (Heizung)
-- Sommer (Jun-Aug): Niedrigere Gesamtlast, aber Mittagsspitze (Kühlung)
-
-### Korrelationen
-
-**Feature vs. Stromverbrauch**:
-1. Lag_24h: **r = X.XX** (sehr stark)
-2. Lag_1h: **r = X.XX**
-3. Temperatur: **r = -X.XX** (negativ! Kälter → mehr Verbrauch)
-4. Globalstrahlung: **r = -X.XX** (negativ! Mehr Sonne → weniger Verbrauch)
-   - Erklärung: Solaranlagen produzieren → Netzbezug sinkt
-
-**Wetter-Interkorrelationen**:
-- Temperatur ↔ Globalstrahlung: r = X.XX
-- Temperatur ↔ Taupunkt: r = X.XX
-- → Multikollinearität vorhanden, aber durch Regularisierung in Modellen beherrscht
-
-### Prediction vs. Actual
-
-**Scatter-Plot (Test-Set)**:
-- Ideale Linie: y = x (45°-Linie)
-- Tatsächlicher Fit: sehr nah an idealer Linie
-- R² = X.XXX visuell bestätigt
-- Leichte Untervorhersage bei Extremen (>XX.XXX kWh)
-
-**Residuen vs. Predicted**:
-- Zufällige Verteilung um 0
-- Keine Trichterform → Homoskedastizität ✓
-- Vereinzelte Ausreißer bei hohen/niedrigen Werten
 
 ---
 
@@ -516,42 +230,55 @@ Feature Importance Bar-Plot zeigt:
 
 ### Wichtigste Erkenntnisse
 
-1. **ML schlägt klassische Zeitreihen-Modelle**
-   - LightGBM/XGBoost: R² X.XXX
-   - Prophet: R² X.XXX
-   - **Verbesserung: +X.X%**
+1. **LightGBM liefert exzellente Ergebnisse**
+   - 1-Step Forecast: R² 0.9935, MAPE 1.19%
+   - Sehr geringe Overfitting-Tendenz
+   - Robuste Performance auf ungesehenen Daten
 
-2. **Lag-Features sind essentiell**
-   - Ohne Lags: MAE XXXX kWh
-   - Mit Lags: MAE XXX kWh
-   - **Verbesserung: -XX%**
+2. **Recursive Forecast übertrifft Multi-Output**
+   - Recursive: MAPE 2.48% (Test)
+   - Multi-Output Block: MAPE 4.07% (Test)
+   - **Verbesserung: -39%** beim MAPE
+   - Trotz rekursiver Natur moderate Fehler-Akkumulation
 
-3. **Recursive Forecast ist praktikabel**
-   - 24h-Prognose mit R² X.XXX
-   - Fehler-Akkumulation moderat
-   - Produktionsreif für Tagesplanung
+3. **Verschiedene Forecast-Strategien im Vergleich**
+   - **1-Step (15min)**: Beste Genauigkeit (MAPE 1.19%), ideal für kurzfristige Prognosen
+   - **Recursive 24h**: Beste 24h-Prognose (MAPE 2.48%), empfohlen für Tagesplanung
+   - **Multi-Output Global**: Moderate Performance (MAPE 3.10%), schnellere Berechnung
+   - **Multi-Output Block**: Schwächste Generalisierung (MAPE 4.07%)
 
-4. **Feature Engineering > Modell-Wahl**
-   - LightGBM, XGBoost, RF: alle R² X.XXX
-   - Unterschied durch Features (Lags, sin/cos) entsteht
+4. **Feature Engineering ist essentiell**
+   - Lag-Features (Verbrauch der letzten Stunden/Tage) sind der stärkste Prädiktor
+   - Sin/Cos-Encoding für zyklische Features funktioniert hervorragend
+   - Wetter-Features bringen zusätzliche Genauigkeit bei Extrembedingungen
 
-5. **Feiertage sind Herausforderung**
-   - Größte Fehler an Feiertagen
-   - Potenzial für Verbesserung durch Holiday-Features
+5. **Produktionsreife erreicht**
+   - R² von 0.8632 für 24h-Prognosen
+   - MAPE von 2.48% ermöglicht zuverlässige Tagesplanung
+   - Modell ist stabil und generalisiert gut
 
 ### Empfehlungen
 
 **Für Produktion**:
-- **Modell**: LightGBM (beste Balance aus Genauigkeit und Geschwindigkeit)
-- **Features**: Lags + Kalender (sin/cos) + reduzierte Wetter-Features
-- **Forecast-Horizont**: 24h (recursive)
-- **Retraining**: Monatlich mit neuen Daten
+- **Modell**: LightGBM
+- **Forecast-Strategie**: Recursive 24h (beste Balance aus Genauigkeit und Praktikabilität)
+- **Features**: Lags + Kalender (sin/cos) + Wetter-Lags
+- **Retraining**: Regelmäßig mit neuen Daten (monatlich empfohlen)
 
 **Für weitere Verbesserungen**:
-1. Holiday-Encoding (Schweizer Feiertage, Basel-spezifische Events)
-2. Extreme-Weather-Flags (Hitzewellen, Kälteeinbrüche)
-3. Ensemble aus mehreren Modellen (LightGBM + XGBoost)
-4. Separate Modelle für Sommer/Winter
+1. Holiday-Encoding (Schweizer Feiertage, Basel-spezifische Events) hinzufügen
+2. Extreme-Weather-Flags für außergewöhnliche Wetterbedingungen
+3. Separate Modelle für verschiedene Jahreszeiten testen
+4. Ensemble-Ansätze evaluieren
+
+### Vergleich der Prognose-Strategien
+
+| Strategie | Test MAPE | Test R² | Anwendungsfall |
+|-----------|-----------|---------|----------------|
+| **1-Step** | **1.19%** | **0.9935** | Kurzfristprognosen (15min) |
+| **Recursive 24h** ⭐ | **2.48%** | **0.8632** | Tagesplanung (empfohlen) |
+| **Multi-Output Global** | **3.10%** | **0.9510** | Schnelle 24h-Prognosen |
+| **Multi-Output Block** | **4.07%** | **0.7809** | Experimentell |
 
 ---
 
