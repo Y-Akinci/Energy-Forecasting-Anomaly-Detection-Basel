@@ -118,7 +118,7 @@ Energy-Forecasting-Anomaly-Detection-Basel/
 │
 ├── 📁 models/                                 # Trainierte Modelle (.joblib)
 ├── 📁 utils/                                  # Helper-Funktionen
-├── 📁 Archiv/                                 # Archivierte Dokumentation
+│                            
 │
 ├── 📄 requirements.txt                        # Python Dependencies
 └── 📄 README.md                               # Diese Datei
@@ -223,42 +223,6 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
                     ↑                                         ↓
                     ←  6. Deployment  ←  5. Evaluation  ←  4. Modeling
 ```
-
-### Phasen
-
-1. **Business Understanding**
-   - Zielsetzung: Präzise Stromverbrauchsprognosen für IWB Basel
-   - Nutzen: Kosteneffizienz, Planungssicherheit, optimierte Beschaffung
-
-2. **Data Understanding**
-   - 481.959 Stromverbrauchsmessungen (15min, 2012-2025)
-   - 788.977 Wettermessungen (10min, 2010-2024)
-   - Explorative Datenanalyse (EDA) mit 20+ Visualisierungen
-
-3. **Data Preparation**
-   - Zeitstempel-Synchronisation (UTC ↔ Europe/Zurich)
-   - Interpolation: Wetter 10min → 15min
-   - Feature Engineering: 60+ Features (Lags, Sin/Cos, Weather-Lags)
-   - Datensplit: 70% Training, 30% Test (chronologisch)
-
-4. **Modeling**
-   - LightGBM Gradient Boosting
-   - Hyperparameter-Tuning
-   - Cross-Validation auf Zeitreihen
-
-5. **Evaluation**
-   - Metriken: MAE, RMSE, R², MAPE
-   - Train/Test-Evaluation
-   - 24h-Block-Evaluation für Robustheit
-
-6. **Deployment** (geplant)
-   - Automatisierte tägliche Prognosen
-   - CSV/Plot-Export
-   - Monitoring & Retraining
-
-→ Detaillierte Beschreibung: [Data-Pipeline.md](docs/Data-Pipeline.md)
-
----
 
 ## Lessons Learned & Besonderheiten
 
