@@ -1,11 +1,14 @@
 import sys
 from pathlib import Path
 
-# sys.path: damit "common" gefunden wird 
-ROOT = Path(__file__).resolve()
-while ROOT != ROOT.parent and ROOT.name != "Yaren":
-    ROOT = ROOT.parent
-sys.path.append(str(ROOT))
+PROJECT_ROOT = Path(__file__).resolve()
+while PROJECT_ROOT != PROJECT_ROOT.parent and not (PROJECT_ROOT / "common").exists():
+    PROJECT_ROOT = PROJECT_ROOT.parent
+
+if not (PROJECT_ROOT / "common").exists():
+    raise RuntimeError(f"Projektroot mit 'common' nicht gefunden. Start war: {Path(__file__).resolve()}")
+
+sys.path.insert(0, str(PROJECT_ROOT))  
 
 # common imports
 import common.data as data
