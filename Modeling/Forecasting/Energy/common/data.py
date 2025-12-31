@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 @dataclass(frozen=True)
 class DataConfig:
     target_col: str = "Stromverbrauch"
