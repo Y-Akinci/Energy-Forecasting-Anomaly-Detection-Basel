@@ -277,7 +277,7 @@ Das Projekt folgt dem **CRISP-DM-Prozess** (Cross Industry Standard Process for 
 
 ## Lizenz
 
-Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details.
+Dieses Projekt steht unter der MIT-Lizenz.
 
 ---
 
