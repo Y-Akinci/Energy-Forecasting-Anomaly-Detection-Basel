@@ -31,8 +31,8 @@ Ein Machine-Learning-System zur präzisen Vorhersage des Stromverbrauchs im Kant
 - LightGBM
 
 **Umfangreicher Datensatz**
-- **Stromverbrauch**: 481.959 Messwerte (2012-2025, 15-Minuten-Intervalle)
-- **Wetterdaten**: 788.977 Messungen (2010-2024, 10-Minuten-Intervalle)
+- **Stromverbrauch**: 481'959 Messwerte (2012-2025, 15-Minuten-Intervalle)
+- **Wetterdaten**: 788'977 Messungen (2010-2024, 10-Minuten-Intervalle)
 - **Features**: 40+ engineered Features (Lags, Kalender, Wetter)
 
 **Production-Ready**
