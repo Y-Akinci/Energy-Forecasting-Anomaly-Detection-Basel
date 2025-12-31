@@ -465,7 +465,7 @@ merged_15.drop(columns=cols_to_drop, inplace=True)
 - **Text-Zeitstempel**: Redundant zu Index
 - **station_abbr**: Konstant (nur BAS)
 
-**Resultat**: ~60 Features (von ursprünglich 100+)
+**Resultat**: ~40 Features (von ursprünglich 60+)
 
 ---
 
