@@ -178,7 +178,7 @@ Erstellt 20+ Visualisierungen zur Datenanalyse:
 #### Option A: 1-Step Forecast (⚡ schnell, hohe Genauigkeit)
 
 ```bash
-python Modeling/Forecasting/Yaren/1-Step_Forecast/1-step_forecast.py
+python Modeling/Forecasting/Energy/1-Step_Forecast/1-step_forecast.py
 ```
 
 Trainiert LightGBM für 15-Minuten-Prognosen.
@@ -186,7 +186,7 @@ Trainiert LightGBM für 15-Minuten-Prognosen.
 #### Option B: Recursive 24h Forecast (⭐ empfohlen für Tagesprognosen)
 
 ```bash
-python Modeling/Forecasting/Yaren/multi_step_forecast_recursive/multistep_forecast_recursive.py
+python Modeling/Forecasting/Energy/multi_step_forecast_recursive/multistep_forecast_recursive.py
 ```
 
 Erstellt rekursive 24h-Prognosen durch iteratives 1-Step-Forecasting.
@@ -194,7 +194,7 @@ Erstellt rekursive 24h-Prognosen durch iteratives 1-Step-Forecasting.
 #### Option C: Multi-Output Forecast
 
 ```bash
-python Modeling/Forecasting/Yaren/multi_output_forecast/modeling_multi_output.py
+python Modeling/Forecasting/Energy/multi_output_forecast/modeling_multi_output.py
 ```
 
 Trainiert ein Modell, das direkt alle 96 Zeitpunkte (24h) vorhersagt.
@@ -202,7 +202,7 @@ Trainiert ein Modell, das direkt alle 96 Zeitpunkte (24h) vorhersagt.
 ### 6️⃣ Feature Importance analysieren
 
 ```bash
-python Modeling/Forecasting/Yaren/1-Step_Forecast/feature_importance_1-Step.py
+python Modeling/Forecasting/Energy/1-Step_Forecast/feature_importance_1-Step.py
 ```
 
 Zeigt die wichtigsten Einflussgrößen auf den Stromverbrauch:
