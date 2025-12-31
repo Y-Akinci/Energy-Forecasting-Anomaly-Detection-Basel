@@ -1,12 +1,9 @@
-# Permutation Feature Importance für das gespeicherte 1-Step Pipeline-Modell
 import sys
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import joblib
-
 from sklearn.inspection import permutation_importance
 
 PROJECT_ROOT = Path(__file__).resolve()
