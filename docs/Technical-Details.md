@@ -403,15 +403,6 @@ train_test_metrics = m.train_test_metrics
 - Änderungen an Datenladung nur an einer Stelle
 - Konsistente Metriken über alle Modelle
 
-### Dynamisches Root-Finding
-
-```python
-# common/data.py (implizit)
-
-ROOT = Path(__file__).resolve()
-while ROOT != ROOT.parent and ROOT.name != "Yaren":
-    ROOT = ROOT.parent
-```
 
 Findet automatisch das Yaren-Verzeichnis → funktioniert unabhängig von Ausführungsort!
 
