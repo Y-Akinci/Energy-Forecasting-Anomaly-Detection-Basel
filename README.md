@@ -110,7 +110,7 @@ Energy-Forecasting-Anomaly-Detection-Basel/
 │   └── data_understanding.md
 │
 ├── 📁 Modeling/                               # Machine Learning
-│   └── Forecasting/Yaren/
+│   └── Forecasting/Energy/
 │       ├── baseline/                          # Prophet Baseline
 │       ├── 1-Step_Forecast/                  # 15min Vorhersage
 │       ├── multi_output_forecast/            # 24h Direct
